@@ -1,0 +1,24 @@
+{
+  "name": "co-invest-grok",
+  "version": "1.0.0",
+  "description": "Research markets, review your Liquid portfolio, and prepare Liquid trade reviews or paper trades from Grok.",
+  "author": {
+    "name": "Liquid",
+    "url": "https://liquid.trade"
+  },
+  "homepage": "https://liquid.trade/coinvest",
+  "repository": "https://github.com/LiquidMax-dev/liquid-plugin",
+  "license": "MIT",
+  "keywords": [
+    "liquid",
+    "Co-Invest",
+    "trading",
+    "portfolio",
+    "markets",
+    "perpetuals",
+    "prediction markets",
+    "mcp"
+  ],
+  "logo": "assets/logo.svg",
+  "mcpServers": "./mcp.json"
+}
