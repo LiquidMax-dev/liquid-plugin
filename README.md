@@ -8,8 +8,8 @@ The Cursor plugin proposes trades and asks for your confirmation before placing 
 
 | Plugin | Clients | Endpoint | Trading |
 | --- | --- | --- | --- |
-| [Co-Invest](plugins/co-invest) | Cursor | https://coinvest.liquid.trade/mcp | Trades proposed for your confirmation in chat |
-| [Co-Invest](plugins/co-invest-grok) | Grok Bot, Grok Build | https://coinvest-chat.liquid.trade/mcp | Live trades reviewed and placed in Liquid |
+| [Co-Invest](plugins/co-invest) | Cursor | https://coinvest.liquid.trade | Trades proposed for your confirmation in chat |
+| [Co-Invest](plugins/co-invest-grok) | Grok Bot, Grok Build | https://coinvest-computer.liquid.trade | Automated Trading |
 
 ## How this repository is maintained
 
