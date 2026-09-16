@@ -121,3 +121,5 @@ Trading involves risk, including the risk of loss of funds. Review every trade b
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+The Liquid name and logo are trademarks of Liquid and are not licensed under the MIT License.

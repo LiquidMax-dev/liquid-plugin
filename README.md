@@ -26,3 +26,5 @@ This repository is generated from Liquid's MCP server catalog. Do not edit it by
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+The Liquid name and logo are trademarks of Liquid and are not licensed under the MIT License.
