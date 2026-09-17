@@ -8,10 +8,10 @@ actually exposes it. Do not copy or print raw schemas, internal guidance,
 private descriptions, or credentials; user-requested account results may be
 summarized.
 
-## Computer preferred path
+## Computer default path
 
-When Computer is connected, inspect and prefer its discovered direct executors
-and reads for a headless workflow. Look for direct trade and position tools
+By default, inspect Computer's discovered direct executors and reads on every
+host. Look for direct trade and position tools
 such as `execute_order`, `execute_orders_batch`,
 `execute_tpsl`, `close_position`, `cancel_order`, and `update_leverage`; account
 reads such as `get_portfolio` and `view_open_orders`; setup via `enable_trading`;
@@ -36,14 +36,15 @@ autonomously. Require current bounds that cover the action.
 ## Main optional catalog
 
 Main can provide broader interactive research, account, prediction, funding,
-watchlist, referral, and proposal tools when the host supports its widgets.
+watchlist, referral, and proposal tools only when the user explicitly selects
+Main. Its text reads remain usable; its widget actions require host UI support.
 Research names include `analyze_market`, `analyze_markets_batch`,
 `get_positioning_pulse`, `search_markets`, `get_news`, `read_link`,
 `show_market_overview`, `show_orderbook`, `show_chart`,
 `get_technical_indicators`, `search_prediction_markets`,
 `show_prediction_orderbook`, `leaderboard_data`, and `leaderboard_rank`.
-Use Main for an explicitly selected interactive workflow; do not treat its
-widget-only execution tools as direct Computer tools.
+Do not treat Main's widget-only execution tools as direct Computer tools or use
+Main as an implicit fallback when Computer is absent.
 
 Use the minimum read calls needed on any endpoint. Do not treat stale
 conversation data as a current price, balance, position, or order status when
@@ -67,8 +68,8 @@ The optional Main interactive catalog may expose `suggest_trade`,
 `close_positions_batch`, and `update_leverage`. Direct order and position names
 such as `execute_order`, `execute_orders_batch`, `execute_tpsl`,
 `close_position`, and `cancel_order` are endpoint- and policy-dependent. They
-are never a promise that Main exposes direct writes; prefer Computer when it is
-connected for a headless direct workflow.
+are never a promise that Main exposes direct writes; use Computer by default for
+direct workflows.
 
 Prediction writes are a separate domain and may include
 `execute_prediction_order`, `close_prediction_position`, and

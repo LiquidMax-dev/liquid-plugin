@@ -21,16 +21,19 @@ npx skills add LiquidMax-dev/liquid-plugin --skill coinvest
 ```
 
 This installs portable guidance only. Configure the MCP connection separately in
-your host's native MCP settings and complete Liquid OAuth there. For a fresh
-setup, [connect the recommended Computer MCP first](skills/coinvest/references/connect.md#recommended-fresh-setup).
-Use Main for an explicitly selected interactive workflow or Restricted for
-review-link behavior; the skill installer does not register any server or grant
+your host's native MCP settings and complete Liquid OAuth there. By default,
+[connect Computer](skills/coinvest/references/connect.md#default-connection)
+for reads and user-authorized direct trades. Use Main or Restricted only when
+explicitly selected; the skill installer does not register any server or grant
 trading access.
 <!-- coinvest-skill:end -->
 
 ## How this repository is maintained
 
-This repository is generated from Liquid's MCP server catalog. Do not edit it by hand — changes are overwritten.
+Plugin manifests and MCP configurations are generated separately from Liquid's
+MCP server catalog. The `skills/coinvest/` files are authored and maintained in
+this public repository. Existing synchronization can overwrite files here; this
+change does not alter that synchronization.
 
 ## Links
 
