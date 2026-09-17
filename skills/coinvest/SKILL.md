@@ -1,17 +1,19 @@
 ---
 name: coinvest
-description: Research markets, inspect Liquid Co-Invest accounts, and execute or manage user-requested trades through a connected OAuth MCP, using live tool discovery and endpoint-specific safeguards.
+description: Research markets, inspect Liquid Co-Invest accounts, and execute or manage user-requested trades through the CoInvest Computer OAuth MCP by default.
 license: MIT
 ---
 
 # Liquid Co-Invest
 
 Use this skill when the user wants Liquid market research, account information,
-paper trading, or an explicitly requested trade. For a fresh setup, connect
-Computer first: it is the preferred path for reads and direct execution in
-hosts that cannot render UI. The skill supplies guidance; installing it does
-not connect an MCP server, grant trading authority, or create an automation
-policy.
+paper trading, or an explicitly requested trade. By default, use Computer at
+`https://coinvest-computer.liquid.trade/mcp` for reads and user-authorized
+direct live or paper trades on every host, including widget-capable hosts. If
+Computer is absent, guide its connection and OAuth setup; do not choose Main or
+Restricted merely because it is installed. The skill supplies guidance;
+installing it does not connect an MCP server, grant trading authority, or create
+an automation policy.
 
 Requires a host that supports remote HTTP MCP and Liquid OAuth.
 
@@ -29,15 +31,15 @@ the live endpoint as the authority. Catalog names in the references are
 starting points only; a shared name never proves that two endpoints have the
 same schema, output, confirmation flow, or permission.
 
-Keep the selected MCP connection as an authority boundary. Prefer Computer's
-discovered reads and direct executors when it is connected and the user has not
-chosen another endpoint. Main is an optional interactive, widget-oriented path;
-its text reads can still help, but a headless host must not call a widget-only
-executor or claim that a widget proposal executed. Restricted is for its
-review-link behavior and must not be silently upgraded to direct execution.
-Never switch endpoints to bypass a denial. If changing or adding a connection
-would change execution behavior, explain that choice and get the user's
-decision first.
+Keep the selected MCP connection as an authority boundary. Use Computer by
+default for reads and direct user-authorized trades. Main is available only when
+the user explicitly selects its interactive, widget-oriented workflow; a host
+must not call a Main widget-only executor or claim that a widget proposal
+executed without the required UI. Restricted is available only when explicitly
+selected for its review-link behavior and must never be silently upgraded to
+direct execution. Never switch endpoints to bypass a denial. If changing or
+adding a connection would change execution behavior, explain that choice and
+get the user's decision first.
 
 For every state-changing request, follow the actual discovered approval flow.
 For an order, require concrete asset, side, and size details, clarify notional

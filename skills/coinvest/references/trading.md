@@ -9,14 +9,14 @@ silently.
 
 ## Computer direct flow
 
-Computer is the preferred path for a headless or fresh setup. Use a direct
-executor only when that server exposes it and its live schema and policy
-authorize the requested action. Before a write, verify the selected account or
-wallet and live/paper mode match the user's intended target using identity and
-context actually exposed by the host or MCP. The selected connection context
-can establish the identity; do not invent a wallet introspection call. Ask if
-identity or mode differs or is unresolved. State the key values and follow the
-discovered confirmation requirement. Preserve backend denials and account/signing
+Computer is the default path on every host. Use a direct executor only when
+that server exposes it and its live schema and policy authorize the requested
+action. Before a write, verify the selected account or wallet and live/paper
+mode match the user's intended target using identity and context actually
+exposed by the host or MCP. The selected connection context can establish the
+identity; do not invent a wallet introspection call. Ask if identity or mode
+differs or is unresolved. State the key values and follow the discovered
+confirmation requirement. Preserve backend denials and account/signing
 handoffs rather than trying another endpoint.
 
 If autonomous execution is requested, read the current Computer policy/status
@@ -36,13 +36,12 @@ outcome remains uncertain, do not resubmit.
 
 ## Main interactive flow
 
-On the optional Main endpoint, tools such as `suggest_trade`, `modify_position`,
-and `close_positions_batch` can return an interactive proposal or checklist. A
-proposal is not an execution. In a widget-capable host, tell the user what is
-being proposed and wait for the host's confirmation flow. In a headless host,
-do not call a widget-only executor or claim that the proposal executed;
-recommend connecting Computer for direct execution. Main's `execute_order` may
-be widget-only while Computer's same-named tool accepts direct requests. Use the
+On Main, only after the user explicitly selects that endpoint, tools such as
+`suggest_trade`, `modify_position`, and `close_positions_batch` can return an
+interactive proposal or checklist. A proposal is not an execution. Use Main's
+existing widget flow when the host supports it; otherwise stop and guide the
+user to connect Computer for direct execution. Main's `execute_order` may be
+widget-only while Computer's same-named tool accepts direct requests. Use the
 contract of the selected connection; shared names do not establish parity.
 
 ## Paper mode
