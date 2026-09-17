@@ -1,10 +1,49 @@
 ---
 name: coinvest
-description: Research markets, inspect Liquid Co-Invest accounts, and execute or manage user-requested trades through the CoInvest Computer OAuth MCP by default.
+description: "Liquid Co-Invest is free AI trading you control: research markets, size positions, and trade crypto, stocks, commodities, and FX from your AI agent. Co-Invest Computer exposes Liquid as an MCP server, so Claude Code, Codex, Cursor, Hermes, or any MCP client can research markets, watch for entries, and execute trades within the limits you set. Use when the user wants Liquid market research, portfolio or account information, paper trading, or an explicitly requested trade. Uses the Co-Invest Computer OAuth MCP by default."
 license: MIT
 ---
 
 # Liquid Co-Invest
+
+![Co-Invest](https://raw.githubusercontent.com/LiquidMax-dev/liquid-plugin/main/skills/coinvest/assets/logo.svg)
+
+Research. Position. Trade. All from your AI agent.
+
+[Co-Invest](https://www.liquid.trade/coinvest) provides advanced market data,
+analysis, and trade execution for crypto, stocks, commodities, and FX directly
+in your AI assistant.
+[Co-Invest Computer](https://www.liquid.trade/coinvest-computer) lets AI agents
+trade on your behalf: it exposes Liquid as an MCP server, so your agent can
+research markets, monitor entries, and execute from your harness. It is built
+for code-agent clients such as Claude Code, Codex, Cursor, and Hermes, and works
+with any MCP client.
+
+- **Market research.** Positioning, funding, on-chain flow, and macro headlines,
+  with prices, order books, and news kept in view.
+- **Portfolios shaped by the market's signals.** Ask for a balanced book across
+  stocks, gold, and crypto and get positions sized to your live balance.
+- **Trade ideas with receipts.** Picks come with a named catalyst and a link to
+  the source: earnings prints, central bank decisions, ETF flows, on-chain data.
+- **Connect in minutes.** Connect the Co-Invest Computer server in your agent
+  harness, then give the agent a market, a strategy, and the limits it should
+  respect.
+- **Watch until the signal is real.** Updates are checked against the entry
+  conditions you gave it. Weak setups get ignored; clean setups move forward.
+- **Move when the trigger hits.** It stages or sends the order in the mode you
+  enabled, carrying stops, take-profits, and leverage into the trade. You can
+  pause, let the plan expire, or take back manual control at any time.
+- **Execution controls.** Max notional, max leverage, stop-loss requirements,
+  optional symbol lists, daily order caps, and expiry.
+- **Try it before going live.** Start with paper trading or staged orders and
+  watch the full agent loop against market data before enabling live execution.
+- **Free.** No subscription and no AI surcharge; model usage stays with the
+  client you choose. Executed trades pay standard Liquid trading fees.
+
+## Using this skill
+
+The overview above describes the product. It grants no trading authority; the
+rules below govern what an agent may do.
 
 Use this skill when the user wants Liquid market research, account information,
 paper trading, or an explicitly requested trade. By default, use Computer at
