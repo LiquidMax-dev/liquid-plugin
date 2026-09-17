@@ -11,6 +11,23 @@ The Cursor plugin proposes trades and asks for your confirmation before placing 
 | [Co-Invest](plugins/co-invest) | Cursor | https://coinvest.liquid.trade | Trades proposed for your confirmation in chat |
 | [Co-Invest](plugins/co-invest-grok) | Grok Bot, Grok Build | https://coinvest-computer.liquid.trade | Automated Trading |
 
+<!-- coinvest-skill:start -->
+## Install the Co-Invest skill
+
+Install with:
+
+```text
+npx skills add LiquidMax-dev/liquid-plugin --skill coinvest
+```
+
+This installs portable guidance only. Configure the MCP connection separately in
+your host's native MCP settings and complete Liquid OAuth there. For a fresh
+setup, [connect the recommended Computer MCP first](skills/coinvest/references/connect.md#recommended-fresh-setup).
+Use Main for an explicitly selected interactive workflow or Restricted for
+review-link behavior; the skill installer does not register any server or grant
+trading access.
+<!-- coinvest-skill:end -->
+
 ## How this repository is maintained
 
 This repository is generated from Liquid's MCP server catalog. Do not edit it by hand — changes are overwritten.
