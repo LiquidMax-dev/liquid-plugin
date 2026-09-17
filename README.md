@@ -1,4 +1,8 @@
+![Co-Invest](skills/coinvest/assets/logo.svg)
+
 # Liquid Co-Invest plugins
+
+Liquid Co-Invest is free AI trading you control: research markets, size positions, and trade crypto, stocks, commodities, and FX inside Claude or ChatGPT. [Co-Invest Computer](https://www.liquid.trade/coinvest-computer) exposes Liquid as an MCP server, so agents in Codex, Claude Code, Cursor, Hermes, or any MCP client can research markets, watch for entries, and trade through Liquid. There is no subscription; executed trades pay standard Liquid trading fees.
 
 Liquid Co-Invest is Liquid's multi-asset trading MCP, covering equities, commodities, indices, crypto, and other supported Liquid markets. These plugins bring Co-Invest's market research and portfolio review into Cursor and Grok, with trading through Liquid's non-custodial wallet model.
 

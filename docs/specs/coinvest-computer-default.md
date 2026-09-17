@@ -41,6 +41,19 @@ skill source or generator changes in another repository are part of this change.
 The standard skill frontmatter retains name `coinvest`, a plain description and
 MIT license. No new runtime state or analytics are introduced.
 
+**Amended 2026-09-17:** the description and the entrypoint's opening paragraph
+take their product wording from https://www.liquid.trade/coinvest and
+https://www.liquid.trade/coinvest-computer, and still name Computer as the
+default. Superlatives from those pages are left out; the fee statement follows
+the Computer page. The entrypoint shows the Co-Invest mark from
+`skills/coinvest/assets/logo.svg`, the plugin logo at 128 px, through an
+absolute raw URL because skills.sh rewrites relative paths to GitHub blob pages.
+The maintained files are therefore `SKILL.md`, its three references and that
+asset. The mark is byte-identical to https://coinvest.liquid.trade/favicon.svg
+apart from the rendered size. The root README opens with the same mark and a
+lead paragraph from the same two pages; that header sits in the part of the
+README that plugin synchronization can overwrite, as described under Risks.
+
 ## API contracts
 
 Computer tool definitions and account policy remain authoritative. Its direct
