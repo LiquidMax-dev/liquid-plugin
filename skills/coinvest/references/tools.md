@@ -54,8 +54,23 @@ the user asks for a refresh.
 
 Computer's core account reads include `get_portfolio`, `view_open_orders`, and
 `paper_trading_status`. Broader discovered account tools may include
-`get_transaction_history`, `view_prediction_positions`,
+`get_transaction_history`, `get_position_history`, `view_prediction_positions`,
 `view_prediction_orders`, and `get_staking`.
+
+`get_position_history`, when exposed, reconstructs the wallet's recent
+perpetual position lifecycles from a bounded window of recent fills: side,
+entry and exit prices, size, gross realized PnL (before fees and funding),
+fees in their own tokens, and optional constituent fills. It follows the
+current live or paper mode. It is recent history, not an all-time ledger:
+report the coverage it states, and when it marks a lifecycle `unknown` or its
+entry incomplete, say so rather than inventing an opening or a close. It
+returns closed lifecycles by default; ask for `open` or `all` explicitly, and
+treat an `open` result as open at the last observed fill, not as the current
+position. Its `symbol` filter is the exact, case-sensitive source coin,
+including any venue prefix such as `xyz:BTC`. Use `get_portfolio` for current
+positions and, where offered, `get_transaction_history` for deposits,
+withdrawals, transfers, and individual transaction rows.
+
 `edit_watchlist`, `refer`, and `help` cover preferences, referrals, and the
 server's own capability help. Funding and conversion names may include
 `show_deposit`, `generate_deposit_address`, `create_onramp_session`, and
