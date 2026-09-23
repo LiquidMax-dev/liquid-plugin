@@ -56,6 +56,7 @@ Paper trading uses virtual funds and never places live orders or moves real fund
 - Your active limit, trigger, and take-profit / stop-loss orders.
 - Your account balance, positions, and live p&l.
 - Your recent transaction history — trades, deposits, withdrawals, transfers, and prediction activity.
+- Recent perpetual position history with entry, exit, gross realized PnL, and fees.
 - Recent market headlines mapped to assets and themes.
 
 ### Trades
