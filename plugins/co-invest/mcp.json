@@ -1,8 +1,9 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
   "mcpServers": {
     "Co-Invest": {
-      "type": "http",
-      "url": "https://coinvest.liquid.trade/mcp"
+      "type": "streamable-http",
+      "url": "https://coinvest-computer.liquid.trade/mcp"
     }
   }
 }

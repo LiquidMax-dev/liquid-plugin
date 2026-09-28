@@ -1,13 +1,13 @@
 {
   "name": "co-invest-grok",
   "displayName": "Co-Invest",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "minClientVersions": {
     "cursor": "never",
     "grokbot": "0.49.0",
     "sand": "0.49.0"
   },
-  "description": "Research markets, review your Liquid portfolio, and prepare Liquid trade reviews or paper trades from Grok.",
+  "description": "Research markets, review your Liquid portfolio, and place trades you approve in chat from Grok.",
   "author": {
     "name": "Liquid"
   },
