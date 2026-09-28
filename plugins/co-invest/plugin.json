@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "co-invest",
+  "version": "2.0.0",
+  "description": "Research markets, review your Liquid portfolio, and place trades you authorize without leaving Cursor.",
+  "author": { "name": "Liquid", "url": "https://liquid.trade" },
+  "homepage": "https://liquid.trade/coinvest",
+  "repository": "https://github.com/LiquidMax-dev/liquid-plugin",
+  "license": "MIT",
+  "keywords": ["liquid", "Co-Invest", "trading", "portfolio", "markets", "perpetuals", "prediction markets", "mcp"]
+}

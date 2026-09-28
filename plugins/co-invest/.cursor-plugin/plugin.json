@@ -1,13 +1,13 @@
 {
   "name": "co-invest",
   "displayName": "Co-Invest",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "minClientVersions": {
     "cursor": "3.13.0",
     "grokbot": "never",
     "sand": "never"
   },
-  "description": "Research markets, review your Liquid portfolio, and confirm trades without leaving Cursor.",
+  "description": "Research markets, review your Liquid portfolio, and place trades you authorize without leaving Cursor.",
   "author": {
     "name": "Liquid"
   },
@@ -31,6 +31,5 @@
     "finance",
     "trading",
     "mcp"
-  ],
-  "mcpServers": "./mcp.json"
+  ]
 }

@@ -1,16 +1,12 @@
 # Co-Invest
 
-Co-Invest connects Grok to Liquid's trading MCP. Research markets, review your Liquid portfolio, and prepare trades to review and place in Liquid.
-
-Live trade suggestions include a prefilled Liquid review link, and you review and confirm the order in Liquid. Co-Invest does not place live orders from chat.
-
-Grok Bot shows results as text. Cards and charts render only in clients that support MCP Apps.
+Co-Invest connects Grok to Liquid's MCP server with the `all` profile. Research markets, review your Liquid portfolio, and place orders only after you approve their exact terms in chat: results come back as text, structured data, or links.
 
 ## Install
 
 ### Grok Bot
 
-Not yet available in Grok Bot's plugin catalog. Until then, ask Grok Bot in a chat to add a custom MCP connector named "Co-Invest" with the URL `https://coinvest-chat.liquid.trade/mcp`, then sign in with your Liquid account if prompted.
+Not yet in Grok Bot's plugin catalog. Open Grok Bot's "Add MCP Server" dialog and paste the MCP configuration block below, then sign in with your Liquid account when prompted. If you added the 1.0.0 connector (`https://coinvest-chat.liquid.trade/mcp`), remove it first.
 
 ### Grok Build
 
@@ -23,7 +19,7 @@ Not yet available in Grok Build's marketplace. Until then, clone `https://github
   "mcpServers": {
     "Co-Invest": {
       "type": "http",
-      "url": "https://coinvest-chat.liquid.trade/mcp"
+      "url": "https://coinvest.liquid.trade/mcp?profile=all"
     }
   }
 }
@@ -37,75 +33,30 @@ Removing the plugin or connector stops your client from using Co-Invest.
 
 ## How trading works
 
-When Co-Invest suggests a live trade, the result includes a prefilled Liquid review link instead of placing the order. Open the link, check the account mode and order details, and confirm it in Liquid.
+Before placing any order from chat, the agent gets a preview and shows you its exact terms: asset, side, size, order type, price, time in force, leverage, take-profit / stop-loss, and whether it's live or paper. The order is placed only after you explicitly approve that unchanged action. Changing any term needs a fresh preview and a fresh approval. If an order's outcome is uncertain, the agent checks your orders and account before retrying instead of repeating the action blind.
 
-Paper trading uses virtual funds and never places live orders or moves real funds. Placing a new paper order from chat uses a confirmation card, which needs a client that renders MCP Apps. Grok Bot doesn't render cards, so there you ask for a paper order review link and confirm it in Liquid. Managing existing paper positions, such as closing a position, setting take-profit / stop-loss, changing leverage or cancelling an order, works in chat after you confirm.
+Cancelling a resting order runs as soon as you ask for it. Cancelling a prediction-market order needs the same preview-and-approval step as any other prediction order.
+
+Paper trading follows the same preview and approval flow, using the paper execution mode instead of your live account. The agent can also prepare a paper-only review link (`suggest_order`) that you open and confirm in Liquid instead of in chat. Paper mode is keyed by your wallet on Liquid's shared paper simulator, so turning it on or off here also turns it on or off for every other Liquid MCP connector using that wallet. The Liquid web app is unaffected either way.
 
 ## What agents can do
 
-### Markets
+The connected server groups its tools by what they do. The names below are examples: the connected server's live tool list is authoritative, and this plugin doesn't pin a fixed number of tools.
 
-- Opinionated analysis on any market — price, positioning, funding, whale activity, and smart money vs crowd.
-- Find the most crowded long-heavy and short-heavy markets.
-- Five news-driven trade ideas with catalysts and reasoning.
-- Compare price, funding, and positioning across multiple assets in one widget.
-- Browse or filter every tradeable market by symbol or asset class.
-- Browse HIP-4 prediction markets and outcome probabilities.
-- View bids and asks for a prediction-market outcome.
-- Your open or historical prediction-market orders.
-- Your active limit, trigger, and take-profit / stop-loss orders.
-- Your account balance, positions, and live p&l.
-- Your recent transaction history — trades, deposits, withdrawals, transfers, and prediction activity.
-- Recent perpetual position history with entry, exit, gross realized PnL, and fees.
-- Recent market headlines mapped to assets and themes.
-
-### Trades
-
-- Propose a live trade to review in Liquid, or confirm a paper trade.
-- Prepare a paper-only order review link in Liquid.
-- Propose a basket with Liquid review links, or confirm paper trades.
-- Build a multi-trade portfolio plan from your prefs, then surface every trade in one Place-All basket.
-
-### Data
-
-- Render a full dashboard of every tradeable market.
-- Show live bid/ask depth for a specific market.
-- Show a candlestick and volume chart for a market.
-- Compute RSI, MACD, moving averages, and other technical indicators for a market.
-- Your open prediction-market positions.
-- Render a pie chart of your position allocation.
-- Rank Liquid traders by PnL, volume, points, or streak over any window.
-- Check where a trader — or you — sits on the Liquid leaderboard.
-- Read the content of a web link — X/Twitter posts get author, age and full text; other pages return title, description and article text.
-- Add, remove, or set symbols on one of your watchlists.
-
-### Funding
-
-- Check and complete the account setup needed before trading.
-- Fund your account by credit card, other apps, or wallet transfer.
-- Your HYPE staking — staked balance, validators, predicted APR, rewards and the unstaking queue.
-
-### Paper
-
-- Enable simulated trading for this wallet in the MCP connector; the Liquid web app is unaffected.
-- Disable this wallet's paper trading in the MCP connector and return to live account data.
-- Reset the simulated account to a fresh default balance.
-- Check this wallet's paper trading mode in the MCP connector; the Liquid web app is unaffected.
-- Close or partially reduce a paper position.
-- Close all paper positions or a specified subset.
-- Set or update TP/SL on a paper position.
-- Update leverage on a paper position.
-- Cancel an open paper order.
-
-### Sharing
-
-- Show your referral link, share card, and referral stats.
+- **Research:** market analysis, positioning and crowd-bias reads, technical indicators, order books, price history, a market overview, leaderboard rankings, and news, such as `analyze_market`, `show_chart`, `get_news`, and `leaderboard_data`.
+- **Account:** balances, positions, open orders, your position allocation, and transaction or position history, such as `get_portfolio`, `view_open_orders`, `get_account`, and `get_transaction_history`.
+- **Trading:** preparing and previewing a trade, then placing, closing, or adjusting perpetual orders once you approve the exact terms, such as `suggest_trade`, `execute_order`, and `close_position`. Cancelling a resting order with `cancel_order` runs when you ask.
+- **Prediction markets:** searching HIP-4 markets, checking your positions and orders, and placing, closing, or cancelling a prediction order after you approve it, such as `search_prediction_markets`, `execute_prediction_order`, and `cancel_prediction_order`.
+- **Paper:** the same preview-and-approve flow as live trading, run against Liquid's shared paper simulator, plus turning paper mode on or off and resetting it, such as `enable_paper_trading`, `paper_trading_status`, and `reset_paper_account`.
+- **Funding:** checking account setup, funding your account, and reviewing your HYPE staking, such as `enable_trading`, `show_deposit`, and `get_staking`.
+- **Automation policy:** saving, reading, or clearing a per-order automation limit, such as `enable_automated_trading`, `automated_trading_status`, and `disable_automated_trading`. These tools only manage that saved record: they don't place orders, and a saved policy never authorizes a chat trade.
+- **Sharing:** your referral link and your payment link, such as `refer` and `payment_link`.
 
 ## Network and data
 
-This plugin contains only configuration: a manifest, the MCP endpoint, and this documentation. It has no local code, hooks, or scripts.
+This plugin contains two manifests (`.cursor-plugin/plugin.json` and `.grok-plugin/plugin.json`), two copies of the MCP configuration (`mcp.json` and `.mcp.json`), a logo, a changelog, a license, and this documentation. It has no local code, hooks, or scripts.
 
-Tool requests go to `https://coinvest-chat.liquid.trade/mcp`, which Liquid operates. Sign-in opens Liquid's account sign-in page in your browser. Liquid's privacy policy, linked below, describes how Liquid handles your data.
+Tool requests go to `https://coinvest.liquid.trade/mcp?profile=all`, which Liquid operates. Sign-in opens Liquid's account sign-in page in your browser. Liquid's privacy policy, linked below, describes how Liquid handles your data.
 
 ## Risk
 
