@@ -7,6 +7,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
 import { SKILL_SYNC_MAP, diffSkillCopies } from "./sync-skills.mjs";
+import { validateMusePackage } from "./muse-paper-only.mjs";
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = process.argv[2] ? resolve(process.cwd(), process.argv[2]) : dirname(scriptsDir);
@@ -437,6 +438,11 @@ function checkNoSymlinks(rootDirs) {
 }
 
 async function main() {
+  const museResult = validateMusePackage(repoRoot);
+  for (const issue of museResult.errors) {
+    const separator = issue.indexOf(": ");
+    addError(issue.slice(0, separator), issue.slice(separator + 2));
+  }
   const marketplacePath = join(repoRoot, ".cursor-plugin/marketplace.json");
   const marketplaceRel = relOf(marketplacePath);
   let marketplace = null;
@@ -528,7 +534,7 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  console.log(`OK: ${plugins.length} plugins, ${skillCount} skills`);
+  console.log(`OK: ${plugins.length} Cursor marketplace plugins, ${museResult.packageCount} Agent Plugins packages, ${skillCount} skills`);
 }
 
 main().catch((err) => {

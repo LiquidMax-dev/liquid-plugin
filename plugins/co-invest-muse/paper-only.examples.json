@@ -1,0 +1,939 @@
+{
+  "formatVersion": 1,
+  "profile": "paper-only",
+  "tools": {
+    "analyze_market": {
+      "input": {
+        "symbol": "BTC"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/symbol",
+            "equals": "BTC"
+          },
+          {
+            "path": "/structuredContent/ticker/markPx",
+            "equals": "50000"
+          }
+        ]
+      }
+    },
+    "analyze_markets_batch": {
+      "input": {
+        "symbols": [
+          "BTC",
+          "ETH"
+        ]
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/snapshots/0/symbol",
+            "equals": "BTC"
+          },
+          {
+            "path": "/structuredContent/snapshots/1/symbol",
+            "equals": "ETH"
+          }
+        ]
+      }
+    },
+    "automated_trading_status": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "^Shared automation policy metadata only; no paper or live order authority is granted:"
+          },
+          {
+            "path": "/structuredContent/text",
+            "matches": "shared|saved automation policy"
+          },
+          {
+            "path": "/structuredContent/text",
+            "matches": "does not|cannot|neither"
+          }
+        ]
+      }
+    },
+    "cancel_order": {
+      "input": {
+        "order_id": "100"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "Order 100 cancelled successfully"
+          }
+        ]
+      }
+    },
+    "cancel_prediction_order": {
+      "input": {
+        "order_id": "fixture-order-1"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "No order was cancelled"
+          }
+        ]
+      }
+    },
+    "close_position": {
+      "input": {
+        "symbol": "BTC"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/close/symbol",
+            "equals": "BTC"
+          },
+          {
+            "path": "/structuredContent/status",
+            "equals": "pending_confirmation"
+          }
+        ]
+      }
+    },
+    "close_positions_batch": {
+      "input": {
+        "symbols": [
+          "BTC"
+        ],
+        "executionMode": "paper"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/status",
+            "equals": "pending_confirmation"
+          },
+          {
+            "path": "/structuredContent/positions/0/symbol",
+            "equals": "BTC-PERP"
+          },
+          {
+            "path": "/structuredContent/positions/0/closeKind",
+            "equals": "full"
+          }
+        ]
+      }
+    },
+    "close_prediction_position": {
+      "input": {
+        "market_id": "hip4:600",
+        "outcome_id": "hip4:600:0"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "No position was closed"
+          }
+        ]
+      }
+    },
+    "edit_watchlist": {
+      "input": {
+        "action": "add",
+        "symbols": [
+          "BTC"
+        ]
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "^Shared account watchlist preferences:"
+          },
+          {
+            "path": "/structuredContent/text",
+            "matches": "Added BTC to \"Watchlist\""
+          }
+        ]
+      }
+    },
+    "enable_paper_trading": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "This connection is paper-only"
+          }
+        ]
+      }
+    },
+    "execute_order": {
+      "input": {
+        "symbol": "BTC",
+        "side": "buy",
+        "size": 100,
+        "leverage": 5,
+        "type": "market",
+        "maxSlippageBps": 100,
+        "confirmed": true,
+        "executionMode": "paper",
+        "idempotencyKey": "matrix-paper-order-1"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/order/exchange",
+            "equals": "paper"
+          },
+          {
+            "path": "/structuredContent/order/status",
+            "equals": "filled"
+          },
+          {
+            "path": "/structuredContent/order/symbol",
+            "equals": "BTC-PERP"
+          }
+        ]
+      }
+    },
+    "execute_orders_batch": {
+      "input": {
+        "orders": [
+          {
+            "symbol": "BTC",
+            "side": "buy",
+            "size": 100,
+            "leverage": 5,
+            "type": "market"
+          },
+          {
+            "symbol": "ETH",
+            "side": "buy",
+            "size": 100,
+            "leverage": 5,
+            "type": "market"
+          }
+        ],
+        "confirmed": true,
+        "executionMode": "paper",
+        "idempotencyKey": "matrix-paper-batch-1"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/status",
+            "equals": "all_executed"
+          },
+          {
+            "path": "/structuredContent/succeeded",
+            "equals": 2
+          },
+          {
+            "path": "/structuredContent/failed",
+            "equals": 0
+          }
+        ]
+      }
+    },
+    "execute_prediction_order": {
+      "input": {
+        "market_id": "600",
+        "side": "buy",
+        "size": 20
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/status",
+            "equals": "pending_confirmation"
+          },
+          {
+            "path": "/structuredContent/order/market_id",
+            "equals": "600"
+          },
+          {
+            "path": "/structuredContent/order/size",
+            "equals": 20
+          }
+        ]
+      }
+    },
+    "execute_tpsl": {
+      "input": {
+        "symbol": "BTC",
+        "confirmed": true,
+        "sl": 45000,
+        "tp": 55000
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/status",
+            "equals": "executed"
+          },
+          {
+            "path": "/structuredContent/tpsl/result/tp/status",
+            "equals": "set"
+          },
+          {
+            "path": "/structuredContent/tpsl/result/sl/status",
+            "equals": "set"
+          }
+        ]
+      }
+    },
+    "get_account": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/tradingAccountAddress",
+            "equals": "0x1111111111111111111111111111111111111111"
+          },
+          {
+            "path": "/structuredContent/addressRole",
+            "equals": "trading-account"
+          }
+        ]
+      }
+    },
+    "get_news": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "Fixture BTC market update"
+          }
+        ]
+      }
+    },
+    "get_portfolio": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/account/equity",
+            "equals": "10000.00"
+          },
+          {
+            "path": "/structuredContent/paperMode",
+            "equals": true
+          },
+          {
+            "path": "/structuredContent/liveTradingEnabled",
+            "equals": false
+          }
+        ]
+      }
+    },
+    "get_position_history": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/status",
+            "equals": "closed"
+          },
+          {
+            "path": "/structuredContent/sourceFillCount",
+            "equals": 0
+          },
+          {
+            "path": "/structuredContent/coverage",
+            "equals": "recent_fills"
+          }
+        ]
+      }
+    },
+    "get_positioning_pulse": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "BTC \\| 72% long"
+          },
+          {
+            "path": "/structuredContent/text",
+            "matches": "ETH \\| 25% long"
+          }
+        ]
+      }
+    },
+    "get_technical_indicators": {
+      "input": {
+        "symbol": "BTC"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/symbol",
+            "equals": "BTC"
+          },
+          {
+            "path": "/structuredContent/candlesUsed",
+            "equals": 120
+          },
+          {
+            "path": "/structuredContent/currentPrice",
+            "equals": 49952
+          }
+        ]
+      }
+    },
+    "get_transaction_history": {
+      "input": {
+        "type": "trades",
+        "limit": 5
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/paperOnlyDataLabel",
+            "equals": "simulated-paper-transaction-history"
+          },
+          {
+            "path": "/structuredContent/paperMode",
+            "equals": true
+          },
+          {
+            "path": "/structuredContent/filter",
+            "equals": "trades"
+          },
+          {
+            "path": "/structuredContent/limit",
+            "equals": 5
+          },
+          {
+            "path": "/content/0/text",
+            "matches": "simulat"
+          }
+        ]
+      }
+    },
+    "help": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "What I can do"
+          }
+        ]
+      }
+    },
+    "leaderboard_data": {
+      "input": {
+        "metric": "pnl",
+        "duration": "7D",
+        "limit": 3,
+        "asset": "BTC"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/paperOnlyDataLabel",
+            "equals": "public-real-leaderboard-not-paper-pnl"
+          },
+          {
+            "path": "/structuredContent/metric",
+            "equals": "pnl"
+          },
+          {
+            "path": "/content/0/text",
+            "matches": "[Pp]ublic"
+          }
+        ]
+      }
+    },
+    "leaderboard_rank": {
+      "input": {
+        "metric": "pnl",
+        "duration": "7D"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/content/0/text",
+            "matches": "Public Liquid leaderboard rank \\(real public rankings; not this paper account's P&L\\)"
+          }
+        ]
+      }
+    },
+    "market_picks": {
+      "input": {
+        "picks": [
+          {
+            "asset": "BTC",
+            "displayName": "BTC",
+            "side": "long",
+            "catalyst": "Fixture market",
+            "reasoning": "Fixture rationale"
+          },
+          {
+            "asset": "ETH",
+            "displayName": "ETH",
+            "side": "long",
+            "catalyst": "Fixture market",
+            "reasoning": "Fixture rationale"
+          },
+          {
+            "asset": "BTC",
+            "displayName": "BTC",
+            "side": "long",
+            "catalyst": "Fixture market",
+            "reasoning": "Fixture rationale"
+          },
+          {
+            "asset": "ETH",
+            "displayName": "ETH",
+            "side": "long",
+            "catalyst": "Fixture market",
+            "reasoning": "Fixture rationale"
+          },
+          {
+            "asset": "BTC",
+            "displayName": "BTC",
+            "side": "long",
+            "catalyst": "Fixture market",
+            "reasoning": "Fixture rationale"
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/picks/0/asset",
+            "equals": "BTC"
+          },
+          {
+            "path": "/structuredContent/picks/0/side",
+            "equals": "long"
+          }
+        ]
+      }
+    },
+    "modify_position": {
+      "input": {
+        "asset": "BTC",
+        "action": "add_tpsl",
+        "positionSide": "long",
+        "positionSize": 0.01,
+        "reasoning": "Fixture rationale",
+        "takeProfit": 55000,
+        "stopLoss": 45000
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/tpsl/asset",
+            "equals": "BTC"
+          },
+          {
+            "path": "/structuredContent/status",
+            "equals": "pending_confirmation"
+          },
+          {
+            "path": "/structuredContent/tpsl/takeProfit",
+            "equals": 55000
+          },
+          {
+            "path": "/structuredContent/tpsl/stopLoss",
+            "equals": 45000
+          }
+        ]
+      }
+    },
+    "paper_trading_status": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "This connection is permanently paper-only"
+          }
+        ]
+      }
+    },
+    "plan_portfolio": {
+      "input": {
+        "riskTolerance": "moderate",
+        "timeHorizon": "position_long_term",
+        "assetClasses": [
+          "crypto"
+        ]
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "Deployable: \\$7680 across 3–4 positions"
+          },
+          {
+            "path": "/structuredContent/text",
+            "matches": "Call suggest_trades_batch ONCE"
+          }
+        ]
+      }
+    },
+    "read_link": {
+      "input": {
+        "url": "https://example.test/fixture"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "Fixture market article"
+          },
+          {
+            "path": "/structuredContent/text",
+            "matches": "Bitcoin market data is served from the loopback fixture"
+          }
+        ]
+      }
+    },
+    "refer": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/paperOnlyDataLabel",
+            "equals": "actual-shared-account-referral-data"
+          },
+          {
+            "path": "/structuredContent/variant",
+            "equals": "referral"
+          },
+          {
+            "path": "/structuredContent/body/code",
+            "equals": "FIXTURE"
+          },
+          {
+            "path": "/content/0/text",
+            "matches": "[Aa]ctual|[Rr]eferral"
+          }
+        ]
+      }
+    },
+    "reset_paper_account": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "Paper account reset\\."
+          }
+        ]
+      }
+    },
+    "search_markets": {
+      "input": {
+        "query": "BTC"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/markets/0/symbol",
+            "equals": "LIT:BTC"
+          },
+          {
+            "path": "/structuredContent/quality",
+            "equals": "complete"
+          }
+        ]
+      }
+    },
+    "search_prediction_markets": {
+      "input": {
+        "query": "Fixture"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/groups/0/title",
+            "equals": "Fixture market wins"
+          }
+        ]
+      }
+    },
+    "show_chart": {
+      "input": {
+        "symbol": "BTC",
+        "interval": "1h"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/symbol",
+            "equals": "BTC"
+          },
+          {
+            "path": "/structuredContent/interval",
+            "equals": "1h"
+          },
+          {
+            "path": "/structuredContent/candleLimit",
+            "equals": 100
+          }
+        ]
+      }
+    },
+    "show_market_overview": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/markets/0/coin",
+            "equals": "LIT:BTC"
+          },
+          {
+            "path": "/structuredContent/quality",
+            "equals": "complete"
+          }
+        ]
+      }
+    },
+    "show_orderbook": {
+      "input": {
+        "symbol": "BTC"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/book/coin",
+            "equals": "BTC"
+          },
+          {
+            "path": "/structuredContent/book/bids/0/px",
+            "equals": "49990"
+          },
+          {
+            "path": "/structuredContent/book/asks/0/px",
+            "equals": "50010"
+          }
+        ]
+      }
+    },
+    "show_portfolio_chart": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/paperOnlyDataLabel",
+            "equals": "simulated-paper-allocation"
+          },
+          {
+            "path": "/structuredContent/positionCount",
+            "equals": 0
+          },
+          {
+            "path": "/structuredContent/totalNotional",
+            "equals": 0
+          },
+          {
+            "path": "/content/0/text",
+            "matches": "[Ss]imulat"
+          }
+        ]
+      }
+    },
+    "show_prediction_orderbook": {
+      "input": {
+        "market_id": "600"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "marketID 600"
+          },
+          {
+            "path": "/structuredContent/text",
+            "matches": "bids 48\\.00%"
+          }
+        ]
+      }
+    },
+    "suggest_order": {
+      "input": {
+        "asset": "BTC",
+        "side": "long",
+        "leverage": 5,
+        "orderType": "market",
+        "size": 100,
+        "reasoning": "Fixture rationale"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/status",
+            "equals": "ready_to_view"
+          },
+          {
+            "path": "/structuredContent/reviewUrl",
+            "matches": "mode=paper"
+          }
+        ]
+      }
+    },
+    "suggest_trade": {
+      "input": {
+        "asset": "BTC",
+        "side": "long",
+        "leverage": 5,
+        "orderType": "market",
+        "size": 100,
+        "reasoning": "Fixture rationale"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/order/asset",
+            "equals": "BTC"
+          },
+          {
+            "path": "/structuredContent/status",
+            "equals": "pending_confirmation"
+          }
+        ]
+      }
+    },
+    "suggest_trades_batch": {
+      "input": {
+        "trades": [
+          {
+            "asset": "BTC",
+            "side": "long",
+            "leverage": 5,
+            "orderType": "market",
+            "size": 100,
+            "reasoning": "Fixture rationale"
+          },
+          {
+            "asset": "ETH",
+            "side": "long",
+            "leverage": 5,
+            "orderType": "market",
+            "size": 100,
+            "reasoning": "Fixture rationale"
+          }
+        ],
+        "thesis": "Two fixture markets"
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/trades/0/asset",
+            "equals": "BTC"
+          },
+          {
+            "path": "/structuredContent/trades/1/asset",
+            "equals": "ETH"
+          }
+        ]
+      }
+    },
+    "update_leverage": {
+      "input": {
+        "asset": "BTC",
+        "targetLeverage": 3,
+        "confirmed": false
+      },
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "Validation only: this tool did not execute"
+          },
+          {
+            "path": "/structuredContent/text",
+            "matches": "Requested change: 5x -> 3x"
+          }
+        ]
+      }
+    },
+    "view_open_orders": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "matches": "No open orders"
+          }
+        ]
+      }
+    },
+    "view_prediction_orders": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "equals": "No open prediction-market orders."
+          }
+        ]
+      }
+    },
+    "view_prediction_positions": {
+      "input": {},
+      "expected": {
+        "outcome": "success",
+        "assertions": [
+          {
+            "path": "/structuredContent/text",
+            "equals": "No prediction-market positions."
+          }
+        ]
+      }
+    }
+  }
+}
