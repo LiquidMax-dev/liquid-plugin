@@ -1,0 +1,4596 @@
+{
+  "formatVersion": 1,
+  "profile": "paper-only",
+  "referenceGuidance": "This connection is permanently limited to simulated paper trading, public market research, public real leaderboard rankings, and explicitly requested shared account utilities. Paper balances, positions, orders, transaction history, P&L, and allocation are simulator data; public leaderboard rankings are real public rankings and do not describe paper P&L. Watchlists are shared account preferences, referral links and rewards are actual shared account referral data, and automated_trading_status reads shared policy metadata only; none of these utilities authorizes or executes paper or live orders. This connection cannot switch to live trading. Obtain explicit user approval for the exact unchanged order or management action before executing it. `enable_paper_trading` confirms that this session is paper-only and does not change the shared wallet setting. `reset_paper_account` resets the wallet's shared simulated account and requires the user's direct request. Use only tools exposed by this connection; unsupported tools are unavailable.",
+  "serverMetadata": {
+    "name": "Co-Invest Paper",
+    "version": "1.0.0",
+    "title": "Co-Invest Paper",
+    "websiteUrl": "https://www.liquid.trade/coinvest",
+    "description": "Co-Invest paper-only simulated trading and market research."
+  },
+  "bindings": [
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Bring Liquid's powerful market intelligence into the conversation: real-time prices, funding, and proprietary positioning insights in one place. PRIMARY TOOL for any question about a specific tradeable asset on Liquid. Use this whenever the user asks about an asset's price, outlook, positioning, sentiment, what an asset is doing, how traders are positioned, or wants analysis on a particular market. Liquid covers equities (TSLA, AAPL, NVDA), commodities (GOLD, SILVER, CL for WTI crude, BRENT for Brent crude), indices (SP500), crypto (BTC, ETH, SOL), and more. If the result requires an asset choice, ask the user which candidate they mean and retry with its exact symbol. Returns real-time Liquid price, funding, OI, and positioning data, including the smart-money (profitable traders) vs losing-crowd long/short split when available. Do NOT use search_markets when the user asks about a specific known asset — use analyze_market instead. After presenting the analysis, offer in your own reply to turn it into a trade (any follow-up trade in this connection is simulated). Do NOT call suggest_trade until the user says yes.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "symbol": {
+              "description": "Asset symbol for positioning data. Use the Liquid market symbol directly, e.g. BTC, ETH, HYPE, GOLD.",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "symbol"
+          ],
+          "type": "object"
+        },
+        "name": "analyze_market",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Analyzing the market"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "analyze_market",
+        "userDescription": "Research a market with price, funding, open interest, and positioning data."
+      },
+      "identity": "service",
+      "operationId": "markets.analyze"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Uncover crowded trades and contrasting trader views with a market-wide cohort-bias snapshot across Liquid markets with positioning data coverage. Returns the most one-sided assets split into long-heavy and short-heavy buckets, with notional, position count, and the smart-money vs losing-crowd split (profitable vs unprofitable pnl cohorts) — a wide gap where winners fade the crowd is the strongest contrarian signal. Use in the /markets flow BEFORE market_picks to ground picks in actual positioning, or when the user asks 'what's crowded?', 'what are traders long/short?', or wants a contrarian setup. Do NOT call for single-asset queries — use analyze_market instead.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "limit": {
+              "default": 5,
+              "description": "Max rows per bucket (long-heavy and short-heavy).",
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "get_positioning_pulse",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Checking positioning pulse"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "get_positioning_pulse",
+        "userDescription": "Review aggregated market positioning and crowding signals."
+      },
+      "identity": "service",
+      "operationId": "positioning.pulse"
+    },
+    {
+      "approval": "proposal-only",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Bring market catalysts to life with 5 news-driven trade picks (at least 1; fewer only when fewer catalysts qualify) as text results. ONLY call this as the final step of the /markets command flow, after calling get_news(), search_markets(), and get_positioning_pulse(). Do NOT call for single-asset queries — use analyze_market instead. Each pick: asset, direction, news catalyst, reasoning — weight reasoning with the positioning pulse (contrarian vs. crowded) and the unusual-activity section from get_news. After presenting the picks, ask in your own reply which pick the user would like to trade (any follow-up trade in this connection is simulated). Do NOT call suggest_trade until the user chooses one.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "picks": {
+              "description": "1 to 5 trade picks",
+              "items": {
+                "properties": {
+                  "asset": {
+                    "description": "Liquid market identifier. Prefer the exact tool-returned asset id when available; never print internal ids to the user.",
+                    "type": "string"
+                  },
+                  "catalyst": {
+                    "description": "News headline driving this pick",
+                    "type": "string"
+                  },
+                  "displayName": {
+                    "description": "User-facing name, e.g. 'CL', 'GOLD', 'BTC'",
+                    "type": "string"
+                  },
+                  "reasoning": {
+                    "description": "1 sentence on why",
+                    "type": "string"
+                  },
+                  "side": {
+                    "description": "Recommended direction",
+                    "enum": [
+                      "long",
+                      "short"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "asset",
+                  "displayName",
+                  "side",
+                  "catalyst",
+                  "reasoning"
+                ],
+                "type": "object"
+              },
+              "maxItems": 5,
+              "minItems": 1,
+              "type": "array"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "picks"
+          ],
+          "type": "object"
+        },
+        "name": "market_picks",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Picking markets"
+      },
+      "effects": [
+        "market-read",
+        "proposal"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "market_picks",
+        "userDescription": "Review catalyst-driven paper trade ideas in text form."
+      },
+      "identity": "service",
+      "operationId": "markets.propose-picks"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Put 2–10 markets side-by-side for a text results. Use when the user asks about more than one asset at once (e.g. 'how are BTC, ETH, and SOL looking?', 'compare gold to oil', 'show me my watchlist'). Returns a short text summary plus a multi-market text results. For deep single-asset analysis still use analyze_market.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "symbols": {
+              "description": "Between 2 and 10 asset symbols (e.g. ['BTC','ETH','SOL']).",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 10,
+              "minItems": 2,
+              "type": "array"
+            },
+            "thesis": {
+              "description": "One-sentence framing for why these markets are being compared together (e.g. 'risk-on basket ahead of CPI', 'pre-earnings watchlist'). Renders prominently in the widget — supply when there's a coherent reason these assets are grouped.",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "symbols"
+          ],
+          "type": "object"
+        },
+        "name": "analyze_markets_batch",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Comparing markets"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "analyze_markets_batch",
+        "userDescription": "Compare two or more markets in a text summary."
+      },
+      "identity": "service",
+      "operationId": "markets.analyze-batch"
+    },
+    {
+      "approval": "proposal-only",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "PAPER ONLY: This proposal or plan is for the simulated account in this permanently paper-only session. It does not offer or prepare a live trade. When the user has a concrete, data-backed directional trade idea, call analyze_market first; do not call for a purely informational query, and 'no trade' is a valid position. Call get_portfolio first to check available_balance and current account mode. Require asset, side, leverage, orderType, size and reasoning; TP/SL are optional, and limit orders may set timeInForce (gtc default, ioc or alo/post-only). Size is notional exposure, not collateral: required collateral is size / leverage. Suggest only when available_balance covers that amount; for example, a $600 order at 3x needs $200 collateral and is valid with $300 available. If the simulated balance is insufficient, suggest reducing the size. Mention reset_paper_account only if the user asks to reset. After reviewing the exact returned terms and execution mode, present those terms in chat and obtain the user's explicit confirmation of that unchanged action. Then call execute_order mapping asset→symbol, long/short→buy/sell, orderType→type, limitPrice→price and takeProfit/stopLoss→tp/sl; copy returned notional size, leverage, requestedLeverage, timeInForce, reasoning, executionMode and aiAttribution verbatim. Do not pass proposal-only sizeBasis, displayName, requestedSize, sizingNote, markPrice, icons, links or status. A proposal is not an order or fill. Changed terms require a new proposal and confirmation.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "asset": {
+              "description": "Liquid asset identifier. Examples: BTC, ETH, GOLD.",
+              "type": "string"
+            },
+            "leverage": {
+              "description": "Proposed leverage",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "limitPrice": {
+              "description": "Limit price (required if orderType is limit)",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "markPrice": {
+              "description": "Current mark price from market_data",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "orderType": {
+              "description": "Order type",
+              "enum": [
+                "market",
+                "limit"
+              ],
+              "type": "string"
+            },
+            "reasoning": {
+              "description": "Brief 1-sentence explanation",
+              "type": "string"
+            },
+            "side": {
+              "description": "Trade direction",
+              "enum": [
+                "long",
+                "short"
+              ],
+              "type": "string"
+            },
+            "size": {
+              "description": "Order size as a USD notional dollar amount (collateral × leverage) — NOT a quantity of coins/contracts. E.g. 250 means $250 of exposure, not 250 units. Minimum $10 collateral × leverage. Always pass this as notional at your requested leverage, even when sizeBasis is 'margin' (e.g. $300 margin at 3x leverage is size=900, not size=300) — sizeBasis never converts this value for you. (e.g. $50 at 5x, $100 at 10x).",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "sizeBasis": {
+              "description": "`size` must already be the notional dollar amount computed at requestedLeverage regardless of this field — sizeBasis does NOT convert a margin/collateral number into notional for you (compute notional yourself as margin × requestedLeverage before calling). This only controls what gets preserved if the venue ends up using a different leverage than requestedLeverage (e.g. inheriting an existing position's leverage, or a leverage cap): 'notional' keeps size's dollar exposure fixed and recomputes margin; 'margin' keeps the margin implied by size/requestedLeverage fixed and recomputes notional at the new leverage. Defaults to notional.",
+              "enum": [
+                "margin",
+                "notional"
+              ],
+              "type": "string"
+            },
+            "stopLoss": {
+              "description": "Stop loss price",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "takeProfit": {
+              "description": "Take profit price",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "timeInForce": {
+              "description": "Time-in-force for limit orders: 'gtc' rests on the book until filled or cancelled (default), 'ioc' fills whatever is immediately available and cancels the remainder, 'alo' is post-only / add-liquidity-only (rejected instead of taking liquidity). Ignored for market orders.",
+              "enum": [
+                "gtc",
+                "ioc",
+                "alo"
+              ],
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "asset",
+            "side",
+            "leverage",
+            "orderType",
+            "size",
+            "reasoning"
+          ],
+          "type": "object"
+        },
+        "name": "suggest_trade",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "failed": {
+              "type": "number"
+            },
+            "order": {
+              "description": "Order details or order proposal payload."
+            },
+            "results": {
+              "description": "Per-order results for batch execution.",
+              "items": {},
+              "type": "array"
+            },
+            "status": {
+              "description": "Order workflow status.",
+              "type": "string"
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Suggesting a trade"
+      },
+      "effects": [
+        "market-read",
+        "account-read",
+        "proposal"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "suggest_trade",
+        "userDescription": "Prepare a simulated trade proposal from market and paper-account context; it does not execute the trade."
+      },
+      "identity": "wallet",
+      "operationId": "perps.prepare"
+    },
+    {
+      "approval": "proposal-only",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "PAPER ONLY: This proposal or plan is for the simulated account in this permanently paper-only session. It does not offer or prepare a live trade. Prepare a simulated paper-order proposal for this automatically paper-only session. The tool does not execute the order. A returned Liquid review link is optional; it is not a required browser handoff.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "asset": {
+              "description": "Liquid asset identifier. Examples: BTC, ETH, GOLD.",
+              "type": "string"
+            },
+            "leverage": {
+              "description": "Proposed leverage",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "limitPrice": {
+              "description": "Limit price (required if orderType is limit)",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "markPrice": {
+              "description": "Current mark price from market_data",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "orderType": {
+              "description": "Order type",
+              "enum": [
+                "market",
+                "limit"
+              ],
+              "type": "string"
+            },
+            "reasoning": {
+              "description": "Brief 1-sentence explanation",
+              "type": "string"
+            },
+            "side": {
+              "description": "Trade direction",
+              "enum": [
+                "long",
+                "short"
+              ],
+              "type": "string"
+            },
+            "size": {
+              "description": "Order size as a USD notional dollar amount (collateral × leverage) — NOT a quantity of coins/contracts. E.g. 250 means $250 of exposure, not 250 units. Minimum $10 collateral × leverage. Always pass this as notional at your requested leverage, even when sizeBasis is 'margin' (e.g. $300 margin at 3x leverage is size=900, not size=300) — sizeBasis never converts this value for you. (e.g. $50 at 5x, $100 at 10x).",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "sizeBasis": {
+              "description": "`size` must already be the notional dollar amount computed at requestedLeverage regardless of this field — sizeBasis does NOT convert a margin/collateral number into notional for you (compute notional yourself as margin × requestedLeverage before calling). This only controls what gets preserved if the venue ends up using a different leverage than requestedLeverage (e.g. inheriting an existing position's leverage, or a leverage cap): 'notional' keeps size's dollar exposure fixed and recomputes margin; 'margin' keeps the margin implied by size/requestedLeverage fixed and recomputes notional at the new leverage. Defaults to notional.",
+              "enum": [
+                "margin",
+                "notional"
+              ],
+              "type": "string"
+            },
+            "stopLoss": {
+              "description": "Stop loss price",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "takeProfit": {
+              "description": "Take profit price",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "timeInForce": {
+              "description": "Time-in-force for limit orders: 'gtc' rests on the book until filled or cancelled (default), 'ioc' fills whatever is immediately available and cancels the remainder, 'alo' is post-only / add-liquidity-only (rejected instead of taking liquidity). Ignored for market orders.",
+              "enum": [
+                "gtc",
+                "ioc",
+                "alo"
+              ],
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "asset",
+            "side",
+            "leverage",
+            "orderType",
+            "size",
+            "reasoning"
+          ],
+          "type": "object"
+        },
+        "name": "suggest_order",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "failed": {
+              "type": "number"
+            },
+            "order": {
+              "description": "Order details or order proposal payload."
+            },
+            "results": {
+              "description": "Per-order results for batch execution.",
+              "items": {},
+              "type": "array"
+            },
+            "status": {
+              "description": "Order workflow status.",
+              "type": "string"
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Suggesting a paper order"
+      },
+      "effects": [
+        "market-read",
+        "account-read",
+        "proposal"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "suggest_order",
+        "userDescription": "Prepare a paper-order proposal for optional review; it does not execute the order."
+      },
+      "identity": "wallet",
+      "operationId": "perps.prepare-paper-link"
+    },
+    {
+      "approval": "confirmed-argument",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "PAPER SIMULATOR ONLY: This operation changes simulated account state and cannot use real funds. Obtain the user's explicit approval for the exact unchanged action before execution. A changed term requires a fresh proposal and approval. Execute one previously reviewed order only after the user explicitly confirms its exact returned terms in chat. Send confirmed=true and the unchanged executionMode. Map only asset→symbol, long/short→buy/sell, orderType→type, limitPrice→price and takeProfit/stopLoss→tp/sl; copy exact size, leverage, requestedLeverage, timeInForce, reasoning and aiAttribution from the proposal. Use only executor fields: executionMode, symbol, side, size, type, price, timeInForce, leverage, requestedLeverage, tp, sl, reasoning, aiAttribution, idempotencyKey and confirmed. Exclude proposal/display fields. Reuse one stable opaque idempotencyKey for this exact action and any safe reconciliation retry; never change it to bypass an uncertain result. Changed terms require a fresh proposal, confirmation and action key. Do not claim a fill unless the returned outcome says filled.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "aiAttribution": {
+              "additionalProperties": {},
+              "properties": {
+                "ai_assisted": {
+                  "type": "boolean"
+                },
+                "ai_client": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "assistant_reasoning": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mcp_session_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mcp_tool_call_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "metadata": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "order_input": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "user_intent": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            "confirmed": {
+              "description": "Must be true to execute. Missing or false is rejected as an error — this tool has no preview mode; use suggest_trade for that.",
+              "type": "boolean"
+            },
+            "executionMode": {
+              "description": "Trading mode of the reviewed confirmation. Copy it unchanged from the proposal; missing or changed mode requires a new proposal.",
+              "enum": [
+                "paper",
+                "live"
+              ],
+              "type": "string"
+            },
+            "idempotencyKey": {
+              "description": "Opaque key for this exact confirmed action. Generate one key and retain it for reconciliation and any safe retry; never invent a different key to repeat an uncertain result or bypass deduplication. Changed terms require a new review, confirmation and key.",
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            "leverage": {
+              "description": "Leverage multiplier (e.g. 5)",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "maxSlippageBps": {
+              "description": "Optional max slippage in basis points (1-500) for market orders. The order is sent as an immediate-or-cancel limit at the current mid plus or minus this many bps; anything that cannot fill within it is cancelled. If it only partly fills, attached TP/SL is not placed; set it with execute_tpsl.",
+              "maximum": 500,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "price": {
+              "description": "Limit price. Required when type is 'limit'.",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "reasoning": {
+              "description": "One-sentence rationale for this order",
+              "type": "string"
+            },
+            "requestedLeverage": {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "side": {
+              "enum": [
+                "buy",
+                "sell"
+              ],
+              "type": "string"
+            },
+            "size": {
+              "description": "Order size as a USD notional dollar amount (collateral × leverage) — NOT a quantity of coins/contracts. E.g. 250 means $250 of exposure, not 250 units. Minimum $10 collateral × leverage. Always pass this as notional at your requested leverage, even when sizeBasis is 'margin' (e.g. $300 margin at 3x leverage is size=900, not size=300) — sizeBasis never converts this value for you.",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "sl": {
+              "description": "Stop-loss trigger price",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "symbol": {
+              "description": "Asset symbol, e.g. BTC, ETH, xyz:GOLD",
+              "type": "string"
+            },
+            "timeInForce": {
+              "description": "Time-in-force for limit orders: 'gtc' rests on the book until filled or cancelled (default), 'ioc' fills whatever is immediately available and cancels the remainder, 'alo' is post-only / add-liquidity-only (rejected instead of taking liquidity). Ignored for market orders.",
+              "enum": [
+                "gtc",
+                "ioc",
+                "alo"
+              ],
+              "type": "string"
+            },
+            "tp": {
+              "description": "Take-profit trigger price",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "type": {
+              "enum": [
+                "market",
+                "limit"
+              ],
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "symbol",
+            "side",
+            "size",
+            "leverage"
+          ],
+          "type": "object"
+        },
+        "name": "execute_order",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "failed": {
+              "type": "number"
+            },
+            "order": {
+              "description": "Order details or order proposal payload."
+            },
+            "results": {
+              "description": "Per-order results for batch execution.",
+              "items": {},
+              "type": "array"
+            },
+            "status": {
+              "description": "Order workflow status.",
+              "type": "string"
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Executing your order"
+      },
+      "effects": [
+        "paper-perp-write"
+      ],
+      "identity": "wallet",
+      "operationId": "perps.place"
+    },
+    {
+      "approval": "proposal-only",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "PAPER ONLY: This proposal or plan is for the simulated account in this permanently paper-only session. It does not offer or prepare a live trade. Call get_portfolio first for the existing position's current side, size and liquidation price, then prepare a TP/SL change proposal. Review the exact returned action, levels, position side, execution mode and account; present them in chat and obtain explicit confirmation of that unchanged change. Then call execute_tpsl with the proposal's asset→symbol, takeProfit→tp and stopLoss→sl mappings, plus exact action, removeTP, removeSL, positionSide, executionMode and reasoning. Preserve explicit removal flags and do not infer a removal from an omitted level. This tool does not close a position. A proposal is not an applied change; changed terms require a new proposal and confirmation.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "action": {
+              "description": "Position modification action (synonyms like 'add', 'update', 'remove' are accepted).",
+              "enum": [
+                "add_tpsl",
+                "modify_tpsl",
+                "remove_tpsl"
+              ],
+              "type": "string"
+            },
+            "asset": {
+              "description": "Coin field from market_data or portfolio",
+              "type": "string"
+            },
+            "currentPrice": {
+              "description": "Current mark price",
+              "type": "number"
+            },
+            "liquidationPrice": {
+              "description": "Liquidation price from portfolio",
+              "type": "number"
+            },
+            "positionSide": {
+              "description": "Direction of existing position",
+              "enum": [
+                "long",
+                "short"
+              ],
+              "type": "string"
+            },
+            "positionSize": {
+              "description": "Asset quantity in the position",
+              "type": "number"
+            },
+            "reasoning": {
+              "description": "Brief 1-sentence explanation",
+              "type": "string"
+            },
+            "removeSL": {
+              "description": "True to remove SL (action=remove_tpsl)",
+              "type": "boolean"
+            },
+            "removeTP": {
+              "description": "True to remove TP (action=remove_tpsl)",
+              "type": "boolean"
+            },
+            "sizeBasis": {
+              "description": "The quantity the user named: margin/collateral or notional exposure. Size is always submitted as notional; margin preserves size/requested leverage if leverage changes. Defaults to notional.",
+              "enum": [
+                "margin",
+                "notional"
+              ],
+              "type": "string"
+            },
+            "stopLoss": {
+              "description": "Stop loss price",
+              "type": "number"
+            },
+            "takeProfit": {
+              "description": "Take profit price",
+              "type": "number"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "asset",
+            "action",
+            "positionSide",
+            "positionSize",
+            "reasoning"
+          ],
+          "type": "object"
+        },
+        "name": "modify_position",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Modifying your position"
+      },
+      "effects": [
+        "market-read",
+        "account-read",
+        "proposal"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "modify_position",
+        "userDescription": "Prepare a paper position TP/SL change for explicit user review and approval."
+      },
+      "identity": "wallet",
+      "operationId": "perps.prepare-brackets"
+    },
+    {
+      "approval": "confirmed-argument",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "PAPER SIMULATOR ONLY: This operation changes simulated account state and cannot use real funds. Obtain the user's explicit approval for the exact unchanged action before execution. A changed term requires a fresh proposal and approval. Apply a previously reviewed TP/SL change only after the user explicitly confirms the exact action and terms in chat. Send confirmed=true and copy the exact symbol, tp, sl, action, removeTP, removeSL, positionSide, executionMode and reasoning from the matching modify_position proposal. Preserve explicit removal flags and position side; do not infer omitted values. If any proposed term changes before confirmation, request a fresh modify_position proposal and confirmation. Do not use this tool to close a position. Report the returned outcome accurately.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "action": {
+              "type": "string"
+            },
+            "asset": {
+              "type": "string"
+            },
+            "confirmed": {
+              "description": "Must be true to apply. Missing or false is rejected as an error — this tool has no preview mode; use modify_position for that.",
+              "type": "boolean"
+            },
+            "executionMode": {
+              "description": "Trading mode of the reviewed confirmation. Copy it unchanged from the proposal; missing or changed mode requires a new proposal.",
+              "enum": [
+                "paper",
+                "live"
+              ],
+              "type": "string"
+            },
+            "positionSide": {
+              "enum": [
+                "long",
+                "short"
+              ],
+              "type": "string"
+            },
+            "reasoning": {
+              "type": "string"
+            },
+            "removeSL": {
+              "type": "boolean"
+            },
+            "removeTP": {
+              "type": "boolean"
+            },
+            "sl": {
+              "type": "number"
+            },
+            "symbol": {
+              "type": "string"
+            },
+            "tp": {
+              "type": "number"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "execute_tpsl",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Setting take-profit / stop-loss"
+      },
+      "effects": [
+        "paper-perp-write"
+      ],
+      "identity": "wallet",
+      "operationId": "perps.set-brackets"
+    },
+    {
+      "approval": "confirmed-argument",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "PAPER SIMULATOR ONLY: This operation changes simulated account state and cannot use real funds. Obtain the user's explicit approval for the exact unchanged action before execution. A changed term requires a fresh proposal and approval. Call first with confirmed=false or omitted to preview a close. Present the exact previewed symbol, quantity and full or partial-close scope in chat and obtain explicit confirmation. Then call again with confirmed=true and the same symbol. If the preview returns an exact coin-unit size, send that size (not USD and not percent); otherwise repeat the exact previewed percent. If a fresh portfolio read shows a material state change since preview, create a fresh preview and obtain confirmation again. Do not change or expand the previewed close. A preview does not close the position; check the returned outcome and portfolio before claiming it closed.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "aiAttribution": {
+              "additionalProperties": {},
+              "properties": {
+                "ai_assisted": {
+                  "type": "boolean"
+                },
+                "ai_client": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "assistant_reasoning": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mcp_session_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mcp_tool_call_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "metadata": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "order_input": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "user_intent": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            "confirmed": {
+              "description": "True to execute. Omit or false to preview.",
+              "type": "boolean"
+            },
+            "percent": {
+              "description": "Partial close as a percentage of the current position size (0-100], resolved server-side against the live position size and the venue's lot precision. 100 closes the whole position.",
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "type": "number"
+            },
+            "reasoning": {
+              "type": "string"
+            },
+            "size": {
+              "description": "Partial close size in coin units (omit for full close)",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "symbol": {
+              "description": "Market symbol, e.g. BTC-PERP",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "symbol"
+          ],
+          "type": "object"
+        },
+        "name": "close_position",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "failed": {
+              "type": "number"
+            },
+            "order": {
+              "description": "Order details or order proposal payload."
+            },
+            "results": {
+              "description": "Per-order results for batch execution.",
+              "items": {},
+              "type": "array"
+            },
+            "status": {
+              "description": "Order workflow status.",
+              "type": "string"
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Closing your position"
+      },
+      "effects": [
+        "paper-perp-write"
+      ],
+      "identity": "wallet",
+      "operationId": "perps.close"
+    },
+    {
+      "approval": "confirmed-argument",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "PAPER SIMULATOR ONLY: This operation changes simulated account state and cannot use real funds. Obtain the user's explicit approval for the exact unchanged action before execution. A changed term requires a fresh proposal and approval. Call first with confirmed=false or omitted to preview the selected closes. Present each exact previewed symbol, quantity and full or partial-close scope, then obtain explicit confirmation. On confirmation send the exact explicit selection: use each previewed symbol and, for a partial close, prefer its returned resolvedSize in coin units; otherwise repeat the exact previewed percent. For full closes, send the exact selected symbols list. If a fresh portfolio read shows a material state change since preview, create a fresh preview and obtain confirmation again. Never omit or send an empty selection: that means close every position at execution time and can expand scope after preview. Do not add or alter positions. Verify and report each returned close outcome.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "aiAttribution": {
+              "additionalProperties": {},
+              "properties": {
+                "ai_assisted": {
+                  "type": "boolean"
+                },
+                "ai_client": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "assistant_reasoning": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mcp_session_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mcp_tool_call_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "metadata": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "order_input": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "user_intent": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            "closes": {
+              "description": "Per-position close requests with optional partial sizing. When provided, only the listed positions are closed and symbols is ignored; must contain at least one entry. Positions not listed are excluded and enumerated as such in the preview.",
+              "items": {
+                "properties": {
+                  "percent": {
+                    "description": "Partial close as a percentage of the current position size (0-100]. 100 closes the whole position.",
+                    "exclusiveMinimum": 0,
+                    "maximum": 100,
+                    "type": "number"
+                  },
+                  "size": {
+                    "description": "Partial close size in coin/asset units — the same units as the position size shown in get_portfolio, NOT USD. Omit (along with percent) for a full close.",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "symbol": {
+                    "description": "Market symbol, e.g. BTC-PERP",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "type": "object"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "confirmed": {
+              "description": "True to execute. Omit or false to preview.",
+              "type": "boolean"
+            },
+            "symbols": {
+              "description": "Internal: symbols selected in the confirmation widget. Omit or empty to close every open position. Ignored when closes is provided.",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "close_positions_batch",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "failed": {
+              "type": "number"
+            },
+            "order": {
+              "description": "Order details or order proposal payload."
+            },
+            "results": {
+              "description": "Per-order results for batch execution.",
+              "items": {},
+              "type": "array"
+            },
+            "status": {
+              "description": "Order workflow status.",
+              "type": "string"
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Closing positions"
+      },
+      "effects": [
+        "paper-perp-write"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "close_positions_batch",
+        "userDescription": "Preview or apply explicitly approved closes of selected simulated positions."
+      },
+      "identity": "wallet",
+      "operationId": "perps.close-batch"
+    },
+    {
+      "approval": "proposal-only",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "PAPER ONLY: This proposal or plan is for the simulated account in this permanently paper-only session. It does not offer or prepare a live trade. Prepare a data-backed basket only when the user explicitly asks for multiple trades; use suggest_trade for one trade. Call get_portfolio first and verify available_balance covers the sum of each leg's required collateral (size / leverage). A resolved proposal leg contains asset, side (long/short), orderType, limitPrice, size, leverage, requestedLeverage, existingIsCross, timeInForce, takeProfit, stopLoss, reasoning and aiAttribution, plus display and sizing fields. Map only asset→symbol, long/short→buy/sell, orderType→type, limitPrice→price and takeProfit/stopLoss→tp/sl; copy resolved notional size, effective leverage, timeInForce, existingIsCross, reasoning and aiAttribution exactly. The batch executor has no requestedLeverage field, so do not send it. Preserve each leg's aiAttribution verbatim; do not recreate provenance. After reviewing every exact leg, current account and common execution mode, present the basket and obtain explicit confirmation of that unchanged action. Then call execute_orders_batch with only symbol, side, size, type, price, timeInForce, leverage, existingIsCross, tp, sl, reasoning and aiAttribution per leg, plus the returned executionMode, thesis, one stable idempotencyKey and confirmed=true. Exclude proposal-only requestedLeverage, sizeBasis, displayName, iconSrc, requestedSize, sizingNote, markPrice, marginSize, links and status. Do not add, remove or alter legs. A proposal is not an order or fill; changed terms require a new basket proposal and confirmation.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "thesis": {
+              "description": "One-sentence basket-level thesis (why these trades together)",
+              "type": "string"
+            },
+            "trades": {
+              "description": "Between 2 and 8 trades to propose as a basket.",
+              "items": {
+                "properties": {
+                  "asset": {
+                    "description": "Asset symbol (e.g. BTC, ETH, xyz:GOLD)",
+                    "type": "string"
+                  },
+                  "leverage": {
+                    "description": "Leverage multiplier (e.g. 5)",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "limitPrice": {
+                    "description": "Limit order price. Required when orderType is 'limit'; omit for market orders.",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "orderType": {
+                    "enum": [
+                      "market",
+                      "limit"
+                    ],
+                    "type": "string"
+                  },
+                  "reasoning": {
+                    "description": "One-sentence rationale for THIS trade",
+                    "type": "string"
+                  },
+                  "side": {
+                    "enum": [
+                      "long",
+                      "short"
+                    ],
+                    "type": "string"
+                  },
+                  "size": {
+                    "description": "Order size as a USD notional dollar amount (collateral × leverage) — NOT a quantity of coins/contracts. E.g. 250 means $250 of exposure, not 250 units. Minimum $10 collateral × leverage. Always pass this as notional at your requested leverage, even when sizeBasis is 'margin' (e.g. $300 margin at 3x leverage is size=900, not size=300) — sizeBasis never converts this value for you.",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "sizeBasis": {
+                    "description": "`size` must already be the notional dollar amount computed at requestedLeverage regardless of this field — sizeBasis does NOT convert a margin/collateral number into notional for you (compute notional yourself as margin × requestedLeverage before calling). This only controls what gets preserved if the venue ends up using a different leverage than requestedLeverage (e.g. inheriting an existing position's leverage, or a leverage cap): 'notional' keeps size's dollar exposure fixed and recomputes margin; 'margin' keeps the margin implied by size/requestedLeverage fixed and recomputes notional at the new leverage. Defaults to notional.",
+                    "enum": [
+                      "margin",
+                      "notional"
+                    ],
+                    "type": "string"
+                  },
+                  "stopLoss": {
+                    "description": "Optional stop-loss trigger price. Omit when no stop loss is requested.",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "takeProfit": {
+                    "description": "Optional take-profit trigger price. Omit when no take profit is requested.",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "timeInForce": {
+                    "description": "Time-in-force for limit orders: 'gtc' rests on the book until filled or cancelled (default), 'ioc' fills whatever is immediately available and cancels the remainder, 'alo' is post-only / add-liquidity-only (rejected instead of taking liquidity). Ignored for market orders.",
+                    "enum": [
+                      "gtc",
+                      "ioc",
+                      "alo"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "asset",
+                  "side",
+                  "leverage",
+                  "orderType",
+                  "size",
+                  "reasoning"
+                ],
+                "type": "object"
+              },
+              "maxItems": 8,
+              "minItems": 2,
+              "type": "array"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "trades",
+            "thesis"
+          ],
+          "type": "object"
+        },
+        "name": "suggest_trades_batch",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "failed": {
+              "type": "number"
+            },
+            "order": {
+              "description": "Order details or order proposal payload."
+            },
+            "results": {
+              "description": "Per-order results for batch execution.",
+              "items": {},
+              "type": "array"
+            },
+            "status": {
+              "description": "Order workflow status.",
+              "type": "string"
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Suggesting a basket trade"
+      },
+      "effects": [
+        "market-read",
+        "account-read",
+        "proposal"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "suggest_trades_batch",
+        "userDescription": "Prepare a basket of simulated trades for user review; it does not place orders."
+      },
+      "identity": "wallet",
+      "operationId": "perps.prepare-batch"
+    },
+    {
+      "approval": "confirmed-argument",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "PAPER SIMULATOR ONLY: This operation changes simulated account state and cannot use real funds. Obtain the user's explicit approval for the exact unchanged action before execution. A changed term requires a fresh proposal and approval. Execute only the exact previously reviewed basket after the user explicitly confirms every leg and the unchanged common execution mode in chat. Send confirmed=true. Each order may contain only symbol, side, size, type, price, timeInForce, leverage, existingIsCross, tp, sl, reasoning and aiAttribution copied from its matching returned proposal leg; preserve aiAttribution verbatim and existingIsCross. The top level may contain only executionMode, orders, thesis, idempotencyKey and confirmed. Do not add, omit, reorder or alter legs or spread proposal-only fields. Reuse one stable opaque key for this exact basket and reconciliation retries; never use another key to bypass an uncertain outcome. Changed terms require a new basket proposal, confirmation and key. Report each leg's actual outcome; accepted or pending is not a fill.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "confirmed": {
+              "description": "Must be true to execute. Missing or false is rejected as an error — this tool has no preview mode; use suggest_trades_batch for that.",
+              "type": "boolean"
+            },
+            "executionMode": {
+              "description": "Trading mode of the reviewed confirmation. Copy it unchanged from the proposal; missing or changed mode requires a new proposal.",
+              "enum": [
+                "paper",
+                "live"
+              ],
+              "type": "string"
+            },
+            "idempotencyKey": {
+              "description": "Opaque key for this exact confirmed action. Generate one key and retain it for reconciliation and any safe retry; never invent a different key to repeat an uncertain result or bypass deduplication. Changed terms require a new review, confirmation and key.",
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            "orders": {
+              "items": {
+                "properties": {
+                  "aiAttribution": {
+                    "additionalProperties": {},
+                    "properties": {
+                      "ai_assisted": {
+                        "type": "boolean"
+                      },
+                      "ai_client": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "assistant_reasoning": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "mcp_session_id": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "mcp_tool_call_id": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "additionalProperties": {},
+                        "propertyNames": {
+                          "type": "string"
+                        },
+                        "type": "object"
+                      },
+                      "order_input": {
+                        "additionalProperties": {},
+                        "propertyNames": {
+                          "type": "string"
+                        },
+                        "type": "object"
+                      },
+                      "source": {
+                        "type": "string"
+                      },
+                      "user_intent": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "existingIsCross": {
+                    "type": "boolean"
+                  },
+                  "leverage": {
+                    "description": "Leverage multiplier (e.g. 5)",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "maxSlippageBps": {
+                    "description": "Optional max slippage in basis points (1-500) for market orders. The order is sent as an immediate-or-cancel limit at the current mid plus or minus this many bps; anything that cannot fill within it is cancelled. If it only partly fills, attached TP/SL is not placed; set it with execute_tpsl.",
+                    "maximum": 500,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "price": {
+                    "description": "Limit price. Required when type is 'limit'.",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "reasoning": {
+                    "description": "One-sentence rationale for this order",
+                    "type": "string"
+                  },
+                  "side": {
+                    "enum": [
+                      "buy",
+                      "sell"
+                    ],
+                    "type": "string"
+                  },
+                  "size": {
+                    "description": "Order size as a USD notional dollar amount (collateral × leverage) — NOT a quantity of coins/contracts. E.g. 250 means $250 of exposure, not 250 units. Minimum $10 collateral × leverage. Always pass this as notional at your requested leverage, even when sizeBasis is 'margin' (e.g. $300 margin at 3x leverage is size=900, not size=300) — sizeBasis never converts this value for you.",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "sl": {
+                    "description": "Stop-loss trigger price",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "symbol": {
+                    "description": "Asset symbol, e.g. BTC, ETH, xyz:GOLD",
+                    "type": "string"
+                  },
+                  "timeInForce": {
+                    "description": "Time-in-force for limit orders: 'gtc' rests on the book until filled or cancelled (default), 'ioc' fills whatever is immediately available and cancels the remainder, 'alo' is post-only / add-liquidity-only (rejected instead of taking liquidity). Ignored for market orders.",
+                    "enum": [
+                      "gtc",
+                      "ioc",
+                      "alo"
+                    ],
+                    "type": "string"
+                  },
+                  "tp": {
+                    "description": "Take-profit trigger price",
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "type": {
+                    "enum": [
+                      "market",
+                      "limit"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "symbol",
+                  "side",
+                  "size",
+                  "leverage"
+                ],
+                "type": "object"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array"
+            },
+            "thesis": {
+              "description": "Basket-level thesis from the confirmation widget. Used only for attribution metadata.",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "orders"
+          ],
+          "type": "object"
+        },
+        "name": "execute_orders_batch",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "failed": {
+              "type": "number"
+            },
+            "order": {
+              "description": "Order details or order proposal payload."
+            },
+            "results": {
+              "description": "Per-order results for batch execution.",
+              "items": {},
+              "type": "array"
+            },
+            "status": {
+              "description": "Order workflow status.",
+              "type": "string"
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Placing basket orders"
+      },
+      "effects": [
+        "paper-perp-write"
+      ],
+      "identity": "wallet",
+      "operationId": "perps.place-batch"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "PAPER ONLY: This proposal or plan is for the simulated account in this permanently paper-only session. It does not offer or prepare a live trade. Turn market research and personal preferences into a cohesive multi-trade portfolio plan in one shot. Use this when the user asks for a 'portfolio', 'plan', 'how should I deploy $X', 'suggest a few trades', or any multi-position allocation question — instead of suggesting trades one at a time. Before calling, collect the user's risk tolerance, time horizon, and asset classes in chat or with controls available in the host. Required answers: (1) risk tolerance (conservative | moderate | aggressive), (2) time horizon (intraday | swing_week | position_long_term), (3) assetClasses as an array of one or more selected asset class strings from crypto, equities, commodities, indices, fx. Use the simulated account balance for paper-plan sizing; do not describe it as live buying power. Once you have the three answers, call this tool. It fetches the account balance + news + market-wide positioning + top-trader cohort + unusual volume in parallel (plus upcoming earnings when equities are selected) and returns a research bundle plus sizing rules and synthesis instructions. AFTER this tool returns, you must (a) write a 2–3 sentence thesis, (b) call suggest_trades_batch ONCE with that thesis plus all proposed legs as a basket, then (c) write a 1–2 sentence risk wrap. Do NOT call suggest_trade per-leg — always use suggest_trades_batch for portfolio plans. Do NOT write the trade plan in prose or a markdown table.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "assetClasses": {
+              "description": "Required array of selected asset classes. Always pass an array, even for one choice, e.g. [\"crypto\"].",
+              "items": {
+                "enum": [
+                  "crypto",
+                  "equities",
+                  "commodities",
+                  "indices",
+                  "fx"
+                ],
+                "type": "string"
+              },
+              "maxItems": 5,
+              "minItems": 1,
+              "type": "array"
+            },
+            "maxLeverage": {
+              "description": "Optional user-supplied leverage cap. The risk profile may cap this lower.",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "riskTolerance": {
+              "description": "Risk tolerance answered via the client's native question widget.",
+              "enum": [
+                "conservative",
+                "moderate",
+                "aggressive"
+              ],
+              "type": "string"
+            },
+            "themes": {
+              "description": "Optional free-text bias from the user (e.g. 'lean oil', 'short the crowded names').",
+              "type": "string"
+            },
+            "timeHorizon": {
+              "description": "Time horizon answered via the client's native question widget.",
+              "enum": [
+                "intraday",
+                "swing_week",
+                "position_long_term"
+              ],
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "riskTolerance",
+            "timeHorizon",
+            "assetClasses"
+          ],
+          "type": "object"
+        },
+        "name": "plan_portfolio",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Planning your portfolio"
+      },
+      "effects": [
+        "market-read",
+        "account-read"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "plan_portfolio",
+        "userDescription": "Build a simulated portfolio plan from user preferences and paper-account context."
+      },
+      "identity": "wallet",
+      "operationId": "portfolio.plan"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Explore Liquid's multi-asset market lineup with authoritative search and browsing. Use when the user asks what markets are available, wants to browse assets, needs to find a specific market symbol, or asks whether Liquid can trade something. Returns top markets by volume if no query, or filtered results matching a search term. Liquid covers equities, commodities, indices, crypto, and other supported markets. Do NOT use this for single-asset analysis (price, outlook, positioning) — use analyze_market instead. No visual — use show_market_overview for the full dashboard view.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "query": {
+              "description": "Search term to filter markets by symbol or asset name (e.g. 'BTC', 'gold', 'tech'). Omit to browse the top markets by volume.",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "search_markets",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "markets": {
+              "description": "Matching markets or suggestions. A suggested match requires confirmation; do not automatically trade it.",
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "displayName": {
+                    "description": "Market name to show to the user.",
+                    "type": "string"
+                  },
+                  "symbol": {
+                    "description": "Canonical identifier to pass unchanged to subsequent market or trading tools.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "symbol",
+                  "displayName"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "matchKind": {
+              "enum": [
+                "direct",
+                "suggestion",
+                "none",
+                "browse"
+              ],
+              "type": "string"
+            },
+            "query": {
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Searching markets"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "search_markets",
+        "userDescription": "Search supported markets and symbols."
+      },
+      "identity": "service",
+      "operationId": "markets.search"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Explore Liquid at a glance with a rich visual market overview dashboard showing its full multi-asset trading surface, including equities, commodities, indices, crypto, and other supported markets. Only call when the user explicitly asks to see all markets, wants the full dashboard view, or asks for a visual overview of market activity. Do NOT use for single-asset queries — use analyze_market instead. Do NOT use for text-only market listings — use search_markets instead.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "show_market_overview",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Showing market overview"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "show_market_overview",
+        "userDescription": "Browse the supported market lineup in text form."
+      },
+      "identity": "service",
+      "operationId": "markets.overview"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "See liquidity and bid/ask depth clearly with an text results for a specific asset. Only call when the user explicitly asks to see the order book, bid/ask spread, or market depth for a specific market. Do NOT call for general price or analysis queries — use analyze_market instead.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "symbol": {
+              "description": "Liquid market symbol from market_data, e.g. BTC",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "symbol"
+          ],
+          "type": "object"
+        },
+        "name": "show_orderbook",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Showing the orderbook"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "show_orderbook",
+        "userDescription": "Read simulated or public market bid and ask depth in text form."
+      },
+      "identity": "service",
+      "operationId": "markets.orderbook"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Bring price action into focus with a detailed candlestick text results for a specific asset. Only call when the user explicitly asks to see a chart, price history, or candlestick view (e.g. 'show me a chart of BTC', 'chart ETH'). Do NOT call for general price or analysis queries — use analyze_market instead, which returns price data as text without needing a visual chart.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "interval": {
+              "description": "Candle interval (aliases like '60m', '1hour', 'daily' are accepted).",
+              "enum": [
+                "1m",
+                "5m",
+                "15m",
+                "30m",
+                "1h",
+                "4h",
+                "1d"
+              ],
+              "type": "string"
+            },
+            "limit": {
+              "description": "Number of candles (default 100, max 200)",
+              "maximum": 200,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "symbol": {
+              "description": "Liquid market symbol from market_data, e.g. BTC",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "symbol",
+            "interval"
+          ],
+          "type": "object"
+        },
+        "name": "show_chart",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Showing the chart"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "show_chart",
+        "userDescription": "Read market price history in text form."
+      },
+      "identity": "service",
+      "operationId": "markets.chart"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Explore market momentum, trends, and volatility with the latest technical indicator values (RSI, MACD, SMA/EMA 20/50/200, Bollinger Bands, Stochastic, ATR, rolling VWAP, OBV) for one tradeable market from candle data, returned as structured JSON. Read-only market data; complements analyze_market, which serves broader pre-computed market analysis (price, funding, positioning).",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "indicators": {
+              "description": "Indicators to compute (default: all)",
+              "items": {
+                "enum": [
+                  "rsi",
+                  "macd",
+                  "sma",
+                  "ema",
+                  "bollinger",
+                  "stochastic",
+                  "atr",
+                  "vwap",
+                  "obv"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "interval": {
+              "default": "1h",
+              "description": "Candle interval (default 1h)",
+              "enum": [
+                "1m",
+                "5m",
+                "15m",
+                "30m",
+                "1h",
+                "4h",
+                "1d"
+              ],
+              "type": "string"
+            },
+            "symbol": {
+              "description": "Liquid market symbol from market_data, e.g. BTC",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "symbol"
+          ],
+          "type": "object"
+        },
+        "name": "get_technical_indicators",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "candlesUsed": {
+              "description": "Number of closed candles the indicators were computed on.",
+              "type": "number"
+            },
+            "currentPrice": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Latest traded price: the still-forming candle's running close when available, otherwise the last closed candle's close."
+            },
+            "indicators": {
+              "additionalProperties": {},
+              "description": "Latest value per requested indicator; null when history is insufficient.",
+              "propertyNames": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "interval": {
+              "description": "Candle interval used.",
+              "type": "string"
+            },
+            "lastCandleTime": {
+              "description": "Open time (ISO 8601) of the last closed candle used.",
+              "type": "string"
+            },
+            "latestCandleForming": {
+              "description": "Whether the venue's latest candle was still forming and excluded.",
+              "type": "boolean"
+            },
+            "symbol": {
+              "description": "Resolved market identifier, round-trip-safe for other tools' symbol inputs (may carry an internal venue prefix; the text payload shows the user-facing alias instead).",
+              "type": "string"
+            },
+            "text": {
+              "description": "JSON-formatted indicator payload returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Computing technical indicators"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "get_technical_indicators",
+        "userDescription": "Read technical indicators for a supported market."
+      },
+      "identity": "service",
+      "operationId": "markets.indicators"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Search or browse Liquid prediction markets. Use this for event-style markets, yes/no outcomes, probabilities, or HIP-4 prediction markets. For sports markets, search by match/team names and optionally category, e.g. match='Ecuador Germany', category='World Cup'. Returns user-facing prediction market groups with each bettable outcome's numeric marketID and outcome_id (match markets list both sides, e.g. Mexico outcome_id=0 and England outcome_id=1). Pass that marketID and outcome_id directly to execute_prediction_order or show_prediction_orderbook; do not add a hip4: prefix. Bet on any outcome by buying it; bet against one by buying the opposing outcome.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "category": {
+              "description": "Market category filter, e.g. 'World Cup', 'sports', 'politics', or 'crypto'.",
+              "type": "string"
+            },
+            "limit": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 25,
+              "type": "integer"
+            },
+            "match": {
+              "description": "Sports match/team search terms, e.g. 'Ecuador Germany' or 'Argentina vs Algeria'. Combined with query when both are provided.",
+              "type": "string"
+            },
+            "provider": {
+              "default": "hip4",
+              "description": "Prediction provider. Defaults to hip4.",
+              "type": "string"
+            },
+            "query": {
+              "description": "General search terms such as an event, candidate, asset, or market title.",
+              "type": "string"
+            },
+            "status": {
+              "default": "open",
+              "enum": [
+                "open",
+                "closed",
+                "settled",
+                "paused"
+              ],
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "search_prediction_markets",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "groups": {
+              "description": "Structured market groups with numeric marketIDs for follow-up prediction tools.",
+              "items": {
+                "additionalProperties": {},
+                "properties": {
+                  "outcomes": {
+                    "items": {
+                      "additionalProperties": {},
+                      "properties": {
+                        "market_id": {
+                          "description": "Provider-native market id for follow-up prediction tools.",
+                          "type": "string"
+                        },
+                        "outcome_id": {
+                          "description": "Provider-native outcome id for follow-up prediction tools.",
+                          "type": "string"
+                        },
+                        "probability": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "provider": {
+                          "description": "Provider id for follow-up prediction tools.",
+                          "type": "string"
+                        },
+                        "title": {
+                          "description": "User-facing outcome title.",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "provider",
+                        "market_id",
+                        "outcome_id"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "title": {
+                    "description": "User-facing market group title.",
+                    "type": "string"
+                  },
+                  "volume_24h": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "title",
+                  "outcomes"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "text": {
+              "description": "Human-readable grouped market titles returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Searching prediction markets"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "search_prediction_markets",
+        "userDescription": "Search supported prediction markets."
+      },
+      "identity": "service",
+      "operationId": "predictions.search"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Get the orderbook for a HIP-4 prediction market outcome. Use the numeric marketID from search_prediction_markets as market_id with no hip4: prefix. Use the outcome_id from the search row (defaults to 0, the YES/first side).",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "depth": {
+              "default": 5,
+              "description": "Number of orderbook levels per side to return (1-20). Defaults to 5.",
+              "exclusiveMinimum": 0,
+              "maximum": 20,
+              "type": "integer"
+            },
+            "market_id": {
+              "description": "Numeric marketID from search_prediction_markets, e.g. '594'. Do not include 'hip4:'.",
+              "type": "string"
+            },
+            "outcome_id": {
+              "default": "0",
+              "description": "Provider-native outcome id from search_prediction_markets (match markets list both sides, e.g. 0 and 1). Defaults to 0.",
+              "type": "string"
+            },
+            "provider": {
+              "default": "hip4",
+              "description": "Prediction-market provider id. Defaults to hip4.",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "market_id"
+          ],
+          "type": "object"
+        },
+        "name": "show_prediction_orderbook",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Showing prediction orderbook"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "show_prediction_orderbook",
+        "userDescription": "Read a prediction-market order book."
+      },
+      "identity": "service",
+      "operationId": "predictions.orderbook"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": false,
+          "readOnlyHint": true
+        },
+        "description": "List the user's prediction-market positions, including HIP-4 outcome quantities. Use for questions about prediction bets, YES/NO holdings, or event-market exposure.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "market_id": {
+              "description": "Numeric marketID from search_prediction_markets, e.g. '594'. Do not include a 'hip4:' prefix. Omit to list across all markets.",
+              "type": "string"
+            },
+            "provider": {
+              "default": "hip4",
+              "description": "Prediction-market provider id. Defaults to hip4.",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "view_prediction_positions",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Viewing prediction positions"
+      },
+      "effects": [
+        "account-read"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "view_prediction_positions",
+        "userDescription": "Read prediction positions from the paper account."
+      },
+      "identity": "wallet",
+      "operationId": "predictions.positions"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": false,
+          "readOnlyHint": true
+        },
+        "description": "List prediction-market orders. Use status=open for cancellable resting orders. The returned orderId and provider can be passed to cancel_prediction_order.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "market_id": {
+              "description": "Numeric marketID from search_prediction_markets, e.g. '594'. Do not include a 'hip4:' prefix. Omit to list across all markets.",
+              "type": "string"
+            },
+            "provider": {
+              "default": "hip4",
+              "description": "Prediction-market provider id. Defaults to hip4.",
+              "type": "string"
+            },
+            "status": {
+              "default": "open",
+              "description": "Order status filter, e.g. 'open' for resting/cancellable orders. Defaults to 'open'.",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "view_prediction_orders",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Viewing prediction orders"
+      },
+      "effects": [
+        "account-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "view_prediction_orders",
+        "userDescription": "Read prediction orders from the paper account."
+      },
+      "identity": "wallet",
+      "operationId": "predictions.orders"
+    },
+    {
+      "approval": "confirmed-argument",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "PAPER SIMULATOR ONLY: This operation changes simulated account state and cannot use real funds. Obtain the user's explicit approval for the exact unchanged action before execution. A changed term requires a fresh proposal and approval. Preview or place a prediction-market order. Call with confirmed=false or omit confirmed to preview the order. Only call with confirmed=true after the user explicitly confirms the exact prediction order, and copy the executionMode returned by the preview unchanged. Use the numeric marketID and outcome_id shown next to the user's desired outcome in search_prediction_markets, with no hip4: prefix. Always bet by BUYING the outcome the user wants to back. To bet against a team or outcome, buy the opposing outcome from the search results (e.g. to fade Mexico in 'Mexico vs England', buy England's outcome_id) — side=sell only reduces contracts the user already holds and is rejected otherwise. Do not call show_prediction_orderbook just to place a market order; use orderbook only when the user asks for book depth/spread or when choosing a limit price. size is USD notional. Prediction markets have no leverage. Any valid probability strictly between 0 and 1 is allowed. Honor the user's selected outcome; do not refuse or substitute another bet because the odds are low or high.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "aiAttribution": {
+              "additionalProperties": {},
+              "properties": {
+                "ai_assisted": {
+                  "type": "boolean"
+                },
+                "ai_client": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "assistant_reasoning": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mcp_session_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mcp_tool_call_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "metadata": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "order_input": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "user_intent": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            "confirmed": {
+              "description": "True to execute. Omit or false to preview.",
+              "type": "boolean"
+            },
+            "executionMode": {
+              "description": "Trading mode (paper or live) returned by this tool's preview. Required with confirmed=true; copy it unchanged. A missing or changed mode places nothing and requires a new preview.",
+              "enum": [
+                "paper",
+                "live"
+              ],
+              "type": "string"
+            },
+            "market_id": {
+              "description": "Numeric marketID from search_prediction_markets, e.g. '594'. Do not include 'hip4:'.",
+              "type": "string"
+            },
+            "outcome_id": {
+              "default": "0",
+              "description": "Provider-native outcome id from search_prediction_markets (match markets list both sides, e.g. 0 and 1). Defaults to 0.",
+              "type": "string"
+            },
+            "price": {
+              "description": "Limit price/probability in (0, 1). Required for limit orders.",
+              "exclusiveMaximum": 1,
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "provider": {
+              "default": "hip4",
+              "description": "Prediction-market provider id. Defaults to hip4.",
+              "type": "string"
+            },
+            "reasoning": {
+              "description": "Brief 1-sentence rationale for the order.",
+              "type": "string"
+            },
+            "reduce_only": {
+              "description": "True to only reduce an existing position, never open/increase one.",
+              "type": "boolean"
+            },
+            "side": {
+              "description": "buy to open/add exposure to the outcome; sell only reduces contracts the user already holds.",
+              "enum": [
+                "buy",
+                "sell"
+              ],
+              "type": "string"
+            },
+            "size": {
+              "description": "USD notional order size (dollar amount to bet). Prediction markets have no leverage.",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "time_in_force": {
+              "description": "Time in force for limit orders: gtc (rest) or ioc (fill-or-cancel).",
+              "enum": [
+                "gtc",
+                "ioc"
+              ],
+              "type": "string"
+            },
+            "type": {
+              "default": "market",
+              "description": "Order type. Defaults to market.",
+              "enum": [
+                "market",
+                "limit"
+              ],
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "market_id",
+            "side",
+            "size"
+          ],
+          "type": "object"
+        },
+        "name": "execute_prediction_order",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "failed": {
+              "type": "number"
+            },
+            "order": {
+              "description": "Order details or order proposal payload."
+            },
+            "results": {
+              "description": "Per-order results for batch execution.",
+              "items": {},
+              "type": "array"
+            },
+            "status": {
+              "description": "Order workflow status.",
+              "type": "string"
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Placing prediction order"
+      },
+      "effects": [
+        "prediction-write"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "execute_prediction_order",
+        "userDescription": "Execute the exact user-approved prediction order in the paper simulator."
+      },
+      "identity": "wallet",
+      "operationId": "predictions.place"
+    },
+    {
+      "approval": "confirmed-argument",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "PAPER SIMULATOR ONLY: This operation changes simulated account state and cannot use real funds. Obtain the user's explicit approval for the exact unchanged action before execution. A changed term requires a fresh proposal and approval. Preview or close a prediction-market position fully or partially. Call with confirmed=false or omit confirmed to preview. Only call with confirmed=true after the user explicitly confirms the close, and copy the executionMode returned by the preview unchanged. Omit size to close the full outcome position; provide size (USD notional) to partially close — it is converted to outcome contracts at the execution price (the limit price for limit closes, otherwise the live mark).",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "aiAttribution": {
+              "additionalProperties": {},
+              "properties": {
+                "ai_assisted": {
+                  "type": "boolean"
+                },
+                "ai_client": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "assistant_reasoning": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mcp_session_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mcp_tool_call_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "metadata": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "order_input": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "user_intent": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            "confirmed": {
+              "description": "True to execute. Omit or false to preview.",
+              "type": "boolean"
+            },
+            "executionMode": {
+              "description": "Trading mode (paper or live) returned by this tool's preview. Required with confirmed=true; copy it unchanged. A missing or changed mode places nothing and requires a new preview.",
+              "enum": [
+                "paper",
+                "live"
+              ],
+              "type": "string"
+            },
+            "market_id": {
+              "description": "Numeric marketID from search_prediction_markets, e.g. '594'. Do not include a 'hip4:' prefix.",
+              "type": "string"
+            },
+            "outcome_id": {
+              "description": "Provider-native outcome id from search_prediction_markets (both sides are listed, e.g. 0 and 1). Defaults to 0.",
+              "type": "string"
+            },
+            "price": {
+              "description": "Limit close price/probability in (0, 1). Required for limit closes.",
+              "exclusiveMaximum": 1,
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "provider": {
+              "default": "hip4",
+              "description": "Prediction-market provider id. Defaults to hip4.",
+              "type": "string"
+            },
+            "reasoning": {
+              "description": "Brief 1-sentence rationale for the close.",
+              "type": "string"
+            },
+            "size": {
+              "description": "USD notional to close (converted to outcome contracts at the execution price: the limit price for limit closes, otherwise the live mark). Omit for full close; a notional >= the position's value closes it fully.",
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "time_in_force": {
+              "description": "Time in force for limit closes: gtc (rest) or ioc (fill-or-cancel).",
+              "enum": [
+                "gtc",
+                "ioc"
+              ],
+              "type": "string"
+            },
+            "type": {
+              "default": "market",
+              "description": "Order type. Defaults to market.",
+              "enum": [
+                "market",
+                "limit"
+              ],
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "market_id",
+            "outcome_id"
+          ],
+          "type": "object"
+        },
+        "name": "close_prediction_position",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "failed": {
+              "type": "number"
+            },
+            "order": {
+              "description": "Order details or order proposal payload."
+            },
+            "results": {
+              "description": "Per-order results for batch execution.",
+              "items": {},
+              "type": "array"
+            },
+            "status": {
+              "description": "Order workflow status.",
+              "type": "string"
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Closing prediction position"
+      },
+      "effects": [
+        "prediction-write"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "close_prediction_position",
+        "userDescription": "Close a prediction position in the paper simulator after exact user approval."
+      },
+      "identity": "wallet",
+      "operationId": "predictions.close"
+    },
+    {
+      "approval": "confirmed-argument",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "PAPER SIMULATOR ONLY: This operation changes simulated account state and cannot use real funds. Obtain the user's explicit approval for the exact unchanged action before execution. A changed term requires a fresh proposal and approval. Preview or cancel a resting prediction-market order by provider and provider-native order id. Call view_prediction_orders first if the order id is unknown. Omit confirmed to preview; use confirmed=true only after explicit user confirmation, copying the executionMode returned by the preview unchanged.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "confirmed": {
+              "description": "True to execute cancellation. Omit or false to preview.",
+              "type": "boolean"
+            },
+            "executionMode": {
+              "description": "Trading mode (paper or live) returned by this tool's preview. Required with confirmed=true; copy it unchanged. A missing or changed mode places nothing and requires a new preview.",
+              "enum": [
+                "paper",
+                "live"
+              ],
+              "type": "string"
+            },
+            "order_id": {
+              "description": "Provider-native order id to cancel (from view_prediction_orders).",
+              "type": "string"
+            },
+            "provider": {
+              "default": "hip4",
+              "description": "Prediction-market provider id. Defaults to hip4.",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "order_id"
+          ],
+          "type": "object"
+        },
+        "name": "cancel_prediction_order",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Cancelling prediction order"
+      },
+      "effects": [
+        "prediction-write"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "cancel_prediction_order",
+        "userDescription": "Cancel a prediction order in the paper simulator after exact user approval."
+      },
+      "identity": "wallet",
+      "operationId": "predictions.cancel"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "List the user's currently open orders — includes resting limit orders and position-level trigger orders (TP/SL). Use when the user asks about pending orders, working orders, resting limits, or current TP/SL levels. Do NOT confuse with get_portfolio — this shows ORDERS (pending/resting), not POSITIONS (active holdings). Returns text (no widget) with order id, symbol, side, kind (limit/tp/sl/trigger), size, price or trigger, and flags, followed by a protection-coverage readback for every position with a live TP/SL trigger (a fixed-size leg can stop covering the full position after an add, or after a partial close). The order id can be passed to cancel_order to cancel. Perpetual orders only — HIP-4 prediction-market orders are excluded (they would otherwise render as an unresolvable bare id with a probability shown as a dollar price); use view_prediction_orders for those.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "view_open_orders",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Viewing open orders"
+      },
+      "effects": [
+        "account-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "view_open_orders",
+        "userDescription": "Read open orders from the paper account."
+      },
+      "identity": "wallet",
+      "operationId": "perps.orders"
+    },
+    {
+      "approval": "confirmed-argument",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "PAPER SIMULATOR ONLY: This operation changes simulated account state and cannot use real funds. Obtain the user's explicit approval for the exact unchanged action before execution. A changed term requires a fresh proposal and approval. No-UI leverage update tool for an existing portfolio position. Do not call this automatically as the first step when the user asks to change leverage. First ask whether they have a custom integer leverage value in mind or whether they want an investigation/recommendation. If the user provides a custom value, call this with targetLeverage and confirmed=false to verify the open position, min/max bounds, and impact before confirmation. If the user asks for investigation, gather the needed account and market context first, then call this with the resulting targetLeverage and confirmed=false before confirmation. After the user explicitly confirms the change, call this again with the same targetLeverage and confirmed=true, or validationPhase='executetime', to execute the Liquid leverage update. When targetLeverage is omitted, this only verifies the position and returns current/min/max context; use that only when the user asks for bounds or context. The tool always re-validates the current position and max leverage before executing.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "asset": {
+              "description": "Open position asset from the portfolio, e.g. BTC, BTC-PERP, or GOLD.",
+              "type": "string"
+            },
+            "confirmed": {
+              "default": false,
+              "description": "Set true only after the user explicitly confirms the leverage change. This executes the update.",
+              "type": "boolean"
+            },
+            "positionSide": {
+              "description": "Use when there may be more than one matching position side.",
+              "enum": [
+                "long",
+                "short"
+              ],
+              "type": "string"
+            },
+            "targetLeverage": {
+              "description": "Integer leverage the user wants to set, e.g. 3 for 3x. Omit only when the user asks for bounds or context.",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            },
+            "validationPhase": {
+              "default": "infotime",
+              "description": "infotime before asking/confirming; executetime executes after explicit user confirmation.",
+              "enum": [
+                "infotime",
+                "executetime"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "asset"
+          ],
+          "type": "object"
+        },
+        "name": "update_leverage",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Updating leverage"
+      },
+      "effects": [
+        "paper-perp-write"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "update_leverage",
+        "userDescription": "Change leverage on a simulated position after exact user approval."
+      },
+      "identity": "wallet",
+      "operationId": "perps.set-leverage"
+    },
+    {
+      "approval": "direct-request",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "PAPER SIMULATOR ONLY: This operation changes simulated account state and cannot use real funds. Obtain the user's explicit approval for the exact unchanged action before execution. A changed term requires a fresh proposal and approval. Cancel an open order by its order ID. Call view_open_orders first to get the order ID. Only use for resting/pending orders, not for closing active positions. ",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "order_id": {
+              "description": "The order ID to cancel",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "order_id"
+          ],
+          "type": "object"
+        },
+        "name": "cancel_order",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Canceling your order"
+      },
+      "effects": [
+        "paper-perp-write"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "cancel_order",
+        "userDescription": "Cancel a paper order after exact user approval."
+      },
+      "identity": "wallet",
+      "operationId": "perps.cancel"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Read the connected wallet's simulated paper-account balance, positions, protection coverage, and paper P&L. This session cannot access live financial account data or switch to live mode.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "skipCache": {
+              "description": "Internal: bypass the 5s clearinghouse-state and open-orders caches. Used by the portfolio widget on mount and manual refresh so the user always sees up-to-the-second data.",
+              "type": "boolean"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "get_portfolio",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Loading your portfolio"
+      },
+      "effects": [
+        "account-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "get_portfolio",
+        "userDescription": "Read paper-account balances, positions, protection coverage, and simulated P&L."
+      },
+      "identity": "wallet",
+      "operationId": "portfolio.read"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Read the connected wallet's simulated paper-position allocation as text. This headless connection does not promise a rendered chart; no live positions are read.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "show_portfolio_chart",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Showing portfolio chart"
+      },
+      "effects": [
+        "account-read"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "show_portfolio_chart",
+        "userDescription": "Read simulated paper-position allocation as text. This connection does not promise a rendered chart."
+      },
+      "identity": "wallet",
+      "operationId": "portfolio.chart"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Discover standout traders with the Liquid leaderboard. Ranks traders by `metric` (pnl, volume, points, streak) over `duration` (24H, 7D, 30D, all_time) and returns rank, display name, PnL, volume, points, streak, directional bias, and biggest position per trader. Pass `asset` to keep only traders whose biggest position is in that market (e.g. 'BTC', 'xyz:SP500'). points and streak are all-time boards, so duration is ignored for them. Use when the user asks about top traders, best performers this week, highest-volume traders, who holds a given asset, or leaderboard rankings. For a single named trader's standing use leaderboard_rank; for the user's own positions use get_portfolio. This returns public real Liquid leaderboard rankings, not rankings or P&L from this paper account. Hidden-position protections remain in effect.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "asset": {
+              "description": "Only traders whose biggest position is this market, e.g. 'BTC'.",
+              "type": "string"
+            },
+            "duration": {
+              "description": "Time window. Defaults to 'all_time'. Ignored for points/streak.",
+              "enum": [
+                "24H",
+                "7D",
+                "30D",
+                "all_time"
+              ],
+              "type": "string"
+            },
+            "limit": {
+              "description": "Traders to return, 1-50. Defaults to 10.",
+              "maximum": 50,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "metric": {
+              "description": "Ranking metric. Defaults to 'pnl'.",
+              "enum": [
+                "pnl",
+                "volume",
+                "points",
+                "streak"
+              ],
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "leaderboard_data",
+        "title": "Loading the leaderboard"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "leaderboard_data",
+        "userDescription": "Read public real Liquid trader rankings. These rankings are not based on this paper account or its simulated P&L."
+      },
+      "identity": "service",
+      "operationId": "leaderboard.read"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Get a focused view of one trader’s leaderboard standing on a given board. `trader` accepts a wallet address, display name, or @handle; omit it to check the authenticated user's own rank. Returns the rank plus PnL, volume, points, streak, bias, and biggest position when the trader is in the top 50, the rank alone for ranks 51-100, and says so when they are unranked. Use when the user asks 'where am I on the leaderboard?', 'what rank is X?', or how a specific trader is doing. Use leaderboard_data for whole-board listings. This returns public real Liquid leaderboard rankings, not rankings or P&L from this paper account. Hidden-position protections remain in effect.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "duration": {
+              "description": "Time window. Defaults to 'all_time'. Ignored for points/streak.",
+              "enum": [
+                "24H",
+                "7D",
+                "30D",
+                "all_time"
+              ],
+              "type": "string"
+            },
+            "metric": {
+              "description": "Board to check. Defaults to 'pnl'.",
+              "enum": [
+                "pnl",
+                "volume",
+                "points",
+                "streak"
+              ],
+              "type": "string"
+            },
+            "trader": {
+              "description": "Wallet address, display name, or @handle. Defaults to the signed-in user.",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "leaderboard_rank",
+        "title": "Checking a leaderboard rank"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "leaderboard_rank",
+        "userDescription": "Read a public real Liquid trader ranking. The result does not describe this paper account or its simulated P&L."
+      },
+      "identity": "service",
+      "operationId": "leaderboard.rank"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Read transaction history available from the paper simulator. Results are simulated trades and prediction activity; transfers have no paper ledger and return an explicit empty result. Never read the live transaction ledger.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "limit": {
+              "default": 10,
+              "description": "Maximum rows to return after merging all sources. Defaults to 10, max 100.",
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "offset": {
+              "default": 0,
+              "description": "Rows to skip after merging and sorting (newest-first) — use offset=limit*N to page. Pages within the fetched recent-history snapshot only (each source's most recent window), never into older history. Applied before limit. Defaults to 0.",
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "skipCache": {
+              "description": "Internal: bypass the 5s history caches. Used by the transaction-list widget on mount and manual refresh so the user always sees up-to-the-second data.",
+              "type": "boolean"
+            },
+            "type": {
+              "default": "all",
+              "description": "Filter: 'trades' for fills only, 'transfers' for deposits/withdrawals/sends/receives, 'predictions' for prediction-market activity, 'all' for everything. Defaults to all.",
+              "enum": [
+                "all",
+                "trades",
+                "transfers",
+                "predictions"
+              ],
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "get_transaction_history",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "coverageNote": {
+              "type": "string"
+            },
+            "filter": {
+              "enum": [
+                "all",
+                "trades",
+                "transfers",
+                "predictions"
+              ],
+              "type": "string"
+            },
+            "limit": {
+              "type": "number"
+            },
+            "offset": {
+              "type": "number"
+            },
+            "paperMode": {
+              "type": "boolean"
+            },
+            "rows": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "asset": {
+                    "type": "string"
+                  },
+                  "closedPnl": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "string"
+                  },
+                  "fee": {
+                    "type": "string"
+                  },
+                  "price": {
+                    "type": "string"
+                  },
+                  "side": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "string"
+                  },
+                  "time": {
+                    "type": "string"
+                  },
+                  "timeMs": {
+                    "type": "number"
+                  },
+                  "txHash": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "enum": [
+                      "Trade",
+                      "Deposit",
+                      "Withdraw",
+                      "Send",
+                      "Receive",
+                      "Transfer",
+                      "Prediction",
+                      "Other"
+                    ],
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "time",
+                  "timeMs",
+                  "type",
+                  "asset"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "text": {
+              "description": "Human-readable transaction summary returned in the tool result content.",
+              "type": "string"
+            },
+            "total": {
+              "type": "number"
+            },
+            "unavailableSources": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "rows",
+            "total",
+            "filter",
+            "limit"
+          ],
+          "type": "object"
+        },
+        "title": "Loading transaction history"
+      },
+      "effects": [
+        "account-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "get_transaction_history",
+        "userDescription": "Read simulated paper trades and prediction activity. Transfers have no paper ledger and are reported as empty; live transaction history is not read."
+      },
+      "identity": "wallet",
+      "operationId": "account.transactions"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Read recent position history from the paper simulator. This tool does not read live history or suggest live transactions, transfers, deposits, or withdrawals.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "includeFills": {
+              "default": false,
+              "description": "Include constituent fills, capped at 100 details across the whole response. Defaults to false.",
+              "type": "boolean"
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum matching lifecycles to return, from 1 to 50. Defaults to 10.",
+              "maximum": 50,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "offset": {
+              "default": 0,
+              "description": "Number of matching lifecycles to skip in the reconstructed recent-fill snapshot. Defaults to 0.",
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "status": {
+              "default": "closed",
+              "description": "Lifecycle status filter. Defaults to closed; all also includes uncertain fragments.",
+              "enum": [
+                "closed",
+                "open",
+                "unknown",
+                "all"
+              ],
+              "type": "string"
+            },
+            "symbol": {
+              "description": "Exact case-sensitive source coin, including any venue prefix such as xyz:BTC.",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "get_position_history",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": false,
+          "properties": {
+            "coverage": {
+              "const": "recent_fills",
+              "type": "string"
+            },
+            "coverageNote": {
+              "type": "string"
+            },
+            "eligibleFillCount": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "invalidFillCount": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "issues": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "enum": [
+                      "invalid_transition",
+                      "invalid_price",
+                      "missing_pnl",
+                      "missing_fee",
+                      "continuity_gap",
+                      "conflicting_duplicate"
+                    ],
+                    "type": "string"
+                  },
+                  "count": {
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991,
+                    "type": "integer"
+                  },
+                  "symbol": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "code",
+                  "symbol",
+                  "count"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "limit": {
+              "maximum": 50,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "mode": {
+              "enum": [
+                "live",
+                "paper"
+              ],
+              "type": "string"
+            },
+            "offset": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "positions": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "averageEntryPrice": {
+                    "anyOf": [
+                      {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "averageExitPrice": {
+                    "anyOf": [
+                      {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "closedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "endComplete": {
+                    "type": "boolean"
+                  },
+                  "entryComplete": {
+                    "type": "boolean"
+                  },
+                  "entrySize": {
+                    "anyOf": [
+                      {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "exitSize": {
+                    "anyOf": [
+                      {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "feesByToken": {
+                    "additionalProperties": {
+                      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                      "type": "string"
+                    },
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "type": "object"
+                  },
+                  "feesComplete": {
+                    "type": "boolean"
+                  },
+                  "fillCount": {
+                    "maximum": 9007199254740991,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "fills": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "closedPnl": {
+                          "anyOf": [
+                            {
+                              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "fee": {
+                          "anyOf": [
+                            {
+                              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "feeToken": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "oid": {
+                          "anyOf": [
+                            {
+                              "maximum": 9007199254740991,
+                              "minimum": -9007199254740991,
+                              "type": "integer"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "portion": {
+                          "enum": [
+                            "entry",
+                            "exit"
+                          ],
+                          "type": "string"
+                        },
+                        "price": {
+                          "anyOf": [
+                            {
+                              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "side": {
+                          "enum": [
+                            "B",
+                            "A"
+                          ],
+                          "type": "string"
+                        },
+                        "size": {
+                          "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                          "type": "string"
+                        },
+                        "tid": {
+                          "anyOf": [
+                            {
+                              "maximum": 9007199254740991,
+                              "minimum": -9007199254740991,
+                              "type": "integer"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "time": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "time",
+                        "tid",
+                        "oid",
+                        "side",
+                        "portion",
+                        "size",
+                        "price",
+                        "fee",
+                        "feeToken",
+                        "closedPnl"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "fillsIncluded": {
+                    "maximum": 9007199254740991,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "fillsTruncated": {
+                    "type": "boolean"
+                  },
+                  "grossRealizedPnl": {
+                    "anyOf": [
+                      {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "lastActivityAt": {
+                    "type": "string"
+                  },
+                  "observedAverageEntryPrice": {
+                    "anyOf": [
+                      {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "observedAverageExitPrice": {
+                    "anyOf": [
+                      {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "observedEntrySize": {
+                    "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                    "type": "string"
+                  },
+                  "observedExitSize": {
+                    "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                    "type": "string"
+                  },
+                  "observedGrossRealizedPnl": {
+                    "anyOf": [
+                      {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "openedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "side": {
+                    "enum": [
+                      "long",
+                      "short"
+                    ],
+                    "type": "string"
+                  },
+                  "status": {
+                    "enum": [
+                      "open",
+                      "closed",
+                      "unknown"
+                    ],
+                    "type": "string"
+                  },
+                  "symbol": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "symbol",
+                  "side",
+                  "status",
+                  "entryComplete",
+                  "endComplete",
+                  "openedAt",
+                  "closedAt",
+                  "lastActivityAt",
+                  "entrySize",
+                  "observedEntrySize",
+                  "exitSize",
+                  "observedExitSize",
+                  "averageEntryPrice",
+                  "averageExitPrice",
+                  "observedAverageEntryPrice",
+                  "observedAverageExitPrice",
+                  "grossRealizedPnl",
+                  "observedGrossRealizedPnl",
+                  "feesByToken",
+                  "feesComplete",
+                  "fillCount",
+                  "fillsIncluded",
+                  "fillsTruncated"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "sourceCapped": {
+              "type": "boolean"
+            },
+            "sourceFillCount": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "sourceLimit": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "status": {
+              "enum": [
+                "closed",
+                "open",
+                "unknown",
+                "all"
+              ],
+              "type": "string"
+            },
+            "symbol": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "total": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "unknownPositionCount": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "positions",
+            "total",
+            "limit",
+            "offset",
+            "status",
+            "symbol",
+            "mode",
+            "coverage",
+            "sourceFillCount",
+            "eligibleFillCount",
+            "invalidFillCount",
+            "sourceLimit",
+            "sourceCapped",
+            "unknownPositionCount",
+            "issues",
+            "coverageNote"
+          ],
+          "type": "object"
+        },
+        "title": "Loading recent position history"
+      },
+      "effects": [
+        "account-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "get_position_history",
+        "userDescription": "Read recent position history from the paper account."
+      },
+      "identity": "wallet",
+      "operationId": "account.position-history"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Stay on top of market catalysts with curated recent headlines, source links, and a Liquid unusual-activity section (tradeable symbols whose last-hour volume is anomalously high vs. 24h average). Covers equities, commodities, indices, crypto, and macro. Returns text for the model to reference — no visual widget. Use to cross-reference headlines against positioning data, or when the user asks 'what's happening in the markets' or about recent news. Returns curated trading headlines mapped to Liquid's tradeable markets.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "get_news",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Fetching the news"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Markets",
+        "name": "get_news",
+        "userDescription": "Read recent market news and related assets."
+      },
+      "identity": "service",
+      "operationId": "news.read"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Bring shared links into the conversation with rich post details and readable page content. For x.com/twitter.com status URLs, returns the post's author name, handle, verified flag, age, full text, and attached media via the X API (requires TWITTER_BEARER_TOKEN). For any other http(s) page, fetches it and returns title, meta description, and the main text content (truncated). Use when the user pastes a link, asks 'what does this post say', or wants a page summarized. Not for Liquid market or account data — use the dedicated tools for that.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "url": {
+              "description": "The full http(s) URL to read",
+              "type": "string"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "url"
+          ],
+          "type": "object"
+        },
+        "name": "read_link",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Reading the link"
+      },
+      "effects": [
+        "market-read"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "read_link",
+        "userDescription": "Read public web-page content from a supplied link."
+      },
+      "identity": "service",
+      "operationId": "link.read"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false,
+          "readOnlyHint": true
+        },
+        "description": "Confirm that this connection is paper-only. This is an idempotent, session-local response and does not change the shared wallet paper-trading setting.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "enable_paper_trading",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Enabling paper trading"
+      },
+      "effects": [
+        "local-read"
+      ],
+      "help": {
+        "category": "Paper",
+        "name": "enable_paper_trading",
+        "userDescription": "Confirm this session is paper-only; this does not change the wallet's shared paper setting."
+      },
+      "identity": "wallet",
+      "operationId": "paper-only.session-enable"
+    },
+    {
+      "approval": "direct-request",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false,
+          "readOnlyHint": false
+        },
+        "description": "Reset the wallet's shared simulated paper account, including positions, orders, fills, and balance. This destructive action requires the user's direct request and any separate host approval; it does not enable, disable, or otherwise change the session's paper-only policy.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "reset_paper_account",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Resetting paper account"
+      },
+      "effects": [
+        "paper-account-write"
+      ],
+      "help": {
+        "category": "Paper",
+        "name": "reset_paper_account",
+        "userDescription": "Reset the wallet's shared simulated account after the user's direct request and required host approval."
+      },
+      "identity": "wallet",
+      "operationId": "paper.reset"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": false,
+          "readOnlyHint": true
+        },
+        "description": "Report that this connection is permanently paper-only. This is session policy, not the wallet's mutable shared paper-mode toggle.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "paper_trading_status",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Checking paper trading status"
+      },
+      "effects": [
+        "account-read"
+      ],
+      "help": {
+        "category": "Paper",
+        "name": "paper_trading_status",
+        "userDescription": "Confirm this session's immutable paper-only mode; it does not report or change the wallet's shared toggle."
+      },
+      "identity": "wallet",
+      "operationId": "paper.status"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": false,
+          "readOnlyHint": true
+        },
+        "description": "Read the authenticated user's actual shared referral link, invitation content, referral rewards, and statistics. These are shared account data, not simulated trading results. Call only when the user explicitly asks about referrals or invitations.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "refer",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "status": {
+              "description": "Widget or workflow status when the tool renders an interactive UI.",
+              "type": "string"
+            },
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Sharing your referral link"
+      },
+      "effects": [
+        "account-read",
+        "proposal"
+      ],
+      "help": {
+        "category": "Sharing",
+        "name": "refer",
+        "userDescription": "Read the user's actual shared referral link, invitation content, and referral rewards and statistics. These are account data, not simulated trading results."
+      },
+      "identity": "wallet",
+      "operationId": "referral.show"
+    },
+    {
+      "approval": "direct-request",
+      "definition": {
+        "annotations": {
+          "destructiveHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": false
+        },
+        "description": "Update the authenticated user's shared account watchlist preferences. This changes shared preference data, not the simulated trading account; it requires a verified OAuth trade scope and the user's direct request.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "action": {
+              "description": "add: add symbols to the list; remove: remove symbols from the list; set: replace the list's contents with exactly these symbols (pass an empty array to clear the list)",
+              "enum": [
+                "add",
+                "remove",
+                "set"
+              ],
+              "type": "string"
+            },
+            "list": {
+              "default": "Watchlist",
+              "description": "Name of the watchlist to edit (a user can have multiple named lists)",
+              "type": "string"
+            },
+            "symbols": {
+              "description": "Ticker symbols, e.g. BTC, ETH, HYPE. Required for add/remove; may be empty for set to clear the list",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "symbols"
+          ],
+          "type": "object"
+        },
+        "name": "edit_watchlist",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Editing your watchlist"
+      },
+      "effects": [
+        "preference-write"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "edit_watchlist",
+        "userDescription": "Add, remove, or replace symbols in the user's shared account watchlists. This is a shared preference change, not simulated trading."
+      },
+      "identity": "wallet",
+      "operationId": "watchlist.edit"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": false,
+          "readOnlyHint": true
+        },
+        "description": "List Co-Invest's user-facing capabilities grouped by category. Call this when the user asks what you can do, says 'help', sends '/help', or seems unsure how to use the platform.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "help",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Showing what I can do"
+      },
+      "effects": [
+        "local-read"
+      ],
+      "identity": "service",
+      "operationId": "help.read"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": false,
+          "readOnlyHint": true
+        },
+        "description": "Read the saved shared automation-policy status for the verified account. This reports policy metadata only; it does not enable automation or authorize paper or live orders in this connection.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "automated_trading_status",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": {},
+          "properties": {
+            "text": {
+              "description": "Human-readable summary returned in the tool result content.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "title": "Read saved automation policy"
+      },
+      "effects": [
+        "account-read"
+      ],
+      "help": {
+        "category": "Trades",
+        "name": "automated_trading_status",
+        "userDescription": "Read the saved shared automation-policy status. This metadata does not enable automation or authorize paper or live orders in this connection."
+      },
+      "identity": "wallet",
+      "operationId": "automation.status"
+    },
+    {
+      "approval": "none",
+      "definition": {
+        "annotations": {
+          "destructiveHint": false,
+          "openWorldHint": false,
+          "readOnlyHint": true
+        },
+        "description": "Return the public address of the authenticated trading account. This is the trading account address, not a deposit or bridge destination. No credentials or account secrets are returned.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": false,
+          "properties": {
+            "user_intent": {
+              "description": "One-sentence paraphrase of the user's request that led to this tool call. Include when you have conversational context.",
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "get_account",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": false,
+          "properties": {
+            "addressRole": {
+              "const": "trading-account",
+              "type": "string"
+            },
+            "tradingAccountAddress": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tradingAccountAddress",
+            "addressRole"
+          ],
+          "type": "object"
+        },
+        "title": "Showing your trading account"
+      },
+      "effects": [
+        "account-read"
+      ],
+      "help": {
+        "category": "Data",
+        "name": "get_account",
+        "userDescription": "Read the verified identity of the connected trading account."
+      },
+      "identity": "wallet",
+      "operationId": "account.identity"
+    }
+  ],
+  "contractHash": "dfebda6cbed7fcf447727792ee5b3da4e2549310b2c4eb793f1af84cea73b157"
+}

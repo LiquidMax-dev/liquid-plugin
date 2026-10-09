@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "co-invest-muse",
+  "version": "1.0.0",
+  "description": "Research markets and practice simulated trading with Liquid Co-Invest in Muse. Orders placed through this connector are simulated. Signing in uses your normal Liquid account permission, which is not limited to practice trading.",
+  "author": { "name": "Liquid", "url": "https://liquid.trade" },
+  "homepage": "https://liquid.trade/coinvest",
+  "repository": "https://github.com/LiquidMax-dev/liquid-plugin",
+  "license": "MIT",
+  "keywords": ["liquid", "Co-Invest", "paper trading", "markets", "mcp"]
+}

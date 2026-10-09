@@ -7,7 +7,9 @@
   },
   "scripts": {
     "validate": "node scripts/validate-plugins.mjs",
-    "sync:skills": "node scripts/sync-skills.mjs"
+    "sync:skills": "node scripts/sync-skills.mjs",
+    "sync:muse-paper-only": "node scripts/sync-muse-paper-only.mjs",
+    "test": "node --test test/*.test.mjs"
   },
   "devDependencies": {
     "ajv": "^8.20.0",
