@@ -4,7 +4,7 @@
 
 - Contract profile: `paper-only`
 - Contract hash: `dfebda6cbed7fcf447727792ee5b3da4e2549310b2c4eb793f1af84cea73b157`
-- MCP source revision: `f2a0ed5969dfa64787dceaaecc4d9aed6342300b`
+- MCP source revision: `d963e80f5fdd300a3c0213ae8ad5a4e965bc90e3`
 - Contract snapshot SHA-256: `9c6aa7ae21e9aa81fd886e7bc73805b759629358eb7dc4959dd1978eb90a2a2e`
 - Representative examples SHA-256: `6a76a0a72287bcc74228413ad64b948fb780cfdf9f4875d273dfb1609cc91a50`
 

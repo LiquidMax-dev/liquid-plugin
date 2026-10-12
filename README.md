@@ -4,7 +4,7 @@
 
 Liquid Co-Invest is free AI trading you control: research markets, size positions, and trade crypto, stocks, commodities, and FX inside Claude or ChatGPT. [Co-Invest Computer](https://www.liquid.trade/coinvest-computer) exposes Liquid as an MCP server, so agents in Codex, Claude Code, Cursor, Hermes, or any MCP client can research markets, watch for entries, and trade through Liquid. There is no subscription; executed trades pay standard Liquid trading fees.
 
-Liquid Co-Invest is Liquid's multi-asset trading MCP, covering equities, commodities, indices, crypto, and other supported Liquid markets. The Cursor and Grok packages expose the workflows described below. A separate Muse package is being prepared for platform review against a paper-only endpoint; it is not yet accepted or connected to a deployed endpoint.
+Liquid Co-Invest is Liquid's multi-asset trading MCP, covering equities, commodities, indices, crypto, and other supported Liquid markets. The Cursor and Grok packages expose the workflows described below. The Muse package connects to the production paper-only endpoint, verified on 2026-10-12; its platform submission is prepared for owner review. All repository plugin packages use version **1.0.2**.
 
 The Cursor plugin connects to Co-Invest Computer, whose direct trading tools place orders you explicitly request in chat, with no widget confirmation cards, and it bundles the Co-Invest skill. The Grok plugin connects to liquid-mcp's `all` profile: it returns text results, and an order is placed only after you approve its exact terms in chat.
 
@@ -14,7 +14,7 @@ The Cursor plugin connects to Co-Invest Computer, whose direct trading tools pla
 | --- | --- | --- | --- |
 | [Co-Invest](plugins/co-invest) | Cursor | https://coinvest-computer.liquid.trade/mcp | Direct trades you authorize in chat |
 | [Co-Invest](plugins/co-invest-grok) | Grok Bot, Grok Build | https://coinvest.liquid.trade/mcp?profile=all | Trades you approve in chat |
-| [Co-Invest Paper](plugins/co-invest-muse) | Muse Connector Platform (submission prepared; review pending) | https://coinvest.liquid.trade/mcp?profile=paper-only | Orders through this connector are simulated; sign-in grants a normal Liquid permission, not a practice-only one; endpoint deployment and platform eligibility pending |
+| [Co-Invest](plugins/co-invest-muse) | Muse Connector Platform (submission prepared; review pending) | https://coinvest.liquid.trade/mcp?profile=paper-only | Orders through this connector are simulated; sign-in grants a normal Liquid permission, not a practice-only one; production endpoint verified; Muse review pending |
 
 ## Repository layout
 
@@ -67,9 +67,9 @@ Build, with the same name, version and description, and its `mcp.json` and
 `npm run sync:skills`. Edit the root copy, then run that command.
 
 `co-invest-muse` is a hosted connector submission package using the Agent
-Plugins 1.0.0 manifest and MCP configuration format. Muse acceptance, OAuth
-connection, and deployment of its paper-only endpoint are pending; the package
-does not add an entry to the Cursor marketplace.
+Plugins 1.0.0 manifest and MCP configuration format. The paper-only endpoint is enabled and directly verified. Muse acceptance and
+authenticated host execution remain separate review steps; the package does not
+add an entry to the Cursor marketplace.
 
 <!-- coinvest-skill:start -->
 ## Install the Co-Invest skill

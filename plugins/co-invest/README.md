@@ -21,7 +21,7 @@ Alternatively, add the configuration below to `~/.cursor/mcp.json` directly. Thi
 
 If you install the plugin, don't also run `npx skills add LiquidMax-dev/liquid-plugin --skill coinvest -a cursor`: Cursor would then load two skills named `coinvest`.
 
-Version 2.0.0 moved the server from Main (`https://coinvest.liquid.trade/mcp`) to Co-Invest Computer. If you have an earlier local install, you'll need to sign in again. See the [changelog](CHANGELOG.md).
+Version 1.0.2 aligns the package version with the owner-selected release label. Co-Invest uses the Computer endpoint; earlier local installs connected to the Main endpoint and need to sign in again. See the [changelog](CHANGELOG.md).
 
 ## MCP configuration
 
