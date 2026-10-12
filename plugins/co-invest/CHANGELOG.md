@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- Align the package version with the owner-selected release label. The Co-Invest
+  Computer endpoint and tool behavior are unchanged.
+
 ## 2.0.0
 
 - Moved the MCP server from Main (`https://coinvest.liquid.trade/mcp`) to

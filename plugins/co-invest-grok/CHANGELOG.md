@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- Align the package version with the owner-selected release label. The Grok
+  connector endpoint and tool behavior are unchanged.
+
 ## 2.0.0
 
 - Moved the MCP server from Restricted (`https://coinvest-chat.liquid.trade/mcp`,

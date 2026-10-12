@@ -106,7 +106,9 @@ with trades placed after an explicit approval in chat. It goes to 2.0.0.
   The skill text doesn't change, because its Computer default now matches the
   plugin. Cursor discovers the immediate children of `skills/` that contain a
   `SKILL.md`, taking each skill's name from its frontmatter.
-- **D5, version.** `co-invest` goes from 1.0.0 to 2.0.0: new server, new tool
+- **D5, version. Superseded 2026-10-12:** the owner selected 1.0.2 across all plugin packages for the next submissions; see [current readiness spec](SPEC-muse-production-readiness-20261012.md). The endpoint migration and original 2.0.0 release record below remain historical.
+
+  **Original D5, version.** `co-invest` goes from 1.0.0 to 2.0.0: new server, new tool
   set and a fresh sign-in. It was never listed in Cursor's marketplace
   (`listed.cursor: false` in liquid-mcp `plugin/config.json`), so only local
   installs are affected.
@@ -160,6 +162,7 @@ with trades placed after an explicit approval in chat. It goes to 2.0.0.
       Liquid's authorization server doesn't reject a resource that carries it.
     - Grok Build's listed `getsentry/plugin-grok` uses `"type": "http"` with a
       query-string URL.
+  - **D8 version corrected 2026-10-12:** both Grok manifests now use owner-selected 1.0.2. Endpoint behavior is unchanged; the following 2.0.0 version decision is historical.
   - Grok Build would re-pin a future catalog listing only when the
     `plugin.json` version changes, so both Grok manifests go from 1.0.0 to
     2.0.0. The plugin is not in `xai-org/plugin-marketplace` yet.

@@ -1,6 +1,6 @@
 # SPEC-muse-paper-only-plugin-20261007
 
-Status: 45-tool package implemented; expanded verification below (hosted target). Endpoint release and Muse QA pending. Date: 2026-10-07. Baseline: main 7ebb4bd.
+Status: implemented. **Updated 2026-10-12:** production endpoint is enabled and directly verified; all packages use 1.0.2. Muse submission remains with the owner. Current status and verification: [production readiness spec](SPEC-muse-production-readiness-20261012.md). Date: 2026-10-07. Baseline: main 7ebb4bd.
 Tracker: LIQ-5530. Depends on liquid-mcp SPEC-paper-only-profile-20261007.
 
 **Corrected 2026-10-07 by the user's platform links:** target is the hosted Muse Connector Platform at https://muse.ai/platform, following https://muse.ai/platform/docs. The previous Muse Code native-plugin/settings design is superseded and must not be implemented.
@@ -15,6 +15,7 @@ Muse requires a hosted connector that completes its advertised workflows, with a
 
 ## Solution
 
+- **Superseded 2026-10-12 for version only:** owner selected 1.0.2 across packages; preserve Agent Plugins schema version 1.0.0. The original requirement follows.
 - Add plugins/co-invest-muse/plugin.json and mcp.json following the repository's pinned Agent Plugins schemas, name co-invest-muse/version1.0.0, exact endpoint above, no secrets. These are portable packaging; the portal does not document a required plugin manifest upload.
 - Add README, CHANGELOG, LICENSE and authorized existing Liquid logo copy.
 - Add submission.md: factual overview, simulation-only workflows/value, financial-policy caveat, OAuth resource discovery and scopes from actual server, business/contact/data-processing fields with explicit owner-confirmation markers wherever facts cannot be established, environment/release status, dedicated reviewer account checklist and demo steps.
@@ -42,6 +43,8 @@ Agent Plugins 1.0.0 root manifest fields follow existing co-invest package conve
 Stateful MCP initialization pins paper-only and identity; later calls stay simulated without the URL query. OAuth uses the existing protected-resource/authorization-server discovery and approved hosted callback; requests need the documented read/trade scopes. Confirm read-only scope capability in code before claiming it is offered. The connector never switches modes, grants live automation, or sends the user away to complete an advertised supported simulated action.
 
 ## Risks
+
+**Corrected 2026-10-12:** the endpoint is live, the portal and terms were accessed, and the owner confirmed the simulation scope and closed further eligibility investigation. The original preparation-stage risks below are historical; the current readiness spec governs.
 
 Eligibility for simulated trading is a platform review decision; no claim of automatic compliance or guaranteed acceptance. Portal form and Connector Terms are login-gated in this session, so precise intake fields and terms review remain owner prerequisites. Company contacts, retention and deletion answers cannot be fabricated from defaults. Reviewer credentials stay outside git and are supplied only through the portal's secure instructions. Public endpoint does not yet serve this profile; feature release and compatible rollback qualification precede submission.
 
@@ -85,9 +88,9 @@ Update validator allowlist/count and approved hashes only after the reviewed MCP
 
 The package is implemented and pinned to verified liquid-mcp commit f2a0ed5969dfa64787dceaaecc4d9aed6342300b. It contains all 45 tools and their recorded matrix examples. Canonical contract hash: dfebda6cbed7fcf447727792ee5b3da4e2549310b2c4eb793f1af84cea73b157; copied contract SHA-256: 9c6aa7ae21e9aa81fd886e7bc73805b759629358eb7dc4959dd1978eb90a2a2e; examples SHA-256: 6a76a0a72287bcc74228413ad64b948fb780cfdf9f4875d273dfb1609cc91a50.
 
-On Node 22.22.2, npm run validate passed (two Cursor marketplace plugins, two Agent Plugins packages, two skills), all 17 tests passed, and the skill-copy, deterministic Muse snapshot and whitespace checks passed. Existing Cursor/Grok packages and marketplace are unchanged. The final companion MCP passed 3,872 unit tests with four existing skips, all 45 paper-only matrix cases plus 13 stateful replays, and 32 actual built-server HTTP assertions on the pinned Node version. Its six existing profile contracts remain byte-identical and retained history remains append-only. Paid model evaluations were not run.
+On Node 22.22.2, npm run validate passed (two Cursor marketplace plugins, two Agent Plugins packages, two skills), all 17 tests passed, and the skill-copy, deterministic Muse snapshot and whitespace checks passed. Existing Cursor/Grok packages and marketplace are unchanged. The final companion MCP passed 3,872 unit tests with four existing skips, all 45 paper-only matrix cases plus 13 stateful replays, and 32 actual built-server HTTP assertions on the pinned Node version. Its six existing profile contracts remain byte-identical and retained history remains append-only. **Corrected 2026-10-12:** the companion release paid model evaluation passed on 2026-10-08. Superseded original statement: Paid model evaluations were not run.
 
-Submission documentation now distinguishes simulated trading history/allocation from public real rankings, shared watchlist preferences, actual referral statistics and read-only automation policy metadata. Verified trade scope is required for watchlist writes as well as simulator writes. The user's company/contact/privacy choices and secure reviewer handling remain unchanged. The measured broader OAuth grant and release prerequisites are disclosed. Both companion PRs are ready for review, not drafts; no deployment, terms acceptance, OAuth approval or Muse portal submission was performed.
+Submission documentation now distinguishes simulated trading history/allocation from public real rankings, shared watchlist preferences, actual referral statistics and read-only automation policy metadata. Verified trade scope is required for watchlist writes as well as simulator writes. The user's company/contact/privacy choices and secure reviewer handling remain unchanged. The measured broader OAuth grant and release prerequisites are disclosed. **Corrected 2026-10-12:** both companion PRs have merged and production paper-only is enabled. The following described the original preparation session only: Both companion PRs are ready for review, not drafts; no deployment, terms acceptance, OAuth approval or Muse portal submission was performed.
 
 ## Owner decisions on review feedback (2026-10-08, liquid-plugin #7)
 
