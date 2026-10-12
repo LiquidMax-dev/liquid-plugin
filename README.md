@@ -2,9 +2,9 @@
 
 # Liquid Co-Invest plugins
 
-Liquid Co-Invest is free AI trading you control: research markets, size positions, and trade crypto, stocks, commodities, and FX inside Claude or ChatGPT. [Co-Invest Computer](https://www.liquid.trade/coinvest-computer) exposes Liquid as an MCP server, so agents in Codex, Claude Code, Cursor, Hermes, or any MCP client can research markets, watch for entries, and trade through Liquid. There is no subscription; executed trades pay standard Liquid trading fees.
+Liquid Co-Invest helps you research markets, size positions, and trade crypto, stocks, commodities, and FX through supported AI clients. [Co-Invest Computer](https://www.liquid.trade/coinvest-computer) exposes Liquid as an MCP server, so agents in Codex, Claude Code, Cursor, Hermes, or any MCP client can research markets, watch for entries, and use the trading tools exposed by their configured connection. There is no subscription; executed trades pay standard Liquid trading fees.
 
-Liquid Co-Invest is Liquid's multi-asset trading MCP, covering equities, commodities, indices, crypto, and other supported Liquid markets. The Cursor and Grok packages expose the workflows described below. The Muse package connects to the production paper-only endpoint, verified on 2026-10-12; its platform submission is prepared for owner review. All repository plugin packages use version **1.0.2**.
+Liquid Co-Invest is Liquid's multi-asset MCP, covering equities, commodities, indices, crypto, and other supported Liquid markets. The Cursor and Grok packages expose the workflows described below. The Muse package connects to the production paper-only endpoint, verified on 2026-10-12; its platform submission is in review after owner submission. The OpenAI package uses the Restricted endpoint for research, portfolio reads and review links for new trade suggestions; its existing simulated account and position management tools are also available. Its OAuth consent uses normal Liquid read and trade permissions. The OpenAI package is a local draft and has not been uploaded or published. All repository plugin packages use version **1.0.2**.
 
 The Cursor plugin connects to Co-Invest Computer, whose direct trading tools place orders you explicitly request in chat, with no widget confirmation cards, and it bundles the Co-Invest skill. The Grok plugin connects to liquid-mcp's `all` profile: it returns text results, and an order is placed only after you approve its exact terms in chat.
 
@@ -14,7 +14,8 @@ The Cursor plugin connects to Co-Invest Computer, whose direct trading tools pla
 | --- | --- | --- | --- |
 | [Co-Invest](plugins/co-invest) | Cursor | https://coinvest-computer.liquid.trade/mcp | Direct trades you authorize in chat |
 | [Co-Invest](plugins/co-invest-grok) | Grok Bot, Grok Build | https://coinvest.liquid.trade/mcp?profile=all | Trades you approve in chat |
-| [Co-Invest](plugins/co-invest-muse) | Muse Connector Platform (submission prepared; review pending) | https://coinvest.liquid.trade/mcp?profile=paper-only | Orders through this connector are simulated; sign-in grants a normal Liquid permission, not a practice-only one; production endpoint verified; Muse review pending |
+| [Co-Invest](plugins/co-invest-muse) | Muse Connector Platform (in review) | https://coinvest.liquid.trade/mcp?profile=paper-only | Orders through this connector are simulated; sign-in grants a normal Liquid permission, not a practice-only one; production endpoint verified; Muse review pending |
+| [Co-Invest](plugins/co-invest-openai) | OpenAI | https://coinvest-chat.liquid.trade/mcp | Market research, portfolio reads and review links for new trade suggestions; simulated account and position management tools |
 
 ## Repository layout
 
@@ -41,17 +42,25 @@ liquid-plugin/
 │   ├── .mcp.json
 │   ├── CHANGELOG.md
 │   └── README.md
-└── plugins/co-invest-muse/
-    ├── plugin.json
-    ├── mcp.json
-    ├── paper-only.contract.json
-    ├── paper-only.examples.json
-    ├── paper-only.source.json
-    ├── assets/logo.svg
-    ├── submission.md
-    ├── tools.md
-    ├── CHANGELOG.md
-    └── LICENSE
+├── plugins/co-invest-muse/
+│   ├── plugin.json
+│   ├── mcp.json
+│   ├── paper-only.contract.json
+│   ├── paper-only.examples.json
+│   ├── paper-only.source.json
+│   ├── assets/logo.svg
+│   ├── submission.md
+│   ├── tools.md
+│   ├── CHANGELOG.md
+│   └── LICENSE
+├── plugins/co-invest-openai/
+│   ├── plugin.json
+│   ├── mcp.json
+│   ├── assets/logo.svg
+│   ├── CHANGELOG.md
+│   ├── LICENSE
+│   └── README.md
+└── docs/openai-submission-1.0.2.md
 ```
 
 The `co-invest` and `co-invest-grok` packages are Cursor Plugins with their own
@@ -70,6 +79,11 @@ Build, with the same name, version and description, and its `mcp.json` and
 Plugins 1.0.0 manifest and MCP configuration format. The paper-only endpoint is enabled and directly verified. Muse acceptance and
 authenticated host execution remain separate review steps; the package does not
 add an entry to the Cursor marketplace.
+
+`co-invest-openai` is a separate OpenAI plugin package. Its manifest and MCP
+configuration target the Restricted endpoint, and it is not part of the Cursor
+marketplace. See the [OpenAI submission notes](docs/openai-submission-1.0.2.md)
+for the package workflow and official OpenAI references.
 
 <!-- coinvest-skill:start -->
 ## Install the Co-Invest skill
@@ -90,15 +104,28 @@ trading access.
 
 ## How this repository is maintained
 
-Changes are made by hand in this repository. `npm ci` then `npm run validate`
-checks manifests against Cursor's and Agent Plugins' published schemas, the
-skill copies, the Muse paper-only contract snapshot and generated reference,
-and Cursor's submission checklist. `npm test` runs negative checks for the
-hosted Muse package, and CI runs both commands on every pull request. Refresh
+Changes are made by hand in this repository. Use Node.js 20 or newer and Python
+3. `npm ci` then `npm run validate` checks manifests against Cursor's and Agent
+Plugins' published schemas, the skill copies, the Muse paper-only contract
+snapshot and generated reference, Cursor's submission checklist, and the
+OpenAI package metadata and MCP configuration. `npm test` runs negative checks
+for the hosted Muse and OpenAI packages, and CI runs both commands on every
+pull request. Refresh
 the Muse snapshot only from an explicit liquid-mcp checkout and source revision
 with `npm run sync:muse-paper-only -- --mcp-root <path> --source-revision <sha>`.
 liquid-mcp's `generate-plugin.mjs --out` predates this layout and deletes
 `skills/` and `docs/`, so do not run it against this repository.
+
+Build the OpenAI ZIP to an explicit absolute output path that does not already
+exist and is outside the package directory:
+
+```sh
+npm run package:openai -- --out /absolute/path/Co-Invest-1.0.2.zip
+```
+
+The build validates the OpenAI package before writing the archive. The ZIP is a
+local artifact; publishing or updating a listing is a separate OpenAI dashboard
+action.
 
 ## Links
 

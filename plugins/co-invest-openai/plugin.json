@@ -1,0 +1,31 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "co-invest",
+  "version": "1.0.2",
+  "description": "Research markets and manage supported Liquid Co-Invest account features.",
+  "author": { "name": "Liquid", "email": "support@liquid.trade", "url": "https://www.liquid.trade" },
+  "homepage": "https://www.liquid.trade/coinvest",
+  "repository": "https://github.com/LiquidMax-dev/liquid-plugin",
+  "license": "MIT",
+  "keywords": ["liquid", "Co-Invest", "markets", "portfolio", "mcp"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Co-Invest",
+        "shortDescription": "Markets and portfolio tools",
+        "longDescription": "Research markets and review connected Liquid portfolio data. Co-Invest can prepare new trade suggestions with Liquid review links and manage supported simulated accounts and positions. Sign in with your Liquid account to connect. OAuth permissions include read and trade and are broader than this endpoint's current restrictions. This connection does not submit live trades.",
+        "developerName": "Liquid",
+        "category": "Finance",
+        "websiteURL": "https://www.liquid.trade/coinvest",
+        "supportURL": "https://www.liquid.trade/support",
+        "privacyPolicyURL": "https://www.liquid.trade/privacy",
+        "termsOfServiceURL": "https://www.liquid.trade/termsofservice",
+        "logo": "./assets/logo.svg",
+        "composerIcon": "./assets/logo.svg"
+      },
+      "publication": {
+        "release_notes": "Co-Invest 1.0.2 connects to Liquid's Restricted MCP endpoint for market research, portfolio reads, trade suggestions with Liquid review links, and supported simulated account and position management. Login is required."
+      }
+    }
+  }
+}
