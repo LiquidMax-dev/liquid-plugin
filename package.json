@@ -7,6 +7,7 @@
   },
   "scripts": {
     "validate": "node scripts/validate-plugins.mjs",
+    "package:openai": "python3 scripts/package-openai.py",
     "sync:skills": "node scripts/sync-skills.mjs",
     "sync:muse-paper-only": "node scripts/sync-muse-paper-only.mjs",
     "test": "node --test test/*.test.mjs"
