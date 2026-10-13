@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a deterministic, portable OpenAI Co-Invest plugin ZIP."""
+"""Build the deterministic OpenAI Co-Invest plugin ZIP."""
 
 import argparse
 import hashlib
@@ -11,15 +11,28 @@ import sys
 import zipfile
 
 
-FILES = (
+DOCUMENTATION_FILES = (
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
-    "assets/logo.svg",
-    "mcp.json",
-    "plugin.json",
 )
-DIRECTORIES = ("assets",)
+FILES = (
+    ".codex-plugin/plugin.json",
+    ".mcp.json",
+    "assets/logo-dark.png",
+    "assets/logo.png",
+    "skills/coinvest-earn-vaults/SKILL.md",
+    "skills/coinvest-market-research/SKILL.md",
+    "skills/coinvest-portfolio-planning/SKILL.md",
+)
+DIRECTORIES = (
+    ".codex-plugin",
+    "assets",
+    "skills",
+    "skills/coinvest-earn-vaults",
+    "skills/coinvest-market-research",
+    "skills/coinvest-portfolio-planning",
+)
 
 
 def fail(message: str) -> "NoReturn":
@@ -60,7 +73,7 @@ def collect_package_files(package_dir: Path) -> list[tuple[str, Path]]:
                 fail(f"symlink in package: {relative}")
             if not stat.S_ISREG(path.lstat().st_mode):
                 fail(f"package entry is not a regular file: {relative}")
-            if relative not in FILES:
+            if relative not in (*FILES, *DOCUMENTATION_FILES):
                 fail(f"unexpected package file: {relative}")
             actual_files.add(relative)
 

@@ -9,6 +9,7 @@ import { parse as parseYaml } from "yaml";
 import { SKILL_SYNC_MAP, diffSkillCopies } from "./sync-skills.mjs";
 import { validateMusePackage } from "./muse-paper-only.mjs";
 import { validateOpenaiPackage } from "./openai-package.mjs";
+import { validateOpenaiTools } from "./openai-tools.mjs";
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = process.argv[2] ? resolve(process.cwd(), process.argv[2]) : dirname(scriptsDir);
@@ -441,6 +442,8 @@ function checkNoSymlinks(rootDirs) {
 async function main() {
   const openaiResult = validateOpenaiPackage(repoRoot);
   for (const issue of openaiResult.errors) addError("plugins/co-invest-openai", issue);
+  const openaiTools = validateOpenaiTools(repoRoot);
+  for (const issue of openaiTools.errors) addError("docs/openai", issue);
   const museResult = validateMusePackage(repoRoot);
   for (const issue of museResult.errors) {
     const separator = issue.indexOf(": ");
@@ -537,7 +540,7 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  console.log(`OK: ${plugins.length} Cursor marketplace plugins, ${museResult.packageCount + openaiResult.packageCount} Agent Plugins packages, ${skillCount} skills`);
+  console.log(`OK: ${plugins.length} Cursor marketplace plugins, ${museResult.packageCount} Agent Plugins packages, ${openaiResult.packageCount} OpenAI package, ${openaiTools.toolCount} documented OpenAI tools, ${skillCount} skills`);
 }
 
 main().catch((err) => {

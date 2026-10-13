@@ -218,7 +218,7 @@ export function validateMusePackage(repoRootInput) {
   const validateMcp = new Ajv2020({ allErrors: true, strict: false }).compile(JSON.parse(readFileSync(join(repoRoot, "schemas/agent-plugins/mcp.schema.json"), "utf8")));
   if (existsSync(packagesRoot)) {
     for (const entry of readdirSync(packagesRoot, { withFileTypes: true })) {
-      // OpenAI has its own client namespace and MCP auth extension validator.
+    // OpenAI's published Codex package has its own validator.
       if (entry.name === "co-invest-openai") continue;
       if (!entry.isDirectory() && !(entry.name === "co-invest-muse" && entry.isSymbolicLink())) continue;
       const dir = join(packagesRoot, entry.name);
