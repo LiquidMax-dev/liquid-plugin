@@ -2,6 +2,7 @@
 
 ## 1.0.2
 
-- Add the Co-Invest OpenAI plugin package using Liquid's Restricted MCP endpoint.
-- Include market research, connected portfolio reads, trade suggestions with Liquid review links, and supported simulated account and position management.
-- Require Liquid sign-in and declare OAuth Dynamic Client Registration with `read` and `trade` scopes.
+- Preserve the published Co-Invest listing metadata and prompt while updating the package version.
+- Preserve the exact existing MCP endpoint and portal-managed authentication; tools and descriptions are provided through MCP scans.
+- Add three research skills that use only currently exposed tools and do not perform fund movements.
+- Package only the manifest, MCP map, two original logos, and three skill files in the upload ZIP.

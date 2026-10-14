@@ -1,55 +1,55 @@
+import { createHash } from "node:crypto";
 import { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import Ajv2020 from "ajv/dist/2020.js";
-import addFormats from "ajv-formats";
+import { parse as parseYaml } from "yaml";
 
-export const OPENAI_ENDPOINT = "https://coinvest-chat.liquid.trade/mcp";
-const PACKAGE_NAME = "co-invest";
-const PACKAGE_VERSION = "1.0.2";
-const OPENAI_NAMESPACE = "com.openai";
-const EXPECTED_FILES = new Set([
+const BASELINE_SHA256 = "c7a7590179b778f2335f4c9fb35f8dd00f05c4f11bafa7d666fe6e39fbde9077";
+const LOGO_HASHES = new Map([
+  ["assets/logo.png", "2f1b172ae3b87c066ccab9a517e9c303cd88df6b6ca1835e865f6fd38a704506"],
+  ["assets/logo-dark.png", "29bb7e1a2ba39baf4811246ecfecdfeb1d6d4f9277588587b3bd1b8cb151488a"],
+]);
+const REQUIRED_FILES = new Set([
+  ".codex-plugin/plugin.json",
+  ".mcp.json",
+  "assets/logo.png",
+  "assets/logo-dark.png",
+  "skills/coinvest-market-research/SKILL.md",
+  "skills/coinvest-portfolio-planning/SKILL.md",
+  "skills/coinvest-earn-vaults/SKILL.md",
+]);
+const ALLOWED_FILES = new Set([
+  ...REQUIRED_FILES,
   "CHANGELOG.md",
   "LICENSE",
   "README.md",
-  "assets/logo.svg",
-  "mcp.json",
-  "plugin.json",
 ]);
-const EXPECTED_DIRS = new Set(["assets"]);
+const SKILL_NAMES = ["coinvest-market-research", "coinvest-portfolio-planning", "coinvest-earn-vaults"];
+const EXPECTED_DIRS = new Set([
+  ".codex-plugin",
+  "assets",
+  "skills",
+  ...SKILL_NAMES.map((name) => `skills/${name}`),
+]);
 const CREDENTIAL_RE = /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\b(?:ghp|github_pat|sk_live|sk_test)_[A-Za-z0-9_-]{12,}|\bBearer\s+[A-Za-z0-9._~+/-]{16,}|\b(?:api[_-]?key|client[_-]?secret|access[_-]?token|refresh[_-]?token)["']?\s*[:=]\s*["']?[A-Za-z0-9._~+/-]{12,}/i;
-const PRIVATE_TEXT_RE = /(?:^|["\s])(?:\/Users\/|\/home\/)[^\s"']+/m;
-const URL_RE = /^https:\/\/[^\s]+$/;
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
-function sortedKeys(value) {
-  return isRecord(value) ? Object.keys(value).sort() : [];
-}
-
-function sameKeys(value, expected) {
-  return isRecord(value) && sortedKeys(value).join("\0") === [...expected].sort().join("\0");
-}
-
 function sameValue(left, right) {
   if (left === right) return true;
   if (Array.isArray(left) || Array.isArray(right)) {
-    return Array.isArray(left) && Array.isArray(right) && left.length === right.length && left.every((item, index) => sameValue(item, right[index]));
+    return Array.isArray(left) && Array.isArray(right) && left.length === right.length && left.every((value, index) => sameValue(value, right[index]));
   }
   if (!isRecord(left) || !isRecord(right)) return false;
-  const keys = sortedKeys(left);
-  return keys.join("\0") === sortedKeys(right).join("\0") && keys.every((key) => sameValue(left[key], right[key]));
+  const leftKeys = Object.keys(left).sort();
+  const rightKeys = Object.keys(right).sort();
+  return leftKeys.length === rightKeys.length && leftKeys.every((key, index) => key === rightKeys[index] && sameValue(left[key], right[key]));
 }
 
-function readJson(path, report) {
-  try {
-    return JSON.parse(readFileSync(path, "utf8"));
-  } catch {
-    report(path, "cannot read valid JSON");
-    return null;
-  }
+function sha256(bytes) {
+  return createHash("sha256").update(bytes).digest("hex");
 }
 
 function sourceRel(root, path) {
@@ -68,20 +68,21 @@ function walkPackage(root, onEntry, prefix = "") {
 
 function checkPathAncestry(repoRoot, packageDir, report) {
   let valid = true;
-  const rel = relative(repoRoot, packageDir);
-  let current = repoRoot;
   const rootStat = lstatSync(repoRoot);
   if (rootStat.isSymbolicLink() || !rootStat.isDirectory()) {
     report(repoRoot, "repository root must be a real directory, not a symlink");
-    valid = false;
+    return false;
   }
-  for (const part of rel.split(sep).filter(Boolean)) {
+  let current = repoRoot;
+  for (const part of relative(repoRoot, packageDir).split(sep).filter(Boolean)) {
     current = join(current, part);
     let stat;
-    try { stat = lstatSync(current); }
-    catch (error) {
+    try {
+      stat = lstatSync(current);
+    } catch (error) {
       if (error.code === "ENOENT") continue;
-      throw error;
+      report(current, "package path cannot be inspected");
+      return false;
     }
     if (stat.isSymbolicLink()) {
       report(current, "symlink is not allowed in package path ancestry");
@@ -94,101 +95,76 @@ function checkPathAncestry(repoRoot, packageDir, report) {
   return valid;
 }
 
-function validateInterface(interfaceValue, report, path) {
-  if (!isRecord(interfaceValue)) {
-    report(path, "extensions.com.openai.interface must be an object");
-    return;
-  }
-  const interfaceFields = ["displayName", "shortDescription", "longDescription", "developerName", "category", "websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL", "logo", "composerIcon"];
-  if (!sameKeys(interfaceValue, interfaceFields)) report(path, "interface contains missing or unsupported fields");
-  const requiredText = ["displayName", "shortDescription", "longDescription", "developerName"];
-  for (const key of requiredText) {
-    if (typeof interfaceValue[key] !== "string" || interfaceValue[key].trim().length === 0) report(path, `interface.${key} must be a non-empty string`);
-  }
-  if (interfaceValue.displayName !== "Co-Invest") report(path, 'interface.displayName must be "Co-Invest"');
-  if (interfaceValue.developerName !== "Liquid") report(path, 'interface.developerName must be "Liquid"');
-  if (typeof interfaceValue.displayName === "string" && interfaceValue.displayName.length > 30) report(path, "interface.displayName must be at most 30 characters");
-  if (typeof interfaceValue.developerName === "string" && interfaceValue.developerName.length > 80) report(path, "interface.developerName must be at most 80 characters");
-  if (typeof interfaceValue.shortDescription === "string" && interfaceValue.shortDescription.length > 30) report(path, "interface.shortDescription must be at most 30 characters");
-  if (typeof interfaceValue.longDescription === "string" && interfaceValue.longDescription.length > 4000) report(path, "interface.longDescription must be at most 4000 characters");
-  for (const key of ["displayName", "shortDescription", "longDescription", "developerName"]) {
-    if (typeof interfaceValue[key] === "string" && /[\r\n]/.test(interfaceValue[key])) report(path, `interface.${key} must not contain newlines`);
-  }
-
-  const urls = ["websiteURL", "privacyPolicyURL", "termsOfServiceURL", "supportURL"];
-  for (const key of urls) {
-    let valid = false;
-    try {
-      const url = new URL(interfaceValue[key]);
-      valid = URL_RE.test(interfaceValue[key]) && url.protocol === "https:" && url.hostname === "www.liquid.trade" && !url.username && !url.password;
-    } catch {}
-    if (typeof interfaceValue[key] === "string" && interfaceValue[key].length > 1024) report(path, `interface.${key} must be at most 1024 characters`);
-    if (!valid) report(path, `interface.${key} must be a public HTTPS URL on www.liquid.trade`);
-  }
-  if (interfaceValue.category !== "Finance") report(path, 'interface.category must be the supported "Finance" category');
-  for (const key of ["logo", "composerIcon"]) {
-    const icon = interfaceValue[key];
-    if (icon !== "./assets/logo.svg") {
-      report(path, `interface.${key} must reference the approved ./assets/logo.svg`);
-      continue;
-    }
+function parseJson(path, report) {
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    report(path, "cannot read valid JSON");
+    return null;
   }
 }
 
-function validateOpenAiManifest(manifest, report, path) {
-  if (!isRecord(manifest)) return;
-  if (!sameKeys(manifest, ["$schema", "name", "version", "description", "author", "homepage", "repository", "license", "keywords", "extensions"])) {
-    report(path, "manifest contains missing or unsupported fields (including apps/hooks or private submission data)");
+function manifestWithoutAllowedChanges(manifest) {
+  if (!isRecord(manifest)) return manifest;
+  const copy = structuredClone(manifest);
+  delete copy.version;
+  delete copy.mcpServers;
+  delete copy.skills;
+  return copy;
+}
+
+function validateSkill(path, folderName, pluginName, report) {
+  let source;
+  try {
+    source = readFileSync(path, "utf8");
+  } catch {
+    report(path, "skill file cannot be read");
+    return;
   }
-  if (manifest.name !== PACKAGE_NAME) report(path, `name must be "${PACKAGE_NAME}"`);
-  if (manifest.version !== PACKAGE_VERSION) report(path, `version must be "${PACKAGE_VERSION}"`);
-  if (!sameKeys(manifest.author, ["name", "email", "url"]) || manifest.author.name !== "Liquid" || manifest.author.email !== "support@liquid.trade") {
-    report(path, 'author must identify Liquid with support email "support@liquid.trade"');
+  const frontmatter = source.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)([\s\S]*)$/);
+  if (!frontmatter) {
+    report(path, "skill must start with valid YAML frontmatter and a body");
+    return;
   }
-  const extensions = manifest.extensions;
-  if (!isRecord(extensions) || !sameKeys(extensions, [OPENAI_NAMESPACE])) {
-    report(path, 'extensions must contain only "com.openai"');
+  let metadata;
+  try {
+    metadata = parseYaml(frontmatter[1]);
+  } catch {
+    report(path, "skill frontmatter must be valid YAML");
+    return;
   }
-  const openai = extensions?.[OPENAI_NAMESPACE];
-  if (!isRecord(openai) || !sameKeys(openai, ["interface", "publication"])) report(path, 'extensions.com.openai must contain only "interface" and "publication"');
-  else {
-    validateInterface(openai.interface, report, path);
-    const publication = openai.publication;
-    if (!isRecord(publication) || !sameKeys(publication, ["release_notes"]) || typeof publication.release_notes !== "string" || publication.release_notes.trim().length === 0) {
-      report(path, 'extensions.com.openai.publication must contain only a non-empty "release_notes" string');
-    } else if (publication.release_notes.length > 500) {
-      report(path, "publication.release_notes must be at most 500 characters");
-    }
+  if (!isRecord(metadata)) {
+    report(path, "skill frontmatter must be a YAML object");
+    return;
+  }
+  if (metadata.name !== folderName) report(path, "skill frontmatter name must match its directory");
+  if (typeof metadata.description !== "string" || !metadata.description.trim()) {
+    report(path, "skill frontmatter description must be non-empty");
+  } else if (/^(?:TODO|TBD|FIXME)(?:\s*[:\-].*)?$|^\[(?:TODO|TBD|FIXME)\]$/i.test(metadata.description.trim())) {
+    report(path, "skill frontmatter description must not be a scaffold placeholder");
+  }
+  if (typeof pluginName === "string" && pluginName.length + 1 + folderName.length > 64) report(path, "combined plugin and skill name must be at most 64 characters");
+  if (!frontmatter[2].trim()) report(path, "skill body must be non-empty");
+  if (/^\s*(?:TODO|TBD|FIXME)(?:\s*[:\-]|\s*$)|^\s*\[(?:TODO|TBD|FIXME)\]\s*$/im.test(source)) {
+    report(path, "skill body must not contain scaffold placeholders");
   }
 }
 
-function validateOpenAiMcp(mcp, report, path, schemaValidator) {
-  if (!isRecord(mcp) || !isRecord(mcp.mcpServers)) {
-    report(path, "MCP configuration must be an object with an object-valued mcpServers");
+function validatePng(path, rel, report) {
+  let bytes;
+  try {
+    bytes = readFileSync(path);
+  } catch {
+    report(path, "logo asset cannot be read");
     return;
   }
-  if (!sameKeys(mcp.mcpServers, ["Co-Invest"])) report(path, 'mcpServers must contain only "Co-Invest"');
-  const server = mcp.mcpServers["Co-Invest"];
-  if (!isRecord(server)) {
-    report(path, "Co-Invest MCP server must be an object");
+  if (sha256(bytes) !== LOGO_HASHES.get(rel)) report(path, "logo bytes do not match the published asset");
+  const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  if (bytes.length < 24 || !bytes.subarray(0, 8).equals(signature) || bytes.toString("ascii", 12, 16) !== "IHDR") {
+    report(path, "logo must be a valid PNG image");
     return;
   }
-  if (server.type !== "streamable-http" || server.url !== OPENAI_ENDPOINT) report(path, `Co-Invest must use streamable-http at ${OPENAI_ENDPOINT}`);
-  if (Object.hasOwn(server, "headers")) report(path, "headers are not allowed in the portable package");
-  const openaiExtension = server.extensions?.[OPENAI_NAMESPACE];
-  const knownAuth = {
-    auth: {
-      type: "oauth",
-      client: { mode: "dcr" },
-      baseScopes: ["read", "trade"],
-    },
-  };
-  if (!sameValue(openaiExtension, knownAuth) || !sameKeys(server.extensions, [OPENAI_NAMESPACE])) report(path, 'Co-Invest may contain only the known OpenAI OAuth DCR auth extension with read and trade scopes');
-  const schemaCandidate = structuredClone(mcp);
-  delete schemaCandidate.mcpServers["Co-Invest"].extensions;
-  if (!schemaValidator(schemaCandidate)) {
-    for (const issue of schemaValidator.errors ?? []) report(path, `${issue.instancePath || "(root)"} ${issue.message}`);
-  }
+  if (bytes.readUInt32BE(16) !== 256 || bytes.readUInt32BE(20) !== 256) report(path, "logo must be 256 by 256 pixels");
 }
 
 export function validateOpenaiPackage(repoRootInput) {
@@ -201,78 +177,79 @@ export function validateOpenaiPackage(repoRootInput) {
     report(packageDir, "OpenAI package directory does not exist");
     return { errors, packageCount: 0 };
   }
+
   const actualFiles = new Set();
   let hasSymlink = false;
-  walkPackage(packageDir, (path, abs, stat) => {
-    if (stat.isSymbolicLink()) {
-      report(abs, "symlinks are not allowed in the OpenAI package");
-      hasSymlink = true;
-    }
-    if (stat.isFile()) actualFiles.add(path);
-    else if (stat.isDirectory() && !EXPECTED_DIRS.has(path)) report(abs, "directory is outside the reviewed OpenAI package scope");
-    else if (!stat.isDirectory()) report(abs, "package entries must be regular files or directories");
-  });
-  for (const path of actualFiles) {
-    if (!EXPECTED_FILES.has(path)) report(join(packageDir, path), "file is outside the reviewed OpenAI package scope");
+  try {
+    walkPackage(packageDir, (path, abs, stat) => {
+      if (stat.isSymbolicLink()) {
+        report(abs, "symlinks are not allowed in the OpenAI package");
+        hasSymlink = true;
+      } else if (stat.isFile()) {
+        actualFiles.add(path);
+      } else if (stat.isDirectory()) {
+        if (!EXPECTED_DIRS.has(path)) report(abs, "directory is outside the reviewed OpenAI package scope");
+      } else {
+        report(abs, "package entries must be regular files or directories");
+      }
+    });
+  } catch {
+    report(packageDir, "package contents cannot be inspected");
+    return { errors, packageCount: 0 };
   }
-  for (const expected of EXPECTED_FILES) {
+  for (const path of actualFiles) {
+    if (!ALLOWED_FILES.has(path)) report(join(packageDir, path), "file is outside the reviewed OpenAI package scope");
+  }
+  for (const expected of REQUIRED_FILES) {
     if (!actualFiles.has(expected)) report(join(packageDir, expected), "required OpenAI package file is missing");
   }
-  if (hasSymlink) return { errors, packageCount: actualFiles.has("plugin.json") ? 1 : 0 };
+  const packageCount = actualFiles.has(".codex-plugin/plugin.json") ? 1 : 0;
+  if (hasSymlink) return { errors, packageCount };
 
-  const pluginSchemaPath = join(repoRoot, "schemas/agent-plugins/plugin.schema.json");
-  const mcpSchemaPath = join(repoRoot, "schemas/agent-plugins/mcp.schema.json");
-  const ajv = new Ajv2020({ allErrors: true, strict: false });
-  addFormats(ajv);
-  const validateManifestSchema = ajv.compile(JSON.parse(readFileSync(pluginSchemaPath, "utf8")));
-  const validateMcpSchema = ajv.compile(JSON.parse(readFileSync(mcpSchemaPath, "utf8")));
-
-  const pluginPath = join(packageDir, "plugin.json");
-  const manifest = readJson(pluginPath, report);
-  if (!validateManifestSchema(manifest)) {
-    for (const issue of validateManifestSchema.errors ?? []) report(pluginPath, `${issue.instancePath || "(root)"} ${issue.message}`);
+  const baselinePath = join(repoRoot, "schemas/openai/published-plugin-1.0.0.json");
+  let baseline;
+  try {
+    const bytes = readFileSync(baselinePath);
+    if (sha256(bytes) !== BASELINE_SHA256) report(baselinePath, "published manifest baseline bytes do not match the pinned export");
+    baseline = JSON.parse(bytes.toString("utf8"));
+  } catch {
+    report(baselinePath, "published manifest baseline cannot be read as valid JSON");
   }
-  validateOpenAiManifest(manifest, report, pluginPath);
-  const mcpPath = join(packageDir, "mcp.json");
-  const mcp = readJson(mcpPath, report);
-  validateOpenAiMcp(mcp, report, mcpPath, validateMcpSchema);
 
-  const manifestInterface = manifest?.extensions?.[OPENAI_NAMESPACE]?.interface;
-  const logoValue = manifestInterface?.logo;
-  const composerValue = manifestInterface?.composerIcon;
-  const logoPath = logoValue === "./assets/logo.svg" ? join(packageDir, logoValue) : "";
-  const composerPath = composerValue === "./assets/logo.svg" ? join(packageDir, composerValue) : "";
-  const readSvgSize = (path, property) => {
-    try {
-      if (lstatSync(path).size > 5 * 1024 * 1024) {
-        report(path, `${property} asset must be at most 5 MiB`);
-        return;
-      }
-      const svg = readFileSync(path, "utf8");
-      const match = svg.match(/<svg\b[^>]*\bwidth=["'](\d+(?:\.\d+)?)(?:px)?["'][^>]*\bheight=["'](\d+(?:\.\d+)?)(?:px)?["']/i);
-      if (!match) {
-        report(path, `${property} asset must declare explicit square dimensions`);
-        return;
-      }
-      if (Number(match[1]) !== Number(match[2]) || Number(match[1]) < 48) report(path, `${property} asset must be square and at least 48 pixels`);
-    } catch (error) {
-      report(path || packageDir, `${property} asset cannot be read (${error.message})`);
+  const manifestPath = join(packageDir, ".codex-plugin/plugin.json");
+  const manifest = parseJson(manifestPath, report);
+  if (!isRecord(manifest)) {
+    report(manifestPath, "manifest must be a JSON object");
+  } else {
+    if (manifest.version !== "1.0.2") report(manifestPath, 'version must be "1.0.2"');
+    if (manifest.mcpServers !== "./.mcp.json") report(manifestPath, 'mcpServers must be "./.mcp.json"');
+    if (manifest.skills !== "./skills/") report(manifestPath, 'skills must be "./skills/"');
+    if (isRecord(baseline) && !sameValue(manifestWithoutAllowedChanges(manifest), manifestWithoutAllowedChanges(baseline))) {
+      report(manifestPath, "manifest must match the published 1.0.0 export except for version, mcpServers and skills");
     }
-  };
-  if (logoPath) readSvgSize(logoPath, "logo");
-  if (composerPath && composerPath !== logoPath) readSvgSize(composerPath, "composerIcon");
+  }
 
+  const mcpPath = join(packageDir, ".mcp.json");
+  const mcp = parseJson(mcpPath, report);
+  const expectedMcp = { mcpServers: { "co-invest": { url: "https://coinvest-chat.liquid.trade" } } };
+  if (!sameValue(mcp, expectedMcp)) report(mcpPath, 'MCP configuration must contain only co-invest at "https://coinvest-chat.liquid.trade"');
+
+  for (const name of SKILL_NAMES) {
+    validateSkill(join(packageDir, `skills/${name}/SKILL.md`), name, manifest?.name, report);
+  }
+
+  for (const [path, hash] of LOGO_HASHES) {
+    if (actualFiles.has(path)) validatePng(join(packageDir, path), path, report);
+  }
   for (const path of actualFiles) {
-    if (!EXPECTED_FILES.has(path)) continue;
+    if (!/\.(?:md|txt|json)$/i.test(path)) continue;
     try {
-      const text = readFileSync(join(packageDir, path), "utf8");
-      if (CREDENTIAL_RE.test(text)) report(join(packageDir, path), "possible credential or private key detected");
-      if (PRIVATE_TEXT_RE.test(text)) report(join(packageDir, path), "machine-specific absolute path is not allowed in the portable package");
+      if (CREDENTIAL_RE.test(readFileSync(join(packageDir, path), "utf8"))) report(join(packageDir, path), "possible credential or private key detected");
     } catch {
-      report(join(packageDir, path), "cannot read package file");
+      report(join(packageDir, path), "package file cannot be read");
     }
   }
-  return { errors, packageCount: existsSync(pluginPath) ? 1 : 0 };
+  return { errors, packageCount };
 }
 
 const invokedPath = process.argv[1] ? resolve(process.argv[1]) : "";

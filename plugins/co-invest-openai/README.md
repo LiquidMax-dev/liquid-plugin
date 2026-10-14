@@ -1,20 +1,24 @@
 # Co-Invest
 
-Co-Invest connects to Liquid's Restricted MCP endpoint for market research, connected portfolio reads, trade suggestions with Liquid review links, and supported simulated account and position management. The connection requires sign-in with a Liquid account. OAuth requests `read` and `trade`; those normal account permissions are broader than the restrictions on this endpoint. The endpoint does not submit live trades.
+This directory contains the repository documentation and the files used to prepare the Co-Invest OpenAI plugin upload. The upload ZIP contains exactly these seven files:
 
-## Connect
+- `.codex-plugin/plugin.json`
+- `.mcp.json`
+- `assets/logo.png`
+- `assets/logo-dark.png`
+- `skills/coinvest-market-research/SKILL.md`
+- `skills/coinvest-portfolio-planning/SKILL.md`
+- `skills/coinvest-earn-vaults/SKILL.md`
 
-Install Co-Invest from the OpenAI plugin directory when it is available, then sign in to Liquid when prompted. Do not paste access tokens or other credentials into chat or plugin configuration.
-
-New trade suggestions include a Liquid link for review and confirmation there. Supported simulated account and position changes require the user's request or approval in chat. The connected service determines which operations are currently available.
+The plugin manifest preserves the published listing and prompt and points to the existing Co-Invest MCP service at `https://coinvest-chat.liquid.trade`. Authentication remains managed by the existing OpenAI portal connection. Skills guide research using tools exposed by the current connection; they do not add server capabilities. Available tools and descriptions come from MCP scans, not from this ZIP. See [tool reference on main](https://github.com/LiquidMax-dev/liquid-plugin/blob/main/docs/openai/tools.md) for the current public tool reference.
 
 ## Links
 
 - [Liquid Co-Invest](https://www.liquid.trade/coinvest)
 - [Liquid app](https://app.liquid.trade)
-- [Support](https://www.liquid.trade/support): support@liquid.trade
-- [Privacy policy](https://www.liquid.trade/privacy)
-- [Terms of service](https://www.liquid.trade/termsofservice)
+- [Support](https://www.liquid.trade/support)
+- [Privacy policy](https://liquid.trade/privacy)
+- [Terms of service](https://liquid.trade/termsofservice)
 - [Source repository](https://github.com/LiquidMax-dev/liquid-plugin)
 
 ## License

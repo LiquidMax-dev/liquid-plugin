@@ -1,4 +1,6 @@
-# OpenAI Co-Invest 1.0.2 package
+# Superseded provisional OpenAI Co-Invest 1.0.2 package
+
+**Superseded 2026-10-13 by [SPEC-openai-live-metadata-20261013](SPEC-openai-live-metadata-20261013.md).** The owner supplied the published ZIP. Its stable name, Codex manifest and two PNG logos replace this spec's provisional identity, portable manifest, SVG and new OAuth declaration. The original record below is preserved as historical context; its six-file archive must not be used for the existing listing update.
 
 Status: partial — local package implemented and verified; publisher access and release comparison pending.
 

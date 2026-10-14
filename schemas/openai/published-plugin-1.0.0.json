@@ -1,0 +1,25 @@
+{
+  "author": {
+    "name": "Liquid"
+  },
+  "description": "Co-Invest brings market research and portfolio planning into ChatGPT.\n\nExplore Liquid market data, news catalysts, positioning trends, portfolio context, and trading tools in one place. Model allocations, compare opportunities, and open Liquid, our brokerage, with trade ideas ready for your final review.\n\nDesigned for traders who want sharper context, faster planning, and a more connected way to navigate Liquid markets.",
+  "interface": {
+    "capabilities": [],
+    "category": "Finance",
+    "defaultPrompt": [
+      "NVDA last 24h"
+    ],
+    "developerName": "Liquid",
+    "displayName": "Co-Invest",
+    "logo": "./assets/logo.png",
+    "logoDark": "./assets/logo-dark.png",
+    "longDescription": "Co-Invest brings market research and portfolio planning into ChatGPT.\n\nExplore Liquid market data, news catalysts, positioning trends, portfolio context, and trading tools in one place. Model allocations, compare opportunities, and open Liquid, our brokerage, with trade ideas ready for your final review.\n\nDesigned for traders who want sharper context, faster planning, and a more connected way to navigate Liquid markets.",
+    "privacyPolicyURL": "https://liquid.trade/privacy",
+    "shortDescription": "Research global markets 24/7",
+    "supportURL": "https://liquid.trade/support",
+    "termsOfServiceURL": "https://liquid.trade/termsofservice",
+    "websiteURL": "https://coinvest.ai"
+  },
+  "name": "app-6a20e26c6ab8819191519e2811e03522",
+  "version": "1.0.0"
+}
