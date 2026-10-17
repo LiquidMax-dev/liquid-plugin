@@ -11,17 +11,17 @@ Change a market's leverage or add or remove isolated margin on a position.
 ## Core capabilities
 
 - Changes a market's leverage between 1x and 200x
-- Switches between isolated and cross margin
+- Updates leverage on a market with an open position while preserving its confirmed margin mode
 - Adds or removes isolated margin and shows the new liquidation price
 
 ## Just say to your agent
 
-- "Set BTC-PERP leverage to 5x, isolated."
+- "Set BTC-PERP leverage to 5x on my existing isolated position."
 - "Add 50 USD of margin to my ETH-PERP position."
 
 ## When to use
 
-The user explicitly asks to change leverage, margin mode or the margin on an open position.
+The user explicitly asks to change leverage on an open position or adjust its isolated margin. This skill cannot switch margin mode.
 
 ## Setup
 
@@ -46,13 +46,21 @@ client = LiquidClient(
 ## SDK call
 
 ```python
-client.update_leverage("BTC-PERP", leverage=5, is_cross=False)   # isolated by default
+positions = client.get_positions()
+pos = next((p for p in positions if p.symbol == "BTC-PERP"), None)
+if pos is None:
+    raise ValueError("No open BTC-PERP position; no leverage update was sent.")
+confirmed_is_cross = False  # ask the user to confirm the position's existing mode; positions do not report it
+client.update_leverage("BTC-PERP", leverage=5, is_cross=confirmed_is_cross)
+margin_pos = next((p for p in positions if p.symbol == "ETH-PERP"), None)
+if margin_pos is None:
+    raise ValueError("No open ETH-PERP position; no margin update was sent.")
 client.update_margin("ETH-PERP", amount=50.0)    # positive adds, negative removes
 ```
 
 ## Present the result
 
-Check `max_leverage` for the market with `get_markets` before raising leverage. `update_margin` adjusts isolated margin only; a negative amount removes margin and moves the liquidation price closer, so say so before confirming. Afterwards read positions and show the new `liquidation_price` when available. Report `leverage`, `is_cross` or `margin_adjusted` as returned.
+Before `update_leverage`, require an open position and ask the user to confirm its existing cross/isolated mode; positions do not expose that mode, and changing it is unsupported. For a new position, pass leverage to `place_order`. Check `max_leverage` with `get_markets` before raising leverage. `update_margin` adjusts isolated margin only; it also needs an open position. A negative amount removes margin and moves the liquidation price closer, so say so before confirming. Afterwards read positions and show the new `liquidation_price` when available. Report `leverage`, `is_cross` or `margin_adjusted` as returned.
 
 ## Before every call
 
@@ -60,7 +68,7 @@ Restate the order (symbol, side, USD size, leverage, order type, TP/SL) and get 
 
 ## If a call times out or fails on the network
 
-Never resend an order call after a timeout or a network error (`TimeoutError`, `ConnectionError`): the order may have been placed. Read open orders (`client.get_open_orders()`) and positions (`client.get_positions()`) first and report what actually happened.
+Never resend a mutation after a timeout, network error, or any 5xx response, including a transient error message that says to retry: the outcome may be unknown and the request may have taken effect. Reconcile with read-only calls such as `client.get_open_orders()` and `client.get_positions()` and report the evidence. If those reads do not settle the outcome, say it remains unknown and do not resend.
 
 ## Request cost
 

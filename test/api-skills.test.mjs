@@ -85,13 +85,14 @@ test("the scope in the setup matches the catalog", () => {
   }
 });
 
-test("READ+TRADE skills carry the confirmation rule and the no-resend rule", () => {
+test("READ+TRADE skills carry the confirmation rule and fail closed on unknown mutations", () => {
   assert.equal(tradeRows.length, 8);
   for (const row of tradeRows) {
     const { body } = load(row.slug);
     assert.match(body, /explicit confirmation before each call/, `${row.slug}: confirmation rule`);
-    assert.match(body, /Never resend an order call after a timeout or a network error/, `${row.slug}: no-resend rule`);
-    assert.match(body, /get_open_orders\(\)/, `${row.slug}: reads open orders`);
+    assert.match(body, /Never resend a mutation after a timeout, network error, or any 5xx response/, `${row.slug}: no-resend rule`);
+    assert.match(body, /read-only calls/ , `${row.slug}: reconciliation is read-only`);
+    assert.match(body, /do not resend/, `${row.slug}: unresolved outcomes stay blocked`);
   }
 });
 
@@ -101,33 +102,63 @@ test("READ skills do not call trade methods", () => {
   }
 });
 
-test("order skills state USD notional, and close-position states coin units", () => {
-  for (const slug of orderSlugs) {
-    assert.match(load(slug).body, /USD notional/, slug);
+test("orders convert notional into USD margin, and closes use rounded coin units", () => {
+  for (const slug of orderSlugs.filter((name) => name !== "liquid-close-position")) {
+    assert.match(load(slug).body, /USD margin/, slug);
+    assert.match(load(slug).body, /(?:resulting )?notional is `size \* leverage`/, slug);
+    assert.match(load(slug).body, /divide(?: it)? by (?:the )?confirmed leverage/, slug);
+    assert.match(load(slug).body, /Restate the order \(symbol, side, USD margin, USD notional, leverage, order type, TP\/SL\) and get the user's explicit confirmation/, slug);
   }
   const close = load("liquid-close-position").body;
   assert.match(close, /coin units/);
   assert.match(close, /never a USD amount/);
+  assert.match(close, /get_ticker\(pos\.symbol\)\.mark_price/);
+  assert.match(close, /ROUND_DOWN/);
+  assert.match(close, /close_size <= 0/);
+  assert.match(close, /estimated_usd/);
 });
 
-test("monitor skills state the cost, the 10 s floor and the Free allowance", () => {
-  for (const slug of ["liquid-price-alert", "liquid-position-guard"]) {
-    const { body } = load(slug);
-    assert.match(body, /under 10 s/, slug);
-    assert.match(body, /Retry-After/, slug);
-  }
-  const alert = load("liquid-price-alert").body;
+test("leverage and protection examples enforce their venue contracts", () => {
+  const leverage = load("liquid-leverage").body;
+  assert.match(leverage, /No open BTC-PERP position/);
+  assert.match(leverage, /confirmed_is_cross/);
+  assert.match(leverage, /cannot switch margin mode/i);
+  assert.match(leverage, /For a new position, pass leverage to `place_order`/);
+
+  const bracket = load("liquid-bracket-order").body;
+  assert.match(bracket, /order\.tp is None or order\.sl is None/);
+  assert.match(bracket, /position as live without that protection/);
+  const tpSl = load("liquid-tp-sl").body;
+  assert.match(tpSl, /result\.sl is None or result\.sl\.get\("status"\) != "set"/);
+  assert.match(tpSl, /every requested leg/);
+  assert.match(tpSl, /do not blindly resend/);
+});
+
+test("monitor skills state the cost, interval floors and the Free allowance", () => {
+  const alertBody = load("liquid-price-alert").body;
+  const guardBody = load("liquid-position-guard").body;
+  assert.match(alertBody, /under 10 s/);
+  assert.match(guardBody, /On Free, use at least 20 s/);
+  for (const body of [alertBody, guardBody]) assert.match(body, /Retry-After/);
+  const alert = alertBody;
   assert.match(alert, /1,440 (requests )?(per day|a day)/);
   assert.match(alert, /about 16 hours/);
   assert.doesNotMatch(alert, /250 x interval/);
   assert.match(alert, /remaining requests x interval/);
-  const guard = load("liquid-position-guard").body;
+  const guard = guardBody;
   assert.match(guard, /2,880/);
   assert.match(guard, /about 8 hours/);
   assert.match(guard, /if pos is None:[\s\S]*?client\.get_ticker\(pos\.symbol\)\.mark_price/);
-  assert.match(guard, /get\("status"\) != "set"[\s\S]*?last_stop = new_stop/);
+  assert.match(guard, /result\.sl\.get\("status"\) != "set"[\s\S]*?return new_stop/);
+  assert.match(guard, /last_stop = update_guard_stop\(client, pos, mark, last_stop, trigger_gain, trail, confirm_stop_update\)/);
   assert.match(guard, /never widens or removes a stop/);
   assert.match(guard, /confirm with the user/);
+  assert.match(guard, /gain < trigger_gain/);
+  assert.match(guard, /proposed < mark/);
+  assert.match(guard, /proposed > mark/);
+  assert.match(guard, /never under 10 s/);
+  assert.match(guard, /On Free, use at least 20 s/);
+  assert.match(guard, /Setup and all other skills and keys share/);
 });
 
 test("positions skill reads the mark from the ticker and states the per-position cost", () => {

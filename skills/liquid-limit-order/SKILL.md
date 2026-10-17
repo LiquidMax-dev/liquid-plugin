@@ -16,12 +16,12 @@ Rest a buy or sell at your price; it fills only if the market trades there.
 
 ## Just say to your agent
 
-- "Buy 300 USD of ETH-PERP at 2,400, 3x leverage, good til cancelled."
-- "Place a sell limit for 150 USD of SOL-PERP at 210, 2x."
+- "Use 100 USD margin for an ETH-PERP buy at 2,400 and 3x (300 USD notional), good til cancelled."
+- "Use 75 USD margin for a SOL-PERP sell at 210 and 2x (150 USD notional)."
 
 ## When to use
 
-The user explicitly asks for an order at a specific price and has given the symbol, side, USD size, leverage and limit price.
+The user explicitly asks for an order at a specific price and has given the symbol, side, USD margin or notional, leverage and limit price.
 
 ## Setup
 
@@ -46,12 +46,15 @@ client = LiquidClient(
 ## SDK call
 
 ```python
+usd_notional = 900.0  # the user's requested notional
+leverage = 3
+usd_margin = usd_notional / leverage
 order = client.place_order(
     symbol="ETH-PERP",
     side="buy",
     type="limit",
-    size=300.0,          # USD notional, not coin units
-    leverage=3,
+    size=usd_margin,     # USD margin; at 3x this opens about 900 USD notional
+    leverage=leverage,
     price=2400.0,        # required for limit orders
     time_in_force="gtc", # "gtc" rests; "ioc" cancels what does not fill at once
 )
@@ -59,15 +62,15 @@ order = client.place_order(
 
 ## Present the result
 
-Report `order_id`, `status` and the price. Explain that a resting limit order may never fill, and that an `ioc` order that does not fill immediately is cancelled. `place_order.size` is USD notional. Use `reduce_only=True` only when the user asks for it. To see or cancel the order later use `liquid-open-orders` and `liquid-cancel-orders`.
+`place_order.size` is USD margin; notional is `size * leverage`. If the user gives notional, divide by the confirmed leverage and restate both amounts before confirmation. Report `order_id`, `status` and the price. Explain that a resting limit order may never fill, and that an `ioc` order that does not fill immediately is cancelled. Use `reduce_only=True` only when the user asks for it. To see or cancel the order later use `liquid-open-orders` and `liquid-cancel-orders`.
 
 ## Before every call
 
-Restate the order (symbol, side, USD size, leverage, order type, TP/SL) and get the user's explicit confirmation before each call. Never invent a size, price, leverage or level; if the user did not give one, ask.
+Restate the order (symbol, side, USD margin, USD notional, leverage, order type, TP/SL) and get the user's explicit confirmation before each call. Never invent a size, price, leverage or level; if the user did not give one, ask.
 
 ## If a call times out or fails on the network
 
-Never resend an order call after a timeout or a network error (`TimeoutError`, `ConnectionError`): the order may have been placed. Read open orders (`client.get_open_orders()`) and positions (`client.get_positions()`) first and report what actually happened.
+Never resend a mutation after a timeout, network error, or any 5xx response, including a transient error message that says to retry: the outcome may be unknown and the request may have taken effect. Reconcile with read-only calls such as `client.get_open_orders()` and `client.get_positions()` and report the evidence. If those reads do not settle the outcome, say it remains unknown and do not resend.
 
 ## Request cost
 

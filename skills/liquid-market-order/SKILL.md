@@ -6,22 +6,22 @@ license: MIT
 
 # Market Order
 
-Open a long or short at market by USD size and leverage, after you confirm the order.
+Open a long or short at market by USD margin and leverage, after you confirm the order.
 
 ## Core capabilities
 
-- Opens a long or short at market by USD size and leverage
+- Opens a long or short at market by USD margin and leverage
 - Restates the full order and waits for your explicit confirmation
 - Reports the order status and never resends after a timeout
 
 ## Just say to your agent
 
-- "Long 200 USD of BTC at 5x, at market."
-- "Short 100 USD of ETH-PERP at 3x with a market order."
+- "Use 200 USD margin for a BTC-PERP long at 5x (1,000 USD notional), at market."
+- "Use 100 USD margin for an ETH-PERP short at 3x (300 USD notional), at market."
 
 ## When to use
 
-The user explicitly asks to open a long or short at market and has given the symbol, side, USD size and leverage.
+The user explicitly asks to open a long or short at market and has given the symbol, side, USD margin or notional, and leverage.
 
 ## Setup
 
@@ -46,27 +46,30 @@ client = LiquidClient(
 ## SDK call
 
 ```python
+usd_notional = 1000.0  # the user's requested notional
+leverage = 5
+usd_margin = usd_notional / leverage
 order = client.place_order(
     symbol="BTC-PERP",
     side="buy",          # "buy" = long, "sell" = short
     type="market",
-    size=200.0,          # USD notional, not coin units
-    leverage=5,          # 1 to 200
+    size=usd_margin,     # USD margin; at 5x this opens about 1,000 USD notional
+    leverage=leverage,   # 1 to 200
 )
 # order.order_id, order.status, order.size, order.price, order.leverage
 ```
 
 ## Present the result
 
-Report `order_id`, `status`, the size and the leverage exactly as returned. `place_order.size` is USD notional. `InsufficientBalanceError` and `OrderRejectedError` mean the order did not go through: show the message and stop. Never reduce the size or raise the leverage on your own to make an order fit.
+`place_order.size` is USD margin and the resulting notional is `size * leverage`. If the user gives notional, divide it by the confirmed leverage to get margin, then restate both amounts before confirmation. Report `order_id`, `status`, the size and leverage exactly as returned. `InsufficientBalanceError` and `OrderRejectedError` mean the order did not go through: show the message and stop. Never reduce the size or raise the leverage on your own to make an order fit.
 
 ## Before every call
 
-Restate the order (symbol, side, USD size, leverage, order type, TP/SL) and get the user's explicit confirmation before each call. Never invent a size, price, leverage or level; if the user did not give one, ask.
+Restate the order (symbol, side, USD margin, USD notional, leverage, order type, TP/SL) and get the user's explicit confirmation before each call. Never invent a size, price, leverage or level; if the user did not give one, ask.
 
 ## If a call times out or fails on the network
 
-Never resend an order call after a timeout or a network error (`TimeoutError`, `ConnectionError`): the order may have been placed. Read open orders (`client.get_open_orders()`) and positions (`client.get_positions()`) first and report what actually happened.
+Never resend a mutation after a timeout, network error, or any 5xx response, including a transient error message that says to retry: the outcome may be unknown and the request may have taken effect. Reconcile with read-only calls such as `client.get_open_orders()` and `client.get_positions()` and report the evidence. If those reads do not settle the outcome, say it remains unknown and do not resend.
 
 ## Request cost
 

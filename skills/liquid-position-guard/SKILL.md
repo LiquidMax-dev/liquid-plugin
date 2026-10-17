@@ -47,37 +47,81 @@ client = LiquidClient(
 
 ```python
 import time
+from math import isfinite
 last_stop = 104000.0                    # the stop the user says is set now
+trigger_gain = 0.02                     # explicitly confirmed; use 0.0 for a trail-only guard
+trail = 0.015                           # explicitly confirmed fraction
+
+def finite_number(value):
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and isfinite(value)
+
+def candidate_stop(pos, mark, previous_stop, trigger_gain, trail):
+    entry = pos.entry_price
+    if not finite_number(entry) or entry <= 0:
+        raise ValueError("A finite positive entry price is required.")
+    if not finite_number(mark) or mark <= 0:
+        raise ValueError("A finite positive current mark is required.")
+    if not finite_number(trigger_gain) or trigger_gain < 0:
+        raise ValueError("Trigger gain must be finite and nonnegative.")
+    if not finite_number(trail) or trail < 0 or trail >= 1:
+        raise ValueError("Trail distance must be finite and between 0 and 1.")
+    if not finite_number(previous_stop):
+        raise ValueError("A finite current stop is required.")
+    if pos.side == "long":
+        gain = mark / entry - 1
+        proposed = max(entry, mark * (1 - trail))
+        improves = proposed > previous_stop
+        correct_side = proposed < mark
+    elif pos.side == "short":
+        gain = 1 - mark / entry
+        proposed = min(entry, mark * (1 + trail))
+        improves = proposed < previous_stop
+        correct_side = proposed > mark
+    else:
+        raise ValueError(f"Unknown position side {pos.side!r}")
+    if gain < trigger_gain or not improves or not correct_side:
+        return None
+    return proposed
+
+def update_guard_stop(client, pos, mark, previous_stop, trigger_gain, trail, confirm):
+    new_stop = candidate_stop(pos, mark, previous_stop, trigger_gain, trail)
+    if new_stop is None:
+        return previous_stop
+    if not confirm(pos, new_stop):
+        raise RuntimeError("Stop update was not confirmed; the existing stop remains unchanged.")
+    result = client.set_tp_sl(pos.symbol, sl=new_stop)
+    if result.sl is None or result.sl.get("status") != "set":
+        raise RuntimeError(f"Stop update was not confirmed: {result.sl}")
+    return new_stop
+
+def confirm_stop_update(pos, new_stop):
+    answer = input(f"Confirm moving {pos.symbol} stop to {new_stop}? [y/N] ")
+    return answer.strip().lower() == "y"
+
 while True:
     pos = next((p for p in client.get_positions() if p.symbol == "BTC-PERP"), None)
     if pos is None:
         break                            # position closed: stop the guard
     mark = client.get_ticker(pos.symbol).mark_price
-    # long: gain = mark / entry - 1; new_stop = max(entry, mark * (1 - trail))
-    # short: gain = 1 - mark / entry; new_stop = min(entry, mark * (1 + trail))
-    # move only if new_stop is better than last_stop
-    # result = client.set_tp_sl("BTC-PERP", sl=new_stop)
-    # if result.sl is None or result.sl.get("status") != "set":
-    #     raise RuntimeError(f"Stop update was not confirmed: {result.sl}")
-    # last_stop = new_stop
+    last_stop = update_guard_stop(client, pos, mark, last_stop, trigger_gain, trail, confirm_stop_update)
     time.sleep(60)
 ```
 
 ## Present the result
 
-Before starting, confirm with the user the markets, the trigger gain, the trail distance, the interval (default 60 s, never under 10 s) and the current stop. The SDK does not return the stop currently set, so the guard keeps the last stop it set (or the one the user states) and only sends a new stop that is better for the position: higher for a long, lower for a short. It never widens or removes a stop and never touches the take-profit. State the cost: each check reads positions once and the ticker once per guarded market, so one market costs 2 requests per check, 2,880 per day at 60 s, and the Free 1,000 requests last about 8 hours. On the Free plan's 10 requests a minute, guard one market at an interval of 12 s or more. Stop when the position is gone, when the user says stop, or after 3 failed checks in a row; a check fails on a 5xx, a timeout or a connection error, and a 5xx is not charged. On `RATE_LIMIT_EXCEEDED` wait for `Retry-After`; on `API_QUOTA_EXCEEDED` or any other 4xx stop and tell the user. If a stop update is not confirmed (`sl.status` is not `set`) or raises, stop the guard and tell the user that the stop may still be at the old level.
+Before starting, confirm with the user the markets, the trigger gain, the trail distance, the interval (default 60 s, never under 10 s) and the current stop. A trail-only guard uses a confirmed trigger gain of zero. On Free, use at least 20 s for one guarded market when there is no other traffic: two reads and a possible stop write make up to 9 requests per 60-second window. Setup and all other skills and keys share the same 10-request window, so account for those requests and use a longer interval when needed. The SDK does not return the stop currently set, so the guard keeps the last stop it set (or the one the user states) and proposes a new stop only when the gain threshold is met, the stop improves (higher for a long, lower for a short), and it remains strictly below the current mark for a long or above it for a short. Validate entry and mark as finite positive numbers, and the trigger and trail as finite nonnegative fractions before calculating. Ask for explicit confirmation for every proposed stop update. It never widens or removes a stop and never touches the take-profit. State the cost: each check reads positions once and the ticker once per guarded market, and a moving stop adds one update, so one market costs 2 requests per check or 3 when it moves; at 60 s that is 2,880 reads per day, plus updates. The Free 1,000 requests last about 8 hours at 60 s before updates. Stop when the position is gone, when the user says stop, or after 3 failed checks in a row. On any mutation 5xx, timeout, or connection error, reconcile with read-only calls and never resend; if the outcome remains unknown, stop and report it. On `RATE_LIMIT_EXCEEDED` wait for `Retry-After`; on `API_QUOTA_EXCEEDED` or any other 4xx stop and tell the user. If a requested stop update is not confirmed (`sl.status` is not `set`) or raises, stop the guard and tell the user that the stop may still be at the old level.
 
 ## Before every call
 
-Restate the order (symbol, side, USD size, leverage, order type, TP/SL) and get the user's explicit confirmation before each call. Never invent a size, price, leverage or level; if the user did not give one, ask.
+Restate any order (symbol, side, USD margin, USD notional, leverage, order type, TP/SL) and get explicit confirmation before each call. For every guard stop proposal, state the market, side, current mark, proposed stop and reason, then obtain the user's explicit confirmation. Never invent a size, price, leverage or level; if the user did not give one, ask.
 
 ## If a call times out or fails on the network
 
-Never resend an order call after a timeout or a network error (`TimeoutError`, `ConnectionError`): the order may have been placed. Read open orders (`client.get_open_orders()`) and positions (`client.get_positions()`) first and report what actually happened.
+Never resend a mutation after a timeout, network error, or any 5xx response, including a transient error message that says to retry: the outcome may be unknown and the request may have taken effect. Reconcile with read-only calls such as `client.get_open_orders()` and `client.get_positions()` and report the evidence. If those reads do not settle the outcome, say it remains unknown and do not resend.
 
 ## Request cost
 
-One `get_positions` request per check, plus one `get_ticker` request per guarded market, plus one `set_tp_sl` request each time a stop moves. At the default 60 s interval one market costs at least 2,880 requests per day. Every request counts against the account's allowance, trades included; a request that fails with a 5xx is not charged. Free plan: 1,000 requests once, 10 a minute, three keys; paid plans raise the requests and the per-minute limit. All keys share the account's limits.
+One `get_positions` request per check, plus one `get_ticker` request per guarded market, plus one `set_tp_sl` request each time a stop moves. At the default 60 s interval one market costs 2,880 read requests per day plus stop updates. Every request counts against the account's allowance, trades included; a request that fails with a 5xx is not charged. On Free, use at least 20 s for one market with no other traffic (at most 9 requests per 60-second window if each check moves the stop); setup, other skills and all keys share the 10-request window, so use a longer interval when that traffic requires it. Free plan: 1,000 requests once, 10 a minute, three keys; paid plans raise the requests and the per-minute limit. All keys share the account's limits.
 
 - `429 RATE_LIMIT_EXCEEDED`: wait for `Retry-After` (`RateLimitError.retry_after`), then try again once.
 - `429 API_QUOTA_EXCEEDED`: stop and tell the user the allowance is used up.

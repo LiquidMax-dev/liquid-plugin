@@ -16,8 +16,8 @@ Enter a position with a take-profit and a stop-loss attached in one request.
 
 ## Just say to your agent
 
-- "Long 250 USD of BTC at 4x with take-profit at 112,000 and stop-loss at 104,000."
-- "Short 100 USD of ETH-PERP at 3x, TP 2,200, SL 2,550, at market."
+- "Use 250 USD margin for a BTC-PERP long at 4x (1,000 USD notional), TP 112,000 and SL 104,000."
+- "Use 100 USD margin for an ETH-PERP short at 3x (300 USD notional), TP 2,200 and SL 2,550, at market."
 
 ## When to use
 
@@ -50,25 +50,26 @@ order = client.place_order(
     symbol="BTC-PERP",
     side="buy",
     type="market",       # or "limit" with price=...
-    size=250.0,          # USD notional, not coin units
+    size=250.0,          # USD margin; at 4x this opens about 1,000 USD notional
     leverage=4,
     tp=112000.0,
     sl=104000.0,
 )
-# order.tp and order.sl echo the attached levels
+if order.tp is None or order.sl is None:
+    raise RuntimeError("The entry may be live without confirmed TP/SL protection; inspect read-only state and do not resend.")
 ```
 
 ## Present the result
 
-Before sending, check against the entry or current mark price: for a buy, `sl` below entry and `tp` above; for a sell, `sl` above entry and `tp` below. If a level is on the wrong side, tell the user and do not send. After the call, report `order_id`, `status`, `tp` and `sl` as returned. `place_order.size` is USD notional.
+Before sending, check against the entry or current mark price: for a buy, `sl` below entry and `tp` above; for a sell, `sl` above entry and `tp` below. If a level is on the wrong side, tell the user and do not send. `place_order.size` is USD margin; notional is `size * leverage`. If the user gives notional, divide it by the confirmed leverage and restate both amounts before confirmation. After the call, require `order.tp` and `order.sl` to be present for every requested leg. A missing leg means protection was not confirmed, even if the order itself was accepted: report the position as live without that protection, explain the result, and never blindly resend the entry or bracket mutation.
 
 ## Before every call
 
-Restate the order (symbol, side, USD size, leverage, order type, TP/SL) and get the user's explicit confirmation before each call. Never invent a size, price, leverage or level; if the user did not give one, ask.
+Restate the order (symbol, side, USD margin, USD notional, leverage, order type, TP/SL) and get the user's explicit confirmation before each call. Never invent a size, price, leverage or level; if the user did not give one, ask.
 
 ## If a call times out or fails on the network
 
-Never resend an order call after a timeout or a network error (`TimeoutError`, `ConnectionError`): the order may have been placed. Read open orders (`client.get_open_orders()`) and positions (`client.get_positions()`) first and report what actually happened.
+Never resend a mutation after a timeout, network error, or any 5xx response, including a transient error message that says to retry: the outcome may be unknown and the request may have taken effect. Reconcile with read-only calls such as `client.get_open_orders()` and `client.get_positions()` and report the evidence. If those reads do not settle the outcome, say it remains unknown and do not resend.
 
 ## Request cost
 
