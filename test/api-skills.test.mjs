@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import test from "node:test";
@@ -29,6 +30,69 @@ function section(body, heading) {
   const match = body.match(new RegExp(`^## ${heading}\\n\\n([\\s\\S]*?)(?=\\n## |(?![\\s\\S]))`, "m"));
   assert.ok(match, `missing section ${heading}`);
   return match[1].trim();
+}
+
+function pythonExample(slug, heading) {
+  const { body } = load(slug);
+  const text = section(body, heading);
+  const match = text.match(/```python\n([\s\S]*?)\n```/);
+  assert.ok(match, `${slug}: Python example in ${heading}`);
+  return match[1];
+}
+
+const runGuardHarness = String.raw`
+import ast, json, re, sys, types
+
+source = sys.stdin.read()
+case = json.loads(sys.argv[1])
+source = re.sub(r"(?m)^last_stop = [^#]+(?=#)", f"last_stop = {case['last_stop']}", source, count=1)
+source = re.sub(r"(?m)^trigger_gain = [^#]+(?=#)", f"trigger_gain = {case.get('trigger_gain', 0.0)}", source, count=1)
+tree = ast.parse(source)
+
+events = {"prompts": [], "mutations": [], "reads": 0, "tickers": 0, "sleep_stops": []}
+answers = iter(case["answers"])
+class Position:
+    symbol = "BTC-PERP"
+    side = case["side"]
+    entry_price = case["entry"]
+class Client:
+    def get_positions(self):
+        events["reads"] += 1
+        return [Position()] if events["reads"] == 1 else []
+    def get_ticker(self, symbol):
+        events["tickers"] += 1
+        return types.SimpleNamespace(mark_price=case["mark"])
+    def set_tp_sl(self, symbol, *, sl):
+        events["mutations"].append({"symbol": symbol, "sl": sl})
+        if case.get("outcome") == "timeout":
+            raise TimeoutError("synthetic unknown outcome")
+        return types.SimpleNamespace(sl={"status": case.get("status", "set")})
+class FakeTime:
+    @staticmethod
+    def sleep(_seconds):
+        events["sleep_stops"].append(namespace.get("last_stop"))
+fake_time = types.ModuleType("time")
+fake_time.sleep = FakeTime.sleep
+sys.modules["time"] = fake_time
+namespace = {
+    "client": Client(),
+    "input": lambda prompt="": (events["prompts"].append(prompt), next(answers))[1],
+}
+error = None
+try:
+    exec(compile(tree, "position-guard-example.py", "exec"), namespace)
+except Exception as exc:
+    error = f"{type(exc).__name__}: {exc}"
+print(json.dumps({**events, "error": error, "last_stop": namespace.get("last_stop")}))
+`;
+
+function runGuard(source, scenario) {
+  const result = spawnSync("python3", ["-c", runGuardHarness, JSON.stringify(scenario)], {
+    encoding: "utf8",
+    input: source,
+  });
+  assert.equal(result.status, 0, `Python guard harness failed: ${result.stderr || result.stdout}`);
+  return JSON.parse(result.stdout.trim());
 }
 
 const rows = catalog();
@@ -151,7 +215,8 @@ test("monitor skills state the cost, interval floors and the Free allowance", ()
   assert.match(guard, /if pos is None:[\s\S]*?client\.get_ticker\(pos\.symbol\)\.mark_price/);
   assert.match(guard, /result\.sl\.get\("status"\) != "set"[\s\S]*?return new_stop/);
   assert.match(guard, /last_stop = update_guard_stop\(client, pos, mark, last_stop, trigger_gain, trail, confirm_stop_update\)/);
-  assert.match(guard, /never widens or removes a stop/);
+  assert.match(guard, /tightens the stop relative to the explicitly confirmed current stop while the user maintains exclusive control/i);
+  assert.match(guard, /not an API lock or atomic protection/);
   assert.match(guard, /confirm with the user/);
   assert.match(guard, /gain < trigger_gain/);
   assert.match(guard, /proposed < mark/);
@@ -159,6 +224,84 @@ test("monitor skills state the cost, interval floors and the Free allowance", ()
   assert.match(guard, /never under 10 s/);
   assert.match(guard, /On Free, use at least 20 s/);
   assert.match(guard, /Setup and all other skills and keys share/);
+});
+
+test("Position Guard executes baseline and exclusivity checks before writing a stop", () => {
+  const source = pythonExample("liquid-position-guard", "SDK call");
+  const cases = [
+    {
+      side: "long", entry: 100000, mark: 111000, last_stop: 104000,
+      answers: ["y", "n"], expected_baseline: "104000", expected_proposal: 109335,
+    },
+    {
+      side: "short", entry: 110000, mark: 103000, last_stop: 110000,
+      answers: ["y", "n"], expected_baseline: "110000", expected_proposal: 104545,
+    },
+  ];
+
+  for (const scenario of cases) {
+    const result = runGuard(source, scenario);
+    assert.match(result.error, /Stop update was not confirmed/);
+    assert.equal(result.mutations.length, 0, `${scenario.side}: stale baseline refusal must not write`);
+    assert.match(result.prompts[0], new RegExp(scenario.expected_baseline));
+    assert.match(result.prompts[0], /no other guard is active/i);
+    assert.match(result.prompts[1], new RegExp(scenario.expected_baseline));
+    const promptedProposal = result.prompts[1].match(/move it to ([0-9.]+)/);
+    assert.ok(promptedProposal, `${scenario.side}: prompt must show the replacement stop`);
+    assert.ok(Math.abs(Number(promptedProposal[1]) - scenario.expected_proposal) < 0.001);
+    assert.match(result.prompts[1], /exclusive control/i);
+    assert.match(result.prompts[1], /If the stop changed or control is shared, answer no/i);
+  }
+
+  const noProposal = runGuard(source, {
+    side: "long", entry: 100000, mark: 100500, last_stop: 104000, answers: ["n"],
+  });
+  assert.match(noProposal.error, /startup was not confirmed/);
+  assert.equal(noProposal.prompts.length, 1, "startup must be confirmed even when this cycle has no proposal");
+  assert.match(noProposal.prompts[0], /104000/);
+  assert.match(noProposal.prompts[0], /no other guard is active/i);
+  assert.equal(noProposal.tickers, 0);
+  assert.equal(noProposal.mutations.length, 0);
+
+  const unknownBaseline = runGuard(source, {
+    side: "long", entry: 100000, mark: 100500, last_stop: "None", answers: ["y"],
+  });
+  assert.match(unknownBaseline.error, /numeric current stop is required/);
+  assert.equal(unknownBaseline.prompts.length, 0);
+  assert.equal(unknownBaseline.mutations.length, 0);
+});
+
+test("Position Guard advances its baseline only after a confirmed set result", () => {
+  const source = pythonExample("liquid-position-guard", "SDK call");
+  for (const scenario of [
+    { side: "long", entry: 100000, mark: 111000, last_stop: 104000, expected: 109335 },
+    { side: "short", entry: 110000, mark: 103000, last_stop: 110000, expected: 104545 },
+  ]) {
+    const result = runGuard(source, { ...scenario, answers: ["y", "y"] });
+    assert.equal(result.error, null);
+    assert.equal(result.mutations.length, 1);
+    assert.ok(Math.abs(result.mutations[0].sl - scenario.expected) < 0.001);
+    assert.equal(result.sleep_stops.length, 1);
+    assert.ok(Math.abs(result.sleep_stops[0] - scenario.expected) < 0.001);
+    assert.ok(Math.abs(result.last_stop - scenario.expected) < 0.001);
+  }
+
+  const rejected = runGuard(source, {
+    side: "long", entry: 100000, mark: 111000, last_stop: 104000,
+    answers: ["y", "y"], status: "rejected",
+  });
+  assert.match(rejected.error, /Stop update was not confirmed/);
+  assert.equal(rejected.mutations.length, 1);
+  assert.equal(rejected.last_stop, 104000);
+  assert.deepEqual(rejected.sleep_stops, []);
+
+  const unknown = runGuard(source, {
+    side: "long", entry: 100000, mark: 111000, last_stop: 104000,
+    answers: ["y", "y"], outcome: "timeout",
+  });
+  assert.match(unknown.error, /synthetic unknown outcome/);
+  assert.equal(unknown.mutations.length, 1, "unknown write outcomes stop without retrying");
+  assert.deepEqual(unknown.sleep_stops, []);
 });
 
 test("positions skill reads the mark from the ticker and states the per-position cost", () => {
