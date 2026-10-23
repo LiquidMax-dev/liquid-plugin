@@ -1,6 +1,6 @@
-# Co-Invest 1.0.2 — Muse form draft
+# Co-Invest 1.0.2 — Muse submission form
 
-Filled on 2026-10-12 for owner review. No submission was performed by the agent. This records public form fields. Private submitter identity and work-email values are intentionally omitted, alongside reviewer credentials, access tokens, account data and infrastructure identifiers.
+Filled on 2026-10-12 and submitted by the owner the same day. Muse then requested an Integration credentials step, filled on 2026-10-23 and submitted by the owner. This records public form fields. Private submitter identity and work-email values are intentionally omitted, alongside reviewer credentials, access tokens, account data and infrastructure identifiers.
 
 ## Overview
 
@@ -67,12 +67,19 @@ https://github.com/LiquidMax-dev/liquid-plugin/tree/main/plugins/co-invest-muse
 
 ### Access requirements
 
-Requires a Liquid account and OAuth sign-in. Uses the existing read and trade scopes; a read-only grant is not offered by the current consent flow. Paper-only execution is enforced by the server profile. Ages 18+; account eligibility, regional and sanctions restrictions in Liquid Terms apply. Market availability depends on supported venues/providers. Shared simulated balances, positions and history persist across Liquid connectors; this connector does not accept payments or move real funds. Live trading, funding, withdrawals and automation-authority changes are unavailable. Sensitive reset affects shared simulated state and requires explicit confirmation. Provider/service rate limits may return retryable errors; a contractual per-user numeric quota is not promised. Unknown write outcomes must be reconciled before retrying. Reviewer access can be supplied through the secure review process.
+Requires a Liquid account and OAuth sign-in. Uses the existing read and trade scopes; a read-only grant is not offered by the current consent flow. Paper-only execution is enforced by the server profile. Ages 18+; account eligibility, regional and sanctions restrictions in Liquid Terms apply. Market availability depends on supported venues/providers. Shared simulated balances, positions and history persist across Liquid connectors; this connector does not accept payments or move real funds. Live trading, funding, withdrawals and automation-authority changes are unavailable. Sensitive reset affects shared simulated state and requires explicit confirmation. Provider/service rate limits may return retryable errors; a contractual per-user numeric quota is not promised. Unknown write outcomes must be reconciled before retrying. Reviewer access is supplied as a test user in the Integration credentials step.
 
 ### Connection type and authentication
 
 Existing MCP; OAuth with PKCE.
 
+## Integration credentials
+
+- Authentication: OAuth with dynamic client registration (DCR) and PKCE. Muse registers its own client at `https://coinvest.liquid.trade/oauth/register`; its hosted callback `https://agent.meta.ai/api/hatch/oauth/callback` is on the server allowlist. No static client ID or secret is used, because registered clients expire after 30 days without use.
+- Scopes: `read`, `trade`. The server supports S256 PKCE only.
+- Environment: production, `https://coinvest.liquid.trade/mcp?profile=paper-only`.
+- Test user: one dedicated Privy test login with a fixed email code, shared with the liquid-mcp nightly e2e. Its email and code are entered only in the portal. The reviewer notes cover the sign-in steps and paper-only behavior. They also warn that the nightly run may reset the simulated account around 07:00 UTC, and that `reset_paper_account` restores a clean account.
+
 ## Final owner review
 
-The final screen asks the submitter to confirm authority to submit the connector and brand assets, acknowledge review/distribution terms, and agree to the Muse Connector Terms. The owner controls those confirmations and the final Submit for review action. The agent has not performed submission or accepted terms on the owner's behalf.
+The final screen asks the submitter to confirm authority to submit the connector and brand assets, acknowledge review/distribution terms, and agree to the Muse Connector Terms. The owner made those confirmations and submitted both steps. The agent did not submit or accept terms on the owner's behalf.
