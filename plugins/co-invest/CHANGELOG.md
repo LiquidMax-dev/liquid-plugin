@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Bundled six workflow skills next to `coinvest`: `coinvest-research`,
+  `coinvest-portfolio-review`, `coinvest-allocate`, `coinvest-trade`,
+  `coinvest-paper-trading`, and `coinvest-automation`. They are copies of the
+  repository's root skills.
+- Narrowed the `coinvest` skill's description to connection, discovery, and
+  safety rules, and added a list of the workflow skills. Its rules are
+  unchanged.
+- The manifest version stays 1.0.2 until the owner selects the next release
+  label. The MCP server is unchanged.
+
 ## 1.0.2
 
 - Align the package version with the owner-selected release label. The Co-Invest

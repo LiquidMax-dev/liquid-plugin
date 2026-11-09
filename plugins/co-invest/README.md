@@ -1,11 +1,23 @@
 # Co-Invest
 
-Co-Invest connects Cursor to Co-Invest Computer, Liquid's trading MCP server. Research markets, review your Liquid portfolio, and trade directly from chat: Computer returns text and link results, and its trading tools execute when called, with no confirmation cards or other widgets. The plugin bundles the `coinvest` skill, which guides the agent on when and how to use those tools.
+Co-Invest connects Cursor to Co-Invest Computer, Liquid's trading MCP server. Research markets, review your Liquid portfolio, and trade directly from chat: Computer returns text and link results, and its trading tools execute when called, with no confirmation cards or other widgets. The plugin bundles seven skills that guide the agent on when and how to use those tools: the `coinvest` connection and safety skill, plus one workflow skill each for research, portfolio review, allocation, trading, paper trading, and automation.
 
 ## What's included
 
 - The Co-Invest MCP server, connected to Co-Invest Computer.
-- The `coinvest` skill, bundled at `skills/coinvest/` in this plugin (a copy of the repository's root skill), which the agent reads for connection defaults, tool discovery, and trading rules.
+- Seven skills under `skills/` in this plugin, copies of the repository's root skills:
+
+  | Skill | What it does |
+  | --- | --- |
+  | `coinvest` | Connection defaults, tool discovery, and the safety rules every action follows. |
+  | `coinvest-research` | Market analysis, positioning, technicals, order books, charts, and news. Read-only. |
+  | `coinvest-portfolio-review` | Balance, positions, open orders, and recent position history. Read-only. |
+  | `coinvest-allocate` | A multi-position plan from `plan_portfolio`, placed only on your explicit yes. |
+  | `coinvest-trade` | A pre-trade checklist, then orders, TP/SL, closes, cancels, and leverage changes. |
+  | `coinvest-paper-trading` | Paper mode status, switching, and reset. |
+  | `coinvest-automation` | Bounded automated trading: a per-order notional cap and an expiry you set. |
+
+  Each workflow skill names trigger phrases, defaults, and what to do when Co-Invest isn't connected, following the plugin design guidance in [Agent Plugins for AWS](https://github.com/awslabs/agent-plugins/blob/main/docs/DESIGN_GUIDELINES.md).
 
 ## Install
 
@@ -17,9 +29,9 @@ Copy the `plugins/co-invest` folder to `~/.cursor/plugins/local/co-invest` and r
 
 ### Manual install
 
-Alternatively, add the configuration below to `~/.cursor/mcp.json` directly. This route skips the bundled skill.
+Alternatively, add the configuration below to `~/.cursor/mcp.json` directly. This route skips the bundled skills.
 
-If you install the plugin, don't also run `npx skills add LiquidMax-dev/liquid-plugin --skill coinvest -a cursor`: Cursor would then load two skills named `coinvest`.
+If you install the plugin, don't also run `npx skills add LiquidMax-dev/liquid-plugin -a cursor`, with or without `--skill`: Cursor would then load two copies of each installed skill (`coinvest`, `coinvest-research`, `coinvest-portfolio-review`, `coinvest-allocate`, `coinvest-trade`, `coinvest-paper-trading`, and `coinvest-automation`).
 
 Version 1.0.2 aligns the package version with the owner-selected release label. Co-Invest uses the Computer endpoint; earlier local installs connected to the Main endpoint and need to sign in again. See the [changelog](CHANGELOG.md).
 
@@ -43,7 +55,7 @@ Removing the plugin or connector stops your client from using Co-Invest.
 
 ## How trading works
 
-Co-Invest Computer's trading tools execute when the agent calls them; there's no separate confirmation card to approve first. The bundled skill sets the rules the agent follows instead: it acts only on an explicit request naming the asset, side, and size; it confirms your live or paper mode and account before making a change; it treats an accepted or resting order as different from a filled order; and it checks your orders or history before retrying anything uncertain.
+Co-Invest Computer's trading tools execute when the agent calls them; there's no separate confirmation card to approve first. The bundled skills set the rules the agent follows instead: it acts only on an explicit request naming the asset, side, and size; it confirms your live or paper mode and account before making a change; it treats an accepted or resting order as different from a filled order; and it checks your orders or history before retrying anything uncertain.
 
 For autonomous trading, the agent reads Computer's current automated-trading status and stays within the bounds you've set. Installing this plugin does not by itself grant any trading authority.
 
@@ -61,7 +73,7 @@ Computer groups its tools by what they do. The names below are examples: the con
 
 ## Network and data
 
-This plugin contains configuration (two manifests and `mcp.json`), the `coinvest` skill as markdown, a logo, and this documentation. It has no local code, hooks, or scripts.
+This plugin contains configuration (two manifests and `mcp.json`), seven skills as markdown, a logo, and this documentation. It has no local code, hooks, or scripts.
 
 Tool requests go to `https://coinvest-computer.liquid.trade/mcp`, which Liquid operates. Sign-in opens Liquid's account sign-in page in your browser. Liquid's privacy policy, linked below, describes how Liquid handles your data.
 
