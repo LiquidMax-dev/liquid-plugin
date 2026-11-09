@@ -1,6 +1,6 @@
 ---
 name: coinvest
-description: "Liquid Co-Invest is free AI trading you control: research markets, size positions, and trade crypto, stocks, commodities, and FX from your AI agent. Co-Invest Computer exposes Liquid as an MCP server, so Claude Code, Codex, Cursor, Hermes, or any MCP client can research markets, watch for entries, and execute trades within the limits you set. Use when the user wants Liquid market research, portfolio or account information, paper trading, or an explicitly requested trade. Uses the Co-Invest Computer OAuth MCP by default."
+description: "Liquid Co-Invest connection and safety rules: which MCP endpoint to use (Co-Invest Computer by default), how to discover its tools, and the authority boundaries every Co-Invest action follows. Use when setting up or choosing a Co-Invest connection, when no narrower coinvest-* workflow skill fits, or to route a Liquid request to research, portfolio review, allocation, trading, paper trading, or automation."
 license: MIT
 ---
 
@@ -55,6 +55,18 @@ installing it does not connect an MCP server, grant trading authority, or create
 an automation policy.
 
 Requires a host that supports remote HTTP MCP and Liquid OAuth.
+
+## Workflow skills
+
+This skill sets the connection and safety rules. For a specific task, use the
+matching workflow skill when it is installed; each repeats the rules it needs:
+
+- `coinvest-research`: market analysis, positioning, technicals, and news.
+- `coinvest-portfolio-review`: balance, positions, orders, and history.
+- `coinvest-allocate`: a multi-position plan from `plan_portfolio`.
+- `coinvest-trade`: orders, TP/SL, closes, cancels, and leverage.
+- `coinvest-paper-trading`: paper mode status, switching, and reset.
+- `coinvest-automation`: bounded automated-trading policies.
 
 Read the reference that matches the task before acting:
 
