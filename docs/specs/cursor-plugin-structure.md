@@ -88,7 +88,7 @@ with trades placed after an explicit approval in chat. It goes to 2.0.0.
   This plugin ships only `mcp.json`. Agent Plugins' `streamable-http` entry
   forbids extra keys, so Cursor's static OAuth `auth` block can't be used.
   Computer serves dynamic client registration metadata, so none is needed.
-- **D4, skill placement.** The root `skills/coinvest/` stays canonical:
+- **D4, skill placement.** **Amended 2026-11-09:** the plugin now bundles seven root skills, not one; see [SPEC-bundled-workflow-skills-20261109](SPEC-bundled-workflow-skills-20261109.md). The copy and symlink rules below apply to each. Original text: The root `skills/coinvest/` stays canonical:
   - `npx skills add LiquidMax-dev/liquid-plugin --skill coinvest` and skills.sh
     discover it there;
   - the skills CLI scans the `skills/` container and recurses only when it
@@ -310,7 +310,7 @@ plugins, <m> skills` and exits 0 when clean. It checks:
 
    Rules need a `description`. Agents and commands need a `name` and a
    `description`.
-6. Every entry in `SKILL_SYNC_MAP` (`{ "co-invest": ["coinvest"] }`) has
+6. Every entry in `SKILL_SYNC_MAP` (originally `{ "co-invest": ["coinvest"] }`; seven skills since 2026-11-09) has
    `plugins/<plugin>/skills/<name>/` present. Its relative file list and bytes
    equal those of `skills/<name>/`. A missing copy, a missing or extra file, or
    a byte difference is an error that names the path and tells the reader to

@@ -6,7 +6,7 @@ Liquid Co-Invest helps you research markets, size positions, and trade crypto, s
 
 Liquid Co-Invest is Liquid's multi-asset MCP, covering equities, commodities, indices, crypto, and other supported Liquid markets. The Cursor and Grok packages expose the workflows described below. The Muse package connects to the production paper-only endpoint, verified on 2026-10-12; its platform submission is in review after owner submission. The OpenAI package uses the Restricted endpoint for research, portfolio reads and review links for new trade suggestions; its existing simulated account and position management tools are also available. Its OAuth consent uses normal Liquid read and trade permissions. The owner-uploaded OpenAI 1.0.2 ZIP passed draft checks, but has not been submitted; 1.0.0 remains published. The current local portfolio-planning skill differs from that checked upload. All repository plugin packages use version **1.0.2**.
 
-The Cursor plugin connects to Co-Invest Computer, whose direct trading tools place orders you explicitly request in chat, with no widget confirmation cards, and it bundles the Co-Invest skill. The Grok plugin connects to liquid-mcp's `all` profile: it returns text results, and an order is placed only after you approve its exact terms in chat.
+The Cursor plugin connects to Co-Invest Computer, whose direct trading tools place orders you explicitly request in chat, with no widget confirmation cards, and it bundles seven Co-Invest skills: the `coinvest` connection and safety skill plus workflow skills for research, portfolio review, allocation, trading, paper trading, and automation. The Grok plugin connects to liquid-mcp's `all` profile: it returns text results, and an order is placed only after you approve its exact terms in chat.
 
 ## Plugins
 
@@ -28,11 +28,12 @@ liquid-plugin/
 ├── scripts/validate-plugins.mjs
 ├── scripts/sync-skills.mjs
 ├── skills/coinvest/
+├── skills/coinvest-*/          (six workflow skills)
 ├── plugins/co-invest/
 │   ├── .cursor-plugin/plugin.json
 │   ├── plugin.json
 │   ├── mcp.json
-│   ├── skills/coinvest/
+│   ├── skills/coinvest*/       (copies of the seven root skills)
 │   ├── CHANGELOG.md
 │   └── README.md
 ├── plugins/co-invest-grok/
@@ -78,9 +79,11 @@ The `co-invest` and `co-invest-grok` packages are Cursor Plugins with their own
 the Agent Plugins MCP schema. Cursor reads `.cursor-plugin/plugin.json`
 first. `co-invest-grok` also carries `.grok-plugin/plugin.json` for Grok
 Build, with the same name, version and description, and its `mcp.json` and
-`.mcp.json` are identical copies. `skills/coinvest` is the canonical skill, and
-`plugins/co-invest/skills/coinvest` is a copy kept identical by
-`npm run sync:skills`. Edit the root copy, then run that command.
+`.mcp.json` are identical copies. The root `skills/` directories are canonical, and
+`plugins/co-invest/skills/` holds copies of all seven, kept identical by
+`npm run sync:skills` (`SKILL_SYNC_MAP` in `scripts/sync-skills.mjs`). Edit the
+root copy, then run that command. A new root skill must be added to that map;
+`npm test` fails when the plugin does not bundle every root skill.
 
 `co-invest-muse` is a hosted connector submission package using the Agent
 Plugins 1.0.0 manifest and MCP configuration format. The paper-only endpoint is enabled and directly verified. Muse acceptance and
@@ -101,20 +104,26 @@ See the [OpenAI submission notes](docs/openai-submission-1.0.2.md) for the
 package workflow and official OpenAI references.
 
 <!-- coinvest-skill:start -->
-## Install the Co-Invest skill
+## Install the Co-Invest skills
 
-Install with:
+Install all seven skills with:
 
 ```text
-npx skills add LiquidMax-dev/liquid-plugin --skill coinvest
+npx skills add LiquidMax-dev/liquid-plugin
 ```
+
+or one skill with `--skill <name>`, for example
+`npx skills add LiquidMax-dev/liquid-plugin --skill coinvest`. The skills are
+`coinvest` (connection and safety rules), `coinvest-research`,
+`coinvest-portfolio-review`, `coinvest-allocate`, `coinvest-trade`,
+`coinvest-paper-trading`, and `coinvest-automation`.
 
 This installs portable guidance only. Configure the MCP connection separately in
 your host's native MCP settings and complete Liquid OAuth there. By default,
 [connect Computer](skills/coinvest/references/connect.md#default-connection)
 for reads and user-authorized direct trades. Use Main or Restricted only when
 explicitly selected; the skill installer does not register any server or grant
-trading access.
+trading access. The Cursor plugin already bundles these skills.
 <!-- coinvest-skill:end -->
 
 ## How this repository is maintained

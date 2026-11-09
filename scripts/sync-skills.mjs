@@ -3,7 +3,15 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 export const SKILL_SYNC_MAP = Object.freeze({
-  "co-invest": Object.freeze(["coinvest"]),
+  "co-invest": Object.freeze([
+    "coinvest",
+    "coinvest-allocate",
+    "coinvest-automation",
+    "coinvest-paper-trading",
+    "coinvest-portfolio-review",
+    "coinvest-research",
+    "coinvest-trade",
+  ]),
 });
 
 function toPosix(relPath) {
