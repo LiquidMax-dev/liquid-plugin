@@ -14,7 +14,7 @@ OpenAI now accepts plugin ZIP updates. The existing `plugins/co-invest` package 
 
 ## Solution
 
-Add `plugins/co-invest-openai` with a portable manifest, MCP configuration, the approved existing logo, LICENSE, README and changelog. Display name is always Co-Invest; author Liquid; support email support@liquid.trade; version 1.0.2. Use provisional machine name `co-invest`, with the release comparison explicitly required before upload. No new skills are invented or copied from Computer. No listing is created by the build.
+Add `plugins/co-invest-openai` with a portable manifest, MCP configuration, the approved existing logo, LICENSE, README and changelog. Display name is always Co-Invest; author Liquid; support email customer-support@liquid.trade; version 1.0.2. Use provisional machine name `co-invest`, with the release comparison explicitly required before upload. No new skills are invented or copied from Computer. No listing is created by the build.
 
 Listing copy covers market research, connected portfolio reads, Liquid review links for new trade suggestions, and the existing simulated account/position management tools. Do not call this endpoint read-only, paper-only, or claim it executes live trades. Normal Liquid OAuth permissions are broader than the endpoint restriction. Login is required. The public HTTPS support page is https://www.liquid.trade/support; policy URLs use the existing www.liquid.trade pages.
 
