@@ -33,7 +33,7 @@ Entered privately by the owner in the portal.
 
 ### Support email or URL
 
-support@liquid.trade
+customer-support@liquid.trade
 
 ### Privacy policy
 
@@ -45,7 +45,7 @@ https://www.liquid.trade/termsofservice
 
 ### Anything else?
 
-Version 1.0.2. Paper-only server profile with 45 tools. It cannot place live orders, fund accounts, withdraw funds, change automation authority, or switch to a live profile. Simulated account state is shared by wallet across Liquid connectors. Watchlist edits affect real shared preferences; referrals and public leaderboards are actual account/public data. Reset is a sensitive write that clears shared simulated state. OAuth uses the existing Liquid read/trade grant, which is broader than paper trading; the endpoint enforces the simulation boundary. The existing public privacy policy permits indefinite retention; we do not claim a connector-specific deletion SLA or compliance with guideline 4.2. Support, security and maintenance: support@liquid.trade. Published privacy/deletion contact: customer-support@liquid.trade.
+Version 1.0.2. Paper-only server profile with 45 tools. It cannot place live orders, fund accounts, withdraw funds, change automation authority, or switch to a live profile. Simulated account state is shared by wallet across Liquid connectors. Watchlist edits affect real shared preferences; referrals and public leaderboards are actual account/public data. Reset is a sensitive write that clears shared simulated state. OAuth uses the existing Liquid read/trade grant, which is broader than paper trading; the endpoint enforces the simulation boundary. The existing public privacy policy permits indefinite retention; we do not claim a connector-specific deletion SLA or compliance with guideline 4.2. Support, security and maintenance: customer-support@liquid.trade. Published privacy/deletion contact: customer-support@liquid.trade.
 
 ### Connector icon
 
