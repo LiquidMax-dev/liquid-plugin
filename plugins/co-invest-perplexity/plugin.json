@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "co-invest-perplexity",
+  "version": "1.0.2",
+  "description": "Research markets, review your Liquid portfolio, and place trades you approve in chat from Perplexity.",
+  "author": { "name": "Liquid", "url": "https://liquid.trade" },
+  "homepage": "https://liquid.trade/coinvest",
+  "repository": "https://github.com/LiquidMax-dev/liquid-plugin",
+  "license": "MIT",
+  "keywords": ["liquid", "Co-Invest", "trading", "portfolio", "markets", "perpetuals", "prediction markets", "mcp"]
+}
