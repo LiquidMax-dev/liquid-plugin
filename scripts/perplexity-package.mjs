@@ -2,11 +2,12 @@ import { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
 
-export const PERPLEXITY_ENDPOINT = "https://coinvest.liquid.trade/mcp";
+export const PERPLEXITY_ENDPOINT = "https://coinvest-computer.liquid.trade/mcp";
 const PACKAGE_NAME = "co-invest-perplexity";
+const PLUGIN_NAME = "co-invest";
 const PACKAGE_VERSION = "1.0.2";
-const PACKAGE_FILES = new Set(["CHANGELOG.md", "LICENSE", "README.md", "assets/logo.svg", "mcp.json", "plugin.json"]);
-const PACKAGE_DIRS = new Set(["assets"]);
+const BASE_FILES = ["CHANGELOG.md", "LICENSE", "README.md", "assets/logo.svg", "mcp.json", "plugin.json"];
+const SKILL = "skills/coinvest";
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -43,6 +44,15 @@ export function validatePerplexityPackage(repoRootInput) {
   const validateManifest = compile("plugin.schema.json");
   const validateMcp = compile("mcp.schema.json");
 
+  const PACKAGE_FILES = new Set(BASE_FILES);
+  const PACKAGE_DIRS = new Set(["assets", "skills", SKILL]);
+  const skillSource = join(repoRoot, SKILL);
+  if (existsSync(skillSource)) {
+    walkPackage(skillSource, (path, _abs, stat) => (stat.isDirectory() ? PACKAGE_DIRS : PACKAGE_FILES).add(`${SKILL}/${path}`));
+  } else {
+    errors.push(`${SKILL}: canonical skill is missing`);
+  }
+
   const actualFiles = new Set();
   walkPackage(dir, (path, abs, stat) => {
     if (stat.isSymbolicLink()) report(abs, "symlinks are not allowed in the connector package");
@@ -64,7 +74,7 @@ export function validatePerplexityPackage(repoRootInput) {
       if (!validateManifest(manifest)) {
         for (const issue of validateManifest.errors ?? []) report(manifestPath, `${issue.instancePath || "(root)"} ${issue.message}`);
       }
-      if (!isRecord(manifest) || manifest.name !== PACKAGE_NAME) report(manifestPath, `name must be "${PACKAGE_NAME}"`);
+      if (!isRecord(manifest) || manifest.name !== PLUGIN_NAME) report(manifestPath, `name must be "${PLUGIN_NAME}"`);
       if (!isRecord(manifest) || manifest.version !== PACKAGE_VERSION) report(manifestPath, `version must be "${PACKAGE_VERSION}"`);
     } catch (err) {
       report(manifestPath, `cannot parse Agent Plugins manifest (${err.message})`);

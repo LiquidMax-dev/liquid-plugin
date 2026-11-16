@@ -240,8 +240,11 @@ export function validateMusePackage(repoRootInput) {
       for (const issue of validateManifest.errors ?? []) errors.push(`${sourceRel(repoRoot, pkg.manifest)}: ${issue.instancePath || "(root)"} ${issue.message}`);
     }
     if (!isRecord(manifest) || typeof manifest.name !== "string") continue;
-    if (names.has(manifest.name)) errors.push(`${sourceRel(repoRoot, pkg.manifest)}: duplicate Agent Plugins identifier "${manifest.name}"`);
-    names.add(manifest.name);
+    // Perplexity shows the manifest name as the plugin title, so its package reuses "co-invest".
+    if (pkg.name !== "co-invest-perplexity") {
+      if (names.has(manifest.name)) errors.push(`${sourceRel(repoRoot, pkg.manifest)}: duplicate Agent Plugins identifier "${manifest.name}"`);
+      names.add(manifest.name);
+    }
     const mcpPath = join(pkg.dir, "mcp.json");
     if (existsSync(mcpPath)) {
       try {

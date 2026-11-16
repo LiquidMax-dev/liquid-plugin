@@ -4,6 +4,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 export const SKILL_SYNC_MAP = Object.freeze({
   "co-invest": Object.freeze(["coinvest"]),
+  "co-invest-perplexity": Object.freeze(["coinvest"]),
 });
 
 function toPosix(relPath) {

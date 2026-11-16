@@ -2,7 +2,7 @@
 
 Version **1.0.2**. Connector display name: **Co-Invest**.
 
-Co-Invest for Perplexity connects Perplexity to Liquid's standard Co-Invest MCP endpoint, `https://coinvest.liquid.trade/mcp`, so you can research markets, review your Liquid portfolio, and place trades you approve in chat. The package contains one connector configuration, a manifest and Liquid's logo. It bundles no skill and adds no local code.
+Co-Invest for Perplexity connects Perplexity to Liquid's Co-Invest Computer endpoint, `https://coinvest-computer.liquid.trade/mcp`, so you can research markets, review your Liquid portfolio, and place trades you approve in chat. Computer returns text results, which suits Perplexity because it does not render Co-Invest widgets. The package contains one connector configuration, the `coinvest` skill (a synced copy of `skills/coinvest`), a manifest and Liquid's logo. It adds no local code. Perplexity shows the plugin as `co-invest`.
 
 ## Install and connect
 
@@ -15,9 +15,9 @@ An order is placed only after you approve its exact terms in chat. Signing in gr
 
 ## Verification status
 
-Verified on 2026-11-16 on a Perplexity Free plan with this folder: GitHub import succeeded with no warnings, `plugin.json` gave the title and description, `mcp.json` gave one connector named Co-Invest, and no skill was added. Connect registered an OAuth client and reached the Liquid consent page with redirect `https://www.perplexity.ai/rest/connections/oauth_callback`, scope `read trade` and resource `https://coinvest.liquid.trade/mcp`.
+Verified on 2026-11-16 on a Perplexity Free plan with this folder: GitHub import succeeded with no warnings, `plugin.json` gave the title `co-invest` and the description, `mcp.json` gave one connector named Co-Invest, and the `coinvest` skill was imported. Connect registered an OAuth client and reached Liquid's authorization step with redirect `https://www.perplexity.ai/rest/connections/oauth_callback`, scope `read trade` and resource `https://coinvest-computer.liquid.trade/mcp`.
 
-Not yet verified: tool calls inside Perplexity, because consent was not approved.
+Not verified by the agent: tool calls inside Perplexity.
 
 Perplexity could not import from a branch whose name contains a slash (`tree/feat/...` returned "No public GitHub repository, branch, or directory found"). Use `main` or a branch name without a slash.
 

@@ -3,7 +3,7 @@
   "mcpServers": {
     "Co-Invest": {
       "type": "streamable-http",
-      "url": "https://coinvest.liquid.trade/mcp"
+      "url": "https://coinvest-computer.liquid.trade/mcp"
     }
   }
 }
