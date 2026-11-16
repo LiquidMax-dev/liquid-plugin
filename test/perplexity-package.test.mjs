@@ -14,6 +14,7 @@ function fixture(t) {
   mkdirSync(join(root, "schemas"), { recursive: true });
   cpSync(join(repoRoot, "plugins/co-invest-perplexity"), join(root, "plugins/co-invest-perplexity"), { recursive: true });
   cpSync(join(repoRoot, "schemas"), join(root, "schemas"), { recursive: true });
+  cpSync(join(repoRoot, "skills/coinvest"), join(root, "skills/coinvest"), { recursive: true });
   return { root, dir: join(root, "plugins/co-invest-perplexity") };
 }
 
@@ -37,9 +38,9 @@ test("rejects a profile query on the endpoint", (t) => {
   assert.match(errorsFor(root), /mcp\.json: mcpServers must contain only the streamable-http endpoint/);
 });
 
-test("rejects the Computer endpoint", (t) => {
+test("rejects the standard endpoint", (t) => {
   const { root, dir } = fixture(t);
-  rewriteJson(join(dir, "mcp.json"), (v) => { v.mcpServers["Co-Invest"].url = "https://coinvest-computer.liquid.trade/mcp"; });
+  rewriteJson(join(dir, "mcp.json"), (v) => { v.mcpServers["Co-Invest"].url = "https://coinvest.liquid.trade/mcp"; });
   assert.match(errorsFor(root), /mcp\.json: mcpServers must contain only the streamable-http endpoint/);
 });
 
@@ -59,7 +60,7 @@ test("rejects an added skill file", (t) => {
 test("rejects a changed name", (t) => {
   const { root, dir } = fixture(t);
   rewriteJson(join(dir, "plugin.json"), (v) => { v.name = "co-invest-other"; });
-  assert.match(errorsFor(root), /plugin\.json: name must be "co-invest-perplexity"/);
+  assert.match(errorsFor(root), /plugin\.json: name must be "co-invest"/);
 });
 
 test("rejects a changed version", (t) => {
@@ -72,4 +73,10 @@ test("rejects a missing package folder", (t) => {
   const { root, dir } = fixture(t);
   rmSync(dir, { recursive: true });
   assert.match(errorsFor(root), /plugins\/co-invest-perplexity: package folder is missing/);
+});
+
+test("rejects a missing bundled skill file", (t) => {
+  const { root, dir } = fixture(t);
+  rmSync(join(dir, "skills/coinvest/SKILL.md"));
+  assert.match(errorsFor(root), /skills\/coinvest\/SKILL\.md: required Perplexity package file is missing/);
 });

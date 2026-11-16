@@ -1,10 +1,10 @@
 # Co-Invest for Perplexity: connector proposal form draft
 
-Drafted 2026-11-16 for the standard endpoint `https://coinvest.liquid.trade/mcp`. Owner answers were added the same day. The owner reviews and submits; nothing here has been submitted.
+Drafted 2026-11-16, first for the standard endpoint and changed the same day to the Co-Invest Computer endpoint `https://coinvest-computer.liquid.trade/mcp` (owner decision: Perplexity does not render Co-Invest widgets, and Computer returns text results). Owner answers were added the same day. The owner reviews and submits; nothing here has been submitted.
 
 Conventions: `OWNER: ...` marks a fact only the owner knows. `UNVERIFIED:` marks a statement carried over from the Muse paper-only material (or from a Perplexity measurement on a different resource) that was not rechecked for the standard endpoint.
 
-Scope note: the Muse documents describe the `paper-only` profile. This proposal is for the standard endpoint without a `profile` parameter. According to liquid-mcp `README.md` (section "Deployment trading mode") and `generated/all.json`, an unprofiled connection to Main gets the `all` profile (58 ordinary tools, plus seven managed-copy tools that an ordinary client cannot use). It can place live orders after the user approves the exact terms in chat.
+Scope note: the Muse documents describe the `paper-only` profile on the standard host. This proposal is for Co-Invest Computer, the endpoint the Cursor package and the bundled `coinvest` skill use. It can place live orders after the user approves the exact terms in chat. Tool names below come from `skills/coinvest/references/tools.md`; the live Computer catalog was not listed for this draft, so they are starting points, not a full inventory.
 
 ## Company
 
@@ -63,8 +63,8 @@ Left blank (optional).
 ### Top user workflows
 
 1. Goal: research a market before trading. Data or action: the assistant calls `analyze_market` and `get_news` for a symbol. Outcome: the user gets price, funding, open interest, positioning data and recent headlines in one answer. Source: `generated/all.json` (`analyze_market`, `get_news`).
-2. Goal: review the user's own account. Data or action: `get_portfolio`, `view_open_orders`, `get_transaction_history`. Outcome: balances, positions, open orders and recent activity in one summary. Source: `generated/all.json`.
-3. Goal: place or close a trade with control. Data or action: `suggest_trade` or `close_position` returns a preview with exact terms; the user approves in chat; `execute_order` or `close_position` with `confirmed=true` places it. Outcome: an order or close the user approved, with a result to verify against open orders and positions. Source: `generated/all.json` (`execute_order`, `close_position` descriptions).
+2. Goal: review the user's own account. Data or action: `get_portfolio` and `view_open_orders`. Outcome: balances, positions, open orders and recent activity in one summary. Source: `generated/all.json`.
+3. Goal: place or close a trade with control. Data or action: the assistant states the exact terms; the user approves in chat; `execute_order` or `close_position` with `confirmed=true` places it. Outcome: an order or close the user approved, with a result to verify against open orders and positions. Source: `generated/all.json` (`execute_order`, `close_position` descriptions).
 
 ### Example queries
 
@@ -86,7 +86,7 @@ Available globally, except regions restricted by the Liquid Terms of Service and
 
 ### Production MCP endpoint
 
-https://coinvest.liquid.trade/mcp
+https://coinvest-computer.liquid.trade/mcp
 
 ### MCP implementation documentation link
 
@@ -100,7 +100,7 @@ Source: liquid-mcp `src/auth/oauth.ts` (authorization server metadata: `code_cha
 
 ### OAuth client registration method
 
-Dynamic Client Registration (DCR) at `https://coinvest.liquid.trade/oauth/register`. No static client ID or secret is issued. Source: `src/auth/oauth.ts` (`registration_endpoint: ${base}/oauth/register`). UNVERIFIED: the Muse form says registered clients expire after 30 days without use; that was not rechecked.
+Dynamic Client Registration (DCR) at `https://coinvest-computer.liquid.trade/oauth/register` (published authorization-server metadata, read 2026-11-16). No static client ID or secret is issued.
 
 ### Service status page
 
@@ -120,7 +120,7 @@ Universal. A single endpoint serves all users; the user is identified by the OAu
 
 ### Tenant endpoint discovery or URL pattern
 
-Not applicable. There are no per-tenant URLs. The standard endpoint takes an optional `profile` query parameter (for example `?profile=paper-only`), which is not needed for this proposal.
+Not applicable. There are no per-tenant URLs; the user is identified by the OAuth token.
 
 ### Rate limits, timeouts, and retry guidance
 
@@ -138,7 +138,7 @@ https://github.com/LiquidMax-dev/liquid-plugin/tree/main/plugins/co-invest-perpl
 
 ### Does the Perplexity callback URL need to be allowlisted
 
-No. On 2026-11-16 dynamic registration at `https://coinvest.liquid.trade` accepted `https://www.perplexity.ai/rest/connections/oauth_callback` for resource `https://coinvest.liquid.trade/mcp` and the flow reached the Liquid consent page.
+No. On 2026-11-16 dynamic registration accepted `https://www.perplexity.ai/rest/connections/oauth_callback` for resource `https://coinvest-computer.liquid.trade/mcp` and the flow reached the Liquid consent page.
 
 ### Required scopes and rationale
 
@@ -160,25 +160,14 @@ None beyond the user's OAuth sign-in and consent.
 
 ### Key tools and capabilities
 
-Names, purposes and annotations come from liquid-mcp `generated/all.json` (`origin/main`). Scope shows what the connector needs: `read` for reads and proposals, `trade` for anything that places, closes or cancels an order.
-UNVERIFIED: the per-tool scope split follows the Muse paper-only description ("`read` permits market/account reads and proposals, `trade` is required for account changes") and was not checked against the `all` profile.
+Names from `skills/coinvest/references/tools.md`; use a name only when the connected server exposes it.
 
-| Tool                       | Purpose                                                                             | Scope | Read or write |
-| -------------------------- | ----------------------------------------------------------------------------------- | ----- | ------------- |
-| `analyze_market`           | Real-time price, funding, open interest and positioning for one asset               | read  | read          |
-| `search_markets`           | Search and browse the supported market lineup                                       | read  | read          |
-| `get_news`                 | Recent market headlines with source links                                           | read  | read          |
-| `get_technical_indicators` | RSI, MACD, moving averages and similar indicators for a market                      | read  | read          |
-| `get_portfolio`            | Current balances, account mode, positions and TP/SL coverage                        | read  | read          |
-| `view_open_orders`         | Open resting orders and position-level trigger orders                               | read  | read          |
-| `get_transaction_history`  | Newest-first timeline of fills, deposits and other account activity                 | read  | read          |
-| `suggest_trade`            | Prepare a data-backed trade proposal for review; it never places an order           | read  | read          |
-| `execute_order`            | Place one previously reviewed order after the user confirms its exact terms in chat | trade | write         |
-| `close_position`           | Preview a close, then close the approved quantity after confirmation                | trade | write         |
-| `execute_prediction_order` | Preview, then place a prediction-market order after confirmation                    | trade | write         |
-| `cancel_order`             | Cancel an open order by its order ID                                                | trade | write         |
+- Research (scope `read`, read): `analyze_market`, `analyze_markets_batch`, `get_positioning_pulse`, `search_markets`, `get_news`, `get_technical_indicators`, `show_market_overview`, `show_orderbook`, `show_chart`, `plan_portfolio`.
+- Account (scope `read`, read): `get_portfolio`, `view_open_orders`, `paper_trading_status`, `automated_trading_status`.
+- Trading (scope `trade`, write; each needs the user's approval of exact terms in chat): `execute_order`, `execute_orders_batch`, `execute_tpsl`, `close_position`, `cancel_order`, `update_leverage`.
+- Setup and mode (scope `trade`, write): `enable_trading`, `enable_paper_trading`, `disable_paper_trading`, `reset_paper_account`, `enable_automated_trading`, `disable_automated_trading`.
 
-The default profile has more tools than these 12. Others in the same contract move funds or change account settings: `generate_deposit_address`, `deposit_earn`, `withdraw_earn` and `edit_watchlist` (`generated/all.json`). `enable_automated_trading` and `disable_automated_trading` save or clear the automation policy record; liquid-mcp `README.md` says they do not authorize or alter order execution. Owner decision, 2026-11-16: keep the standard endpoint and disclose the full catalog (58 ordinary tools per liquid-mcp `README.md`).
+Owner decision, 2026-11-16: disclose the full catalog. A full tool list is available on request.
 
 ### Data categories accessed
 
@@ -212,7 +201,7 @@ None.
 
 ### Sandbox or test environment
 
-Yes. The `paper-only` profile at `https://coinvest.liquid.trade/mcp?profile=paper-only` serves a 45-tool catalog whose trading actions use a paper simulator from the first call, with simulated funds. On the standard endpoint, `enable_paper_trading` switches the wallet to the simulator, and `paper_trading_status` reports the mode. Source: liquid-mcp `README.md` ("Deployment trading mode", "Paper trading mode"); `generated/all.json`.
+Yes. Paper trading on the same endpoint: `enable_paper_trading` switches the wallet to a simulator with simulated funds, `paper_trading_status` reports the mode, and `reset_paper_account` restores a clean simulated account.
 
 ### Synthetic data and test roles available
 
@@ -220,15 +209,16 @@ The paper simulator provides a simulated account with $10k of simulated funds; `
 
 ### Secure test-access method
 
-A dedicated Liquid test account (a Privy test login with a fixed 6-digit code) is available for reviewers. The form names the account; the code is shared privately on request through support@liquid.trade. No credential belongs in this repository or in the form.
+A dedicated Liquid test account (a Privy test login with a fixed 6-digit code) is available for reviewers. By the owner's direction the live form names the account and gives the code; neither is kept in this repository.
 
 ### Known limitations or differences from production
 
-- Paper mode is shared by wallet within the connector; the paper-only profile cannot be switched to live.
+- Paper mode is shared by wallet within the connector.
 - Leaderboards are real public rankings, not paper-account performance.
 - `get_position_history` covers a bounded recent-fill window (up to 2,000 live fills or 100 paper fills), not all-time history (liquid-mcp `README.md`).
 - Tool calls from inside Perplexity are unverified. On 2026-11-16 this connector reached the Liquid consent page from Perplexity; consent was not approved and no tool call was made.
 - OAuth grants the normal Liquid `read` and `trade` permission, which is broader than any one workflow.
+- Results are text; Co-Invest widgets are not rendered in Perplexity.
 
 ### Answer-quality evaluation materials available
 
@@ -308,7 +298,7 @@ Yes (owner's direction, 2026-11-16). The live form did not show the Catalog list
 
 ### Additional context
 
-- Orders on the standard endpoint can be live. The approval gate is the exact-terms preview and chat confirmation, not a separate server token.
+- Orders can be live. The approval gate is the exact-terms preview and chat confirmation, not a separate server token.
 - Perplexity Computer is an autonomous agent. Users should be told that the connector can place live orders once they approve terms.
 - Perplexity's GitHub import of `plugins/co-invest-perplexity` was verified on 2026-11-16; tool calls inside Perplexity are not yet verified.
 - Support: support@liquid.trade. Privacy and deletion: customer-support@liquid.trade.

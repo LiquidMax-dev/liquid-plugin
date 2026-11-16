@@ -1,6 +1,17 @@
 # SPEC-perplexity-plugin-20261116
 
-Status: implemented. Verification 1 and 2 passed on 2026-11-16 (validate OK, 47 of 47 tests; Perplexity import with 0 warnings, one connector, no skill; consent page reached for resource `https://coinvest.liquid.trade/mcp`). Step 2 used a slash-free copy of the branch because Perplexity rejects `tree/feat/...` URLs. Not done: tool calls inside Perplexity (step 3) and the owner's form submission.
+Status: implemented; changed 2026-11-16 after the first release (see "Changes after first merge"). Gates: validate OK, 48 of 48 tests. Perplexity import of the changed package: 0 warnings, title `co-invest`, one connector, the `coinvest` skill, authorization step reached for resource `https://coinvest-computer.liquid.trade/mcp`. Not done by the agent: tool calls inside Perplexity, the owner's form submission.
+
+## Changes after first merge (owner decisions, 2026-11-16)
+
+These supersede the matching statements below, which describe the first merged version (#16).
+
+- **Endpoint:** Co-Invest Computer, `https://coinvest-computer.liquid.trade/mcp`, replaces the standard endpoint. Reason: Perplexity does not render Co-Invest widgets; Computer returns text.
+- **Skill:** the package bundles `skills/coinvest` through `scripts/sync-skills.mjs` (`SKILL_SYNC_MAP`), like the Cursor package. The validator allows exactly the canonical skill's files under `skills/coinvest/`.
+- **Name:** `co-invest` (was `co-invest-perplexity`); see the `plugin.json` note below.
+- **Description:** expanded; it is the text Perplexity shows under the title.
+- **Publisher line:** Perplexity shows "by LiquidMax-dev", the GitHub organization. `author`, `publisher` and `owner` keys in `plugin.json` do not change it (measured).
+- **Form:** the draft and the live form name the Computer endpoint; the live form carries the reviewer test login by the owner's direction.
 
 ## TLDR
 
@@ -28,9 +39,9 @@ New folder `plugins/co-invest-perplexity/`:
   ```json
   {
     "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-    "name": "co-invest-perplexity",
+    "name": "co-invest",
     "version": "1.0.2",
-    "description": "Research markets, review your Liquid portfolio, and place trades you approve in chat from Perplexity.",
+    "description": "Co-Invest connects Perplexity to your Liquid account. Research crypto, equities, commodities, indices and prediction markets with live prices, funding, positioning and news. Review your portfolio, open orders and history. Ask for a trade and Co-Invest previews the exact terms first; orders are placed only after you approve them in chat. Includes a paper-trading mode with simulated funds.",
     "author": { "name": "Liquid", "url": "https://liquid.trade" },
     "homepage": "https://liquid.trade/coinvest",
     "repository": "https://github.com/LiquidMax-dev/liquid-plugin",
@@ -38,17 +49,17 @@ New folder `plugins/co-invest-perplexity/`:
     "keywords": ["liquid", "Co-Invest", "trading", "portfolio", "markets", "perpetuals", "prediction markets", "mcp"]
   }
   ```
-  `name` must be unique: `validateMusePackage` already discovers every `plugins/*` folder with a root `plugin.json` (except `co-invest-openai`), validates it against the Agent Plugins schemas and rejects a repeated name. Perplexity shows the name as the plugin title. The existing "Agent Plugins packages" count therefore goes from 2 to 3; that is intended.
+  `name` is `co-invest` (owner decision, 2026-11-16): Perplexity shows it as the plugin title, accepts only lowercase letters, numbers and hyphens, and ignores `display_name`, `displayName` and `title` keys (measured). `validateMusePackage` discovers every `plugins/*` folder with a root `plugin.json` and rejects a repeated name; this package is exempt from that one check because the Cursor package also uses `co-invest`. The "Agent Plugins packages" count is 3.
 - `mcp.json`: one server `"Co-Invest"`, `"type": "streamable-http"`, `"url": "https://coinvest.liquid.trade/mcp"`, with the same `$schema` line as `plugins/co-invest/mcp.json`.
 - `LICENSE` and `assets/logo.svg`: byte copies of the `plugins/co-invest-muse` files.
 - `CHANGELOG.md`: `## 1.0.2` with one bullet: initial Perplexity package for the standard Co-Invest endpoint; GitHub import path; marketplace proposal drafted, not submitted.
 - `README.md`: what it is; install steps (Perplexity > Plugins > Add custom > Import plugin from GitHub > paste `https://github.com/LiquidMax-dev/liquid-plugin/tree/main/plugins/co-invest-perplexity` > open the plugin > Connect > sign in to Liquid); that orders need the user's approval of exact terms in chat; that OAuth grants the normal Liquid `read` and `trade` permission; that no skill is bundled; the import and consent facts verified for this folder on 2026-11-16, and that tool calls inside Perplexity are not yet verified; links as in the Muse README.
 - No `skills/`, no `.cursor-plugin/`, no other files.
 
-`scripts/perplexity-package.mjs` exports `PERPLEXITY_ENDPOINT` and `validatePerplexityPackage(repoRoot)` returning `{ errors: string[], packageCount }` where each error is `"<repo-relative path>: <message>"`, the shape `validateMusePackage` returns and `validate-plugins.mjs` splits on `": "`. Do not edit `scripts/muse-paper-only.mjs`. No secret or path scanning. Checks:
+`scripts/perplexity-package.mjs` exports `PERPLEXITY_ENDPOINT` and `validatePerplexityPackage(repoRoot)` returning `{ errors: string[], packageCount }` where each error is `"<repo-relative path>: <message>"`, the shape `validateMusePackage` returns and `validate-plugins.mjs` splits on `": "`. `scripts/muse-paper-only.mjs` changes only by the duplicate-name exemption above. No secret or path scanning. Checks:
 
 - the folder's file set is exactly `CHANGELOG.md`, `LICENSE`, `README.md`, `assets/logo.svg`, `mcp.json`, `plugin.json`, with no symlinks and no other directories;
-- `plugin.json` validates against `schemas/agent-plugins/plugin.schema.json`, `name === "co-invest-perplexity"`, `version === "1.0.2"`;
+- `plugin.json` validates against `schemas/agent-plugins/plugin.schema.json`, `name === "co-invest"`, `version === "1.0.2"`;
 - `mcp.json` validates against `schemas/agent-plugins/mcp.schema.json` and `mcpServers` deep-equals `{ "Co-Invest": { "type": "streamable-http", "url": PERPLEXITY_ENDPOINT } }` (so extra servers, headers or another URL fail);
 - `CHANGELOG.md` has a `## 1.0.2` heading.
 
