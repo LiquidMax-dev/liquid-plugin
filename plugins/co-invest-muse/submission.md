@@ -53,7 +53,7 @@ Liquid's [public privacy policy](https://www.liquid.trade/privacy) says informat
 - **Deletion process:** The public policy directs deletion requests to `customer-support@liquid.trade`. Ending a transport session, revoking access, or deactivating an account is not evidence that stored tool history and backups have been erased. Connector-specific deletion coverage and handling times are **Owner confirmation required**.
 - **Data residency and cross-border processing:** The MCP deployment uses US, European and Singapore regions. This does not establish residency for simulator data, database/object storage, backups or external providers; the complete mapping remains **Owner confirmation required**.
 - **Privacy and deletion contact:** `customer-support@liquid.trade`, listed on the public privacy and terms pages.
-- **Security intake:** `support@liquid.trade`, the support address shown in Liquid's existing product support surfaces; use this same address for security reports per owner direction.
+- **Security intake:** `customer-support@liquid.trade`, the support address shown in Liquid's existing product support surfaces; use this same address for security reports per owner direction.
 - **Privacy notice and data-processing agreement:** The public privacy policy remains unchanged. The Muse Connector Terms were accessed after owner sign-in; the agent has not accepted them on the owner's behalf.
 
 Do not replace these fields with guessed defaults or treat the existing public privacy policy as proof of service-specific retention or deletion behavior.
@@ -62,9 +62,9 @@ Do not replace these fields with guessed defaults or treat the existing public p
 
 - **Legal entity:** LiquidX AI, Inc., Delaware C corporation, according to the [Terms of Service](https://www.liquid.trade/termsofservice).
 - **Registered address:** **Owner confirmation required**; not listed on the reviewed public terms or privacy page.
-- **Business support contact:** `support@liquid.trade`, used by the web app's bug-report link (`liquid-web/components/settings/SettingsSections.tsx`) and server support widget (`liquidmax_server/sphere-widget.html`). The separate published privacy/deletion contact remains `customer-support@liquid.trade`.
-- **Form contact:** The owner supplies the submitter name and work email privately in the portal. Shared support, security and maintenance contact is `support@liquid.trade`. The owner controls the final authority and terms confirmations.
-- **Maintainer:** LiquidX AI Co-Invest engineering; use `support@liquid.trade` as the contact address.
+- **Business support contact:** `customer-support@liquid.trade`, used by the web app's bug-report link (`liquid-web/components/settings/SettingsSections.tsx`) and server support widget (`liquidmax_server/sphere-widget.html`). The separate published privacy/deletion contact remains `customer-support@liquid.trade`.
+- **Form contact:** The owner supplies the submitter name and work email privately in the portal. Shared support, security and maintenance contact is `customer-support@liquid.trade`. The owner controls the final authority and terms confirmations.
+- **Maintainer:** LiquidX AI Co-Invest engineering; use `customer-support@liquid.trade` as the contact address.
 - **Public website:** https://liquid.trade/coinvest
 - **Support and escalation URL:** https://www.liquid.trade/support.
 
