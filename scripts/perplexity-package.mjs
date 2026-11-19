@@ -1,13 +1,14 @@
 import { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
+import { SKILL_SYNC_MAP } from "./sync-skills.mjs";
 
 export const PERPLEXITY_ENDPOINT = "https://coinvest-computer.liquid.trade/mcp";
 const PACKAGE_NAME = "co-invest-perplexity";
 const PLUGIN_NAME = "co-invest";
-const PACKAGE_VERSION = "1.0.3";
+const PACKAGE_VERSION = "1.1.0";
 const BASE_FILES = ["CHANGELOG.md", "LICENSE", "README.md", "assets/logo.svg", "mcp.json", "plugin.json"];
-const SKILL = "skills/coinvest";
+const SKILLS = SKILL_SYNC_MAP[PACKAGE_NAME].map((name) => `skills/${name}`);
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -45,12 +46,14 @@ export function validatePerplexityPackage(repoRootInput) {
   const validateMcp = compile("mcp.schema.json");
 
   const PACKAGE_FILES = new Set(BASE_FILES);
-  const PACKAGE_DIRS = new Set(["assets", "skills", SKILL]);
-  const skillSource = join(repoRoot, SKILL);
-  if (existsSync(skillSource)) {
-    walkPackage(skillSource, (path, _abs, stat) => (stat.isDirectory() ? PACKAGE_DIRS : PACKAGE_FILES).add(`${SKILL}/${path}`));
-  } else {
-    errors.push(`${SKILL}: canonical skill is missing`);
+  const PACKAGE_DIRS = new Set(["assets", "skills", ...SKILLS]);
+  for (const skill of SKILLS) {
+    const skillSource = join(repoRoot, skill);
+    if (existsSync(skillSource)) {
+      walkPackage(skillSource, (path, _abs, stat) => (stat.isDirectory() ? PACKAGE_DIRS : PACKAGE_FILES).add(`${skill}/${path}`));
+    } else {
+      errors.push(`${skill}: canonical skill is missing`);
+    }
   }
 
   const actualFiles = new Set();

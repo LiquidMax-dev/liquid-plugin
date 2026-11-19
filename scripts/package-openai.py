@@ -3,6 +3,7 @@
 
 import argparse
 import hashlib
+import json
 import os
 from pathlib import Path
 import stat
@@ -16,23 +17,48 @@ DOCUMENTATION_FILES = (
     "LICENSE",
     "README.md",
 )
-FILES = (
-    ".codex-plugin/plugin.json",
-    ".mcp.json",
-    "assets/logo-dark.png",
-    "assets/logo.png",
-    "skills/coinvest-earn-vaults/SKILL.md",
-    "skills/coinvest-market-research/SKILL.md",
-    "skills/coinvest-portfolio-planning/SKILL.md",
-)
-DIRECTORIES = (
-    ".codex-plugin",
-    "assets",
-    "skills",
-    "skills/coinvest-earn-vaults",
-    "skills/coinvest-market-research",
-    "skills/coinvest-portfolio-planning",
-)
+SCRIPT_DIR = Path(__file__).resolve().parent
+SKILL_NAMES: tuple[str, ...] = ()
+FILES: tuple[str, ...] = ()
+DIRECTORIES: tuple[str, ...] = ()
+
+
+def load_skill_names() -> tuple[str, ...]:
+    """Read the bundled skill list from SKILL_SYNC_MAP, the single source of truth."""
+    code = (
+        'const m = await import(process.argv[1]);'
+        'console.log(JSON.stringify(m.SKILL_SYNC_MAP["co-invest-openai"]));'
+    )
+    url = (SCRIPT_DIR / "sync-skills.mjs").as_uri()
+    try:
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", code, url],
+            check=True, text=True, capture_output=True,
+        )
+        names = json.loads(result.stdout)
+    except (OSError, subprocess.CalledProcessError, ValueError) as error:
+        fail(f"could not read the skill list from scripts/sync-skills.mjs: {error}")
+    if not names or not all(isinstance(n, str) for n in names):
+        fail("skill list for co-invest-openai is empty or malformed")
+    return tuple(sorted(names))
+
+
+def configure_skills() -> None:
+    global SKILL_NAMES, FILES, DIRECTORIES
+    SKILL_NAMES = load_skill_names()
+    FILES = (
+        ".codex-plugin/plugin.json",
+        ".mcp.json",
+        "assets/logo-dark.png",
+        "assets/logo.png",
+        *(f"skills/{name}/SKILL.md" for name in SKILL_NAMES),
+    )
+    DIRECTORIES = (
+        ".codex-plugin",
+        "assets",
+        "skills",
+        *(f"skills/{name}" for name in SKILL_NAMES),
+    )
 
 
 def fail(message: str) -> "NoReturn":
@@ -125,6 +151,7 @@ def main() -> None:
     parser.add_argument("--out", required=True, type=Path, help="new ZIP path outside plugins/co-invest-openai")
     parser.add_argument("--repo-root", type=Path, default=default_root, help="repository root (defaults to this script's checkout)")
     args = parser.parse_args()
+    configure_skills()
 
     repo_root = args.repo_root.expanduser().absolute()
     package_dir = repo_root / "plugins" / "co-invest-openai"

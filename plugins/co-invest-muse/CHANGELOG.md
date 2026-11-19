@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- Bundles the shared Co-Invest skills under `skills/`, one folder per skill, copied from the repository's canonical `skills/` by `npm run sync:skills`. Endpoint, tools and contract files are unchanged.
+
 ## 1.0.3
 
 - Listing description names the asset classes covered; both disclosure sentences are unchanged. Example prompts added to the README. Endpoint and tools are unchanged.

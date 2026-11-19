@@ -6,7 +6,7 @@ Liquid Co-Invest helps you research markets, size positions, and trade crypto, s
 
 Liquid Co-Invest is Liquid's multi-asset MCP, covering equities, commodities, indices, crypto, and other supported Liquid markets. The Cursor and Grok packages expose the workflows described below. The Muse package connects to the production paper-only endpoint, verified on 2026-10-12; its platform submission is in review after owner submission. The OpenAI package uses the Restricted endpoint for research, portfolio reads and review links for new trade suggestions; its existing simulated account and position management tools are also available. Its OAuth consent uses normal Liquid read and trade permissions. The owner-uploaded OpenAI 1.0.2 ZIP passed draft checks, but has not been submitted; 1.0.0 remains published. The current local portfolio-planning skill differs from that checked upload. The Perplexity package connects to Co-Invest Computer, bundles the same skill as the Cursor package and installs through Perplexity's "Import plugin from GitHub"; on 2026-11-16 that import and the Liquid authorization step were verified with this package, while tool calls inside Perplexity were not verified by the agent. All repository plugin packages use version **1.0.3**, which changes listing text only; the Muse and OpenAI submissions described here were made with 1.0.2.
 
-The Cursor plugin connects to Co-Invest Computer, whose direct trading tools place orders you explicitly request in chat, with no widget confirmation cards, and it bundles the Co-Invest skill. The Grok plugin connects to liquid-mcp's `all` profile: it returns text results, and an order is placed only after you approve its exact terms in chat.
+The Cursor plugin connects to Co-Invest Computer, whose direct trading tools place orders you explicitly request in chat, with no widget confirmation cards, and it bundles seven Co-Invest skills: the `coinvest` connection and safety skill plus workflow skills for research, portfolio review, allocation, trading, paper trading, and automation. The Grok plugin connects to liquid-mcp's `all` profile: it returns text results, and an order is placed only after you approve its exact terms in chat.
 
 ## Plugins
 
@@ -30,11 +30,13 @@ liquid-plugin/
 ├── scripts/validate-plugins.mjs
 ├── scripts/sync-skills.mjs
 ├── skills/coinvest/
+├── skills/coinvest-*/          (13 workflow skills, the single source)
+├── .claude-plugin/marketplace.json
 ├── plugins/co-invest/
 │   ├── .cursor-plugin/plugin.json
 │   ├── plugin.json
 │   ├── mcp.json
-│   ├── skills/coinvest/
+│   ├── skills/coinvest*/       (copies of the root skills this endpoint can use)
 │   ├── CHANGELOG.md
 │   └── README.md
 ├── plugins/co-invest-grok/
@@ -71,9 +73,7 @@ liquid-plugin/
 │   ├── LICENSE
 │   ├── README.md
 │   └── skills/
-│       ├── coinvest-market-research/SKILL.md
-│       ├── coinvest-portfolio-planning/SKILL.md
-│       └── coinvest-earn-vaults/SKILL.md
+│       └── coinvest-*/SKILL.md (copies of the root skills this endpoint can use)
 ├── docs/openai/tools.json
 ├── docs/openai/tools.md
 └── docs/openai-submission-1.0.2.md
@@ -87,9 +87,11 @@ The `co-invest` and `co-invest-grok` packages are Cursor Plugins with their own
 the Agent Plugins MCP schema. Cursor reads `.cursor-plugin/plugin.json`
 first. `co-invest-grok` also carries `.grok-plugin/plugin.json` for Grok
 Build, with the same name, version and description, and its `mcp.json` and
-`.mcp.json` are identical copies. `skills/coinvest` is the canonical skill, and
-`plugins/co-invest/skills/coinvest` is a copy kept identical by
-`npm run sync:skills`. Edit the root copy, then run that command.
+`.mcp.json` are identical copies. The root `skills/` directories are canonical, and
+`plugins/co-invest/skills/` holds copies of all seven, kept identical by
+`npm run sync:skills` (`SKILL_SYNC_MAP` in `scripts/sync-skills.mjs`). Edit the
+root copy, then run that command. A new root skill must be added to that map;
+`npm test` fails when the plugin does not bundle every root skill.
 
 `co-invest-muse` is a hosted connector submission package using the Agent
 Plugins 1.0.0 manifest and MCP configuration format. The paper-only endpoint is enabled and directly verified. Muse acceptance and
@@ -129,20 +131,53 @@ Example requests that use tools this connection serves today. Tokenized stocks t
 Each plugin's README has its own list, because the endpoints serve different tools: tokenized stocks are available on the Claude and Grok connections only, and no connection has options. The lists and the tools behind each prompt are in [docs/listing-prompts.json](docs/listing-prompts.json).
 
 <!-- coinvest-skill:start -->
-## Install the Co-Invest skill
+## Install the Co-Invest skills
 
-Install with:
+Install all 14 skills with:
 
 ```text
-npx skills add LiquidMax-dev/liquid-plugin --skill coinvest
+npx skills add LiquidMax-dev/liquid-plugin
 ```
+
+or one skill with `--skill <name>`, for example
+`npx skills add LiquidMax-dev/liquid-plugin --skill coinvest`.
+
+| Skill | What it does |
+| --- | --- |
+| `coinvest` | Connection defaults, tool discovery, and the safety rules every action follows. |
+| `coinvest-research` | One asset or a comparison: price, funding, positioning, technicals, order book, news. Read-only. |
+| `coinvest-portfolio-review` | Balances, positions, open orders, history and allocation. Read-only. |
+| `coinvest-allocate` | A multi-position plan from `plan_portfolio`, proposed as one batch and placed only on your explicit yes. |
+| `coinvest-trade` | Perpetual orders, take-profit and stop-loss, closes, cancels and leverage, following this connection's approval step. |
+| `coinvest-paper-trading` | Paper mode status, switching and reset. |
+| `coinvest-automation` | The automated-trading policy: your per-order cap and expiry, and what it does and does not authorize. |
+| `coinvest-market-scan` | What is moving, signals, ideas, the leaderboard and your watchlist. Places no trades. |
+| `coinvest-prediction-markets` | Prediction markets: search, odds and order books, positions, buys, closes and cancels. |
+| `coinvest-trailing-stops` | Set, view and remove trailing stops, with the trigger price stated before you approve. |
+| `coinvest-earnings` | Earnings calendar and company fundamentals. Read-only. |
+| `coinvest-yield` | Earn vault balance, deposit and withdrawal requests you sign in Liquid, and HYPE staking reads. |
+| `coinvest-funding` | Trading setup, deposit addresses, card on-ramp, payment and referral links. |
+| `coinvest-tokenized-stocks` | Buy and sell tokenized stock spot tokens such as EQAAPL: 1x, no shorting, live only. |
+
+Skills are defined once, in `skills/`. `npm run sync:skills` copies each one into every plugin whose endpoint serves the tools it needs (`SKILL_REQUIRES` in `scripts/sync-skills.mjs`), so a skill never ships where it has nothing to call:
+
+| Package | Skills | Not bundled |
+| --- | --- | --- |
+| `plugins/co-invest` | 13 | `coinvest-tokenized-stocks` |
+| `plugins/co-invest-perplexity` | 13 | `coinvest-tokenized-stocks` |
+| `plugins/co-invest-claude` | 13 | `coinvest` |
+| `plugins/co-invest-grok` | 13 | `coinvest` |
+| `plugins/co-invest-openai` | 8 | `coinvest`, `coinvest-automation`, `coinvest-trailing-stops`, `coinvest-earnings`, `coinvest-yield`, `coinvest-tokenized-stocks` |
+| `plugins/co-invest-muse` | 8 | `coinvest`, `coinvest-trailing-stops`, `coinvest-earnings`, `coinvest-yield`, `coinvest-funding`, `coinvest-tokenized-stocks` |
+
+Every workflow skill reads the live tool list and follows that connection's approval step, so the same text works on each endpoint. `coinvest-tokenized-stocks` needs `execute_spot_order`, which only the Grok and Claude connections serve.
 
 This installs portable guidance only. Configure the MCP connection separately in
 your host's native MCP settings and complete Liquid OAuth there. By default,
 [connect Computer](skills/coinvest/references/connect.md#default-connection)
 for reads and user-authorized direct trades. Use Main or Restricted only when
 explicitly selected; the skill installer does not register any server or grant
-trading access.
+trading access. Every plugin in this repository already bundles its skills; do not install them a second time for the same host.
 <!-- coinvest-skill:end -->
 
 ## How this repository is maintained
@@ -166,8 +201,8 @@ exist and is outside the package directory:
 npm run package:openai -- --out /absolute/path/Co-Invest-1.0.3.zip
 ```
 
-The build validates the OpenAI package and archives seven files: the manifest,
-`.mcp.json`, both PNG logos, and the three `skills/*/SKILL.md` files. The
+The build validates the OpenAI package and archives the manifest,
+`.mcp.json`, both PNG logos, and the bundled `skills/*/SKILL.md` files (eight today). The
 [OpenAI tool reference](https://github.com/LiquidMax-dev/liquid-plugin/blob/main/docs/openai/tools.md)
 and its JSON snapshot stay in the repository, outside the ZIP. After replacing
 the snapshot with a sanitized public tools/list result, run

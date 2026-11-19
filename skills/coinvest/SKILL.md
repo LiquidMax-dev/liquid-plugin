@@ -1,6 +1,6 @@
 ---
 name: coinvest
-description: "Liquid Co-Invest is free AI trading you control: research markets, size positions, and trade crypto, stocks, commodities, and FX from your AI agent. Co-Invest Computer exposes Liquid as an MCP server, so Claude Code, Codex, Cursor, Hermes, or any MCP client can research markets, watch for entries, and execute trades within the limits you set. Use when the user wants Liquid market research, portfolio or account information, paper trading, or an explicitly requested trade. Uses the Co-Invest Computer OAuth MCP by default."
+description: "Liquid Co-Invest connection and safety rules: which MCP endpoint to use (Co-Invest Computer by default), how to discover its tools, and the authority boundaries every Co-Invest action follows. Use when setting up or choosing a Co-Invest connection, when no narrower coinvest-* workflow skill fits, or to route a Liquid request to research, portfolio review, allocation, trading, paper trading, or automation."
 license: MIT
 ---
 
@@ -55,6 +55,25 @@ installing it does not connect an MCP server, grant trading authority, or create
 an automation policy.
 
 Requires a host that supports remote HTTP MCP and Liquid OAuth.
+
+## Workflow skills
+
+This skill sets the connection and safety rules. For a specific task, use the
+matching workflow skill when it is installed; each repeats the rules it needs:
+
+- `coinvest-research`: one asset or a comparison: price, funding, positioning, technicals, order book, news. Read-only.
+- `coinvest-portfolio-review`: balances, positions, open orders, history and allocation. Read-only.
+- `coinvest-allocate`: a multi-position plan from plan_portfolio, proposed as one batch and placed only on your explicit yes.
+- `coinvest-trade`: perpetual orders, take-profit and stop-loss, closes, cancels and leverage, following this connection's approval step.
+- `coinvest-paper-trading`: paper mode status, switching and reset.
+- `coinvest-automation`: the automated-trading policy: your per-order cap and expiry, and what it does and does not authorize.
+- `coinvest-market-scan`: what is moving, signals, ideas, the leaderboard and your watchlist. Places no trades.
+- `coinvest-prediction-markets`: prediction markets: search, odds and order books, positions, buys, closes and cancels.
+- `coinvest-trailing-stops`: set, view and remove trailing stops, with the trigger price stated before you approve.
+- `coinvest-earnings`: earnings calendar and company fundamentals. Read-only.
+- `coinvest-yield`: earn vault balance, deposit and withdrawal requests you sign in Liquid, and HYPE staking reads.
+- `coinvest-funding`: trading setup, deposit addresses, card on-ramp, payment and referral links.
+- `coinvest-tokenized-stocks`: buy and sell tokenized stock spot tokens such as EQAAPL: 1x, no shorting, live only (only on connections that serve `execute_spot_order`).
 
 Read the reference that matches the task before acting:
 

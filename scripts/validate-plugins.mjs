@@ -10,6 +10,7 @@ import { SKILL_SYNC_MAP, diffSkillCopies } from "./sync-skills.mjs";
 import { validateMusePackage } from "./muse-paper-only.mjs";
 import { validateOpenaiPackage } from "./openai-package.mjs";
 import { validatePerplexityPackage } from "./perplexity-package.mjs";
+import { validateClaudePackage } from "./claude-package.mjs";
 import { validateOpenaiTools } from "./openai-tools.mjs";
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
@@ -455,6 +456,8 @@ async function main() {
     const separator = issue.indexOf(": ");
     addError(issue.slice(0, separator), issue.slice(separator + 2));
   }
+  const claudeResult = validateClaudePackage(repoRoot);
+  for (const issue of claudeResult.errors) addError("plugins/co-invest-claude", issue);
   const marketplacePath = join(repoRoot, ".cursor-plugin/marketplace.json");
   const marketplaceRel = relOf(marketplacePath);
   let marketplace = null;

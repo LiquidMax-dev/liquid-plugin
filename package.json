@@ -10,6 +10,7 @@
     "package:openai": "python3 scripts/package-openai.py",
     "sync:openai-tools": "node scripts/openai-tools.mjs",
     "sync:skills": "node scripts/sync-skills.mjs",
+    "package:claude-skills": "node scripts/package-claude-skills.mjs",
     "sync:muse-paper-only": "node scripts/sync-muse-paper-only.mjs",
     "test": "node --test test/*.test.mjs"
   },

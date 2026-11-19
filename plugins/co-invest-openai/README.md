@@ -1,14 +1,24 @@
 # Co-Invest
 
-This directory contains the repository documentation and the files used to prepare the Co-Invest OpenAI plugin upload. The upload ZIP contains exactly these seven files:
+This directory contains the repository documentation and the files used to prepare the Co-Invest OpenAI plugin upload. The upload ZIP contains the manifest, the MCP map, the two logos and the shared skills bundled for this package (`skills/<name>/SKILL.md`, copied from the root `skills/` folder by `npm run sync:skills`):
 
 - `.codex-plugin/plugin.json`
 - `.mcp.json`
 - `assets/logo.png`
 - `assets/logo-dark.png`
-- `skills/coinvest-market-research/SKILL.md`
-- `skills/coinvest-portfolio-planning/SKILL.md`
-- `skills/coinvest-earn-vaults/SKILL.md`
+
+Copies of the repository's root skills, bundled because this connection serves the tools they use:
+
+| Skill | What it does |
+| --- | --- |
+| `coinvest-allocate` | A multi-position plan from `plan_portfolio`, proposed as one batch and placed only on your explicit yes. |
+| `coinvest-funding` | Trading setup, deposit addresses, card on-ramp, payment and referral links. |
+| `coinvest-market-scan` | What is moving, signals, ideas, the leaderboard and your watchlist. Places no trades. |
+| `coinvest-paper-trading` | Paper mode status, switching and reset. |
+| `coinvest-portfolio-review` | Balances, positions, open orders, history and allocation. Read-only. |
+| `coinvest-prediction-markets` | Prediction markets: search, odds and order books, positions, buys, closes and cancels. |
+| `coinvest-research` | One asset or a comparison: price, funding, positioning, technicals, order book, news. Read-only. |
+| `coinvest-trade` | Perpetual orders, take-profit and stop-loss, closes, cancels and leverage, following this connection's approval step. |
 
 The plugin manifest keeps the published identity, short description, links and logos, carries a rewritten long description and three starter prompts (not yet uploaded to OpenAI), and points to the existing Co-Invest MCP service at `https://coinvest-chat.liquid.trade`. Authentication remains managed by the existing OpenAI portal connection. Skills guide research using tools exposed by the current connection; they do not add server capabilities. Available tools and descriptions come from MCP scans, not from this ZIP. See [tool reference on main](https://github.com/LiquidMax-dev/liquid-plugin/blob/main/docs/openai/tools.md) for the current public tool reference.
 

@@ -13,6 +13,28 @@ Co-Invest for Perplexity connects Perplexity to Liquid's Co-Invest Computer endp
 
 Computer places an order when the assistant calls the trading tool; there is no separate confirmation step, and the bundled skill tells the assistant to act only on an explicit request naming the asset, side and size. Signing in grants Liquid's normal `read` and `trade` permission.
 
+## Bundled skills
+
+Copies of the repository's root skills, bundled because this connection serves the tools they use:
+
+| Skill | What it does |
+| --- | --- |
+| `coinvest` | Connection defaults, tool discovery, and the safety rules every action follows. |
+| `coinvest-allocate` | A multi-position plan from `plan_portfolio`, proposed as one batch and placed only on your explicit yes. |
+| `coinvest-automation` | The automated-trading policy: your per-order cap and expiry, and what it does and does not authorize. |
+| `coinvest-earnings` | Earnings calendar and company fundamentals. Read-only. |
+| `coinvest-funding` | Trading setup, deposit addresses, card on-ramp, payment and referral links. |
+| `coinvest-market-scan` | What is moving, signals, ideas, the leaderboard and your watchlist. Places no trades. |
+| `coinvest-paper-trading` | Paper mode status, switching and reset. |
+| `coinvest-portfolio-review` | Balances, positions, open orders, history and allocation. Read-only. |
+| `coinvest-prediction-markets` | Prediction markets: search, odds and order books, positions, buys, closes and cancels. |
+| `coinvest-research` | One asset or a comparison: price, funding, positioning, technicals, order book, news. Read-only. |
+| `coinvest-trade` | Perpetual orders, take-profit and stop-loss, closes, cancels and leverage, following this connection's approval step. |
+| `coinvest-trailing-stops` | Set, view and remove trailing stops, with the trigger price stated before you approve. |
+| `coinvest-yield` | Earn vault balance, deposit and withdrawal requests you sign in Liquid, and HYPE staking reads. |
+
+Skill loading from the wider set was not rechecked in Perplexity after 1.1.0; the 2026-11-16 import below covered the `coinvest` skill only.
+
 ## Try asking
 
 Example requests that use tools Co-Invest Computer serves today. Computer places an order when the assistant calls the tool, with no separate confirmation step, so ask to see the terms first when you want to review them. Paper mode applies to your wallet across Liquid connectors; ask to switch back to live trading to leave it.

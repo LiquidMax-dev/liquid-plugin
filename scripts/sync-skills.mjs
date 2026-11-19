@@ -1,11 +1,54 @@
+import { readFileSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-export const SKILL_SYNC_MAP = Object.freeze({
-  "co-invest": Object.freeze(["coinvest"]),
-  "co-invest-perplexity": Object.freeze(["coinvest"]),
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+
+// A skill is bundled with every package whose platform serves this tool.
+export const SKILL_REQUIRES = Object.freeze({
+  "coinvest-research": "analyze_market",
+  "coinvest-portfolio-review": "get_portfolio",
+  "coinvest-allocate": "plan_portfolio",
+  "coinvest-trade": "suggest_trade",
+  "coinvest-paper-trading": "paper_trading_status",
+  "coinvest-automation": "automated_trading_status",
+  "coinvest-market-scan": "show_market_overview",
+  "coinvest-prediction-markets": "search_prediction_markets",
+  "coinvest-trailing-stops": "set_trailing_stop",
+  "coinvest-earnings": "upcoming_earnings",
+  "coinvest-yield": "get_earn_balance",
+  "coinvest-funding": "show_deposit",
+  "coinvest-tokenized-stocks": "execute_spot_order",
 });
+
+// Package folder to its platform key in docs/listing-prompts.json.
+export const PACKAGE_PLATFORM = Object.freeze({
+  "co-invest": "cursor",
+  "co-invest-perplexity": "perplexity",
+  "co-invest-claude": "claude",
+  "co-invest-grok": "grok",
+  "co-invest-openai": "chatgpt",
+  "co-invest-muse": "muse",
+});
+
+// The base skill defaults to the Computer endpoint, so it is listed by hand.
+export const BASE_SKILL_PACKAGES = Object.freeze(["co-invest", "co-invest-perplexity"]);
+
+export function computeSkillSyncMap(platforms, packagePlatform = PACKAGE_PLATFORM, basePackages = BASE_SKILL_PACKAGES) {
+  const map = {};
+  for (const [pkg, platform] of Object.entries(packagePlatform)) {
+    const tools = new Set(platforms[platform].tools);
+    const skills = Object.entries(SKILL_REQUIRES).filter(([, tool]) => tools.has(tool)).map(([name]) => name);
+    if (basePackages.includes(pkg)) skills.unshift("coinvest");
+    map[pkg] = Object.freeze(skills.sort());
+  }
+  return Object.freeze(map);
+}
+
+export const SKILL_SYNC_MAP = computeSkillSyncMap(
+  JSON.parse(readFileSync(path.join(moduleDir, "..", "docs", "listing-prompts.json"), "utf8")).platforms,
+);
 
 function toPosix(relPath) {
   return relPath.split(path.sep).join("/");

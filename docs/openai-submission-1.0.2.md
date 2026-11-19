@@ -79,3 +79,5 @@ The owner-uploaded `Co-Invest-1.0.2-skills.zip` has SHA-256 `774f1a720a2a8d80db0
 The local `coinvest-portfolio-planning/SKILL.md` has since been corrected and differs from the uploaded artifact. The verified replacement `Co-Invest-1.0.2-reviewed.zip` has seven files, 16,854 bytes and SHA-256 `d3d528313ac30ac250ddfdb8d8cd20adad9de8b7729d0a6dd1868f5cd802fad2`. Upload it and confirm its skill checks before submitting. The existing OAuth authorization and exact MCP URL remain unchanged. All 39 repository tests and validation pass. See [the complete finding review and draft explanation](openai-review-20261013.md).
 
 The accepted upload's draft checks do not establish runtime skill behavior, submission, review approval or publication, and do not apply to the corrected local portfolio skill. Follow [OpenAI's published-plugin update workflow](https://developers.openai.com/plugins/deploy/submission#update-your-published-plugin) for submission. See [OpenAI's skills documentation](https://developers.openai.com/plugins/build/skills) for the host skill format.
+
+2026-11-19: 1.1.0 replaces the bundled skills with the shared set and needs a new upload.
