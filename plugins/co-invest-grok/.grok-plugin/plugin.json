@@ -1,7 +1,7 @@
 {
   "name": "co-invest-grok",
-  "version": "1.0.2",
-  "description": "Research markets, review your Liquid portfolio, and place trades you approve in chat from Grok.",
+  "version": "1.0.3",
+  "description": "Research and trade crypto, equities, tokenized stocks, commodities, indices and prediction markets on Liquid from Grok. Live prices, positioning, news, earnings and fundamentals; your portfolio, orders and history; trailing stops and paper trading. Every order is previewed and placed only after you approve it in chat.",
   "author": {
     "name": "Liquid",
     "url": "https://liquid.trade"

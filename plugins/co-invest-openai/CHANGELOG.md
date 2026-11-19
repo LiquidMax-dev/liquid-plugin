@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+- Long description rewritten and three starter prompts set in the manifest; example prompts added to the README. Not yet uploaded to OpenAI; 1.0.0 remains published. Endpoint and tools are unchanged.
+
 ## 1.0.2
 
 - Preserve the published Co-Invest listing metadata and prompt while updating the package version.

@@ -110,7 +110,28 @@ function manifestWithoutAllowedChanges(manifest) {
   delete copy.version;
   delete copy.mcpServers;
   delete copy.skills;
+  delete copy.description;
+  if (isRecord(copy.interface)) {
+    delete copy.interface.longDescription;
+    delete copy.interface.defaultPrompt;
+  }
   return copy;
+}
+
+// Limits from https://developers.openai.com/plugins/deploy/submission (read 2026-11-19).
+function validateListingCopy(manifest, manifestPath, report) {
+  const longDescription = manifest.interface?.longDescription;
+  if (typeof manifest.description !== "string" || !manifest.description.trim() || manifest.description.length > 4000) {
+    report(manifestPath, "description must be a non-empty string of at most 4000 characters");
+  }
+  if (manifest.description !== longDescription) report(manifestPath, "description and interface.longDescription must be identical");
+  const prompts = manifest.interface?.defaultPrompt;
+  const validPrompts = Array.isArray(prompts)
+    && prompts.length >= 1
+    && prompts.length <= 3
+    && prompts.every((prompt) => typeof prompt === "string" && prompt.trim() && prompt.length <= 128 && !prompt.includes("@"))
+    && new Set(prompts).size === prompts.length;
+  if (!validPrompts) report(manifestPath, "interface.defaultPrompt must hold 1 to 3 unique prompts of at most 128 characters without @mentions");
 }
 
 function validateSkill(path, folderName, pluginName, report) {
@@ -221,12 +242,13 @@ export function validateOpenaiPackage(repoRootInput) {
   if (!isRecord(manifest)) {
     report(manifestPath, "manifest must be a JSON object");
   } else {
-    if (manifest.version !== "1.0.2") report(manifestPath, 'version must be "1.0.2"');
+    if (manifest.version !== "1.0.3") report(manifestPath, 'version must be "1.0.3"');
     if (manifest.mcpServers !== "./.mcp.json") report(manifestPath, 'mcpServers must be "./.mcp.json"');
     if (manifest.skills !== "./skills/") report(manifestPath, 'skills must be "./skills/"');
     if (isRecord(baseline) && !sameValue(manifestWithoutAllowedChanges(manifest), manifestWithoutAllowedChanges(baseline))) {
-      report(manifestPath, "manifest must match the published 1.0.0 export except for version, mcpServers and skills");
+      report(manifestPath, "manifest must match the published 1.0.0 export except for version, mcpServers, skills, description, longDescription and defaultPrompt");
     }
+    validateListingCopy(manifest, manifestPath, report);
   }
 
   const mcpPath = join(packageDir, ".mcp.json");

@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "co-invest",
-  "version": "1.0.2",
-  "description": "Research markets, review your Liquid portfolio, and place trades you authorize without leaving Cursor.",
+  "version": "1.0.3",
+  "description": "Research and trade crypto, equities, commodities, indices and prediction markets on Liquid without leaving Cursor. Live prices, positioning, news, earnings and fundamentals; your portfolio, orders and history; trailing stops and paper trading. Orders are placed when you ask for them, or within an automation limit you set.",
   "author": { "name": "Liquid", "url": "https://liquid.trade" },
   "homepage": "https://liquid.trade/coinvest",
   "repository": "https://github.com/LiquidMax-dev/liquid-plugin",

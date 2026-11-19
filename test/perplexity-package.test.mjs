@@ -65,8 +65,8 @@ test("rejects a changed name", (t) => {
 
 test("rejects a changed version", (t) => {
   const { root, dir } = fixture(t);
-  rewriteJson(join(dir, "plugin.json"), (v) => { v.version = "1.0.3"; });
-  assert.match(errorsFor(root), /plugin\.json: version must be "1\.0\.2"/);
+  rewriteJson(join(dir, "plugin.json"), (v) => { v.version = "1.0.4"; });
+  assert.match(errorsFor(root), /plugin\.json: version must be "1\.0\.3"/);
 });
 
 test("rejects a missing package folder", (t) => {

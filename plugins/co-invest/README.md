@@ -21,7 +21,7 @@ Alternatively, add the configuration below to `~/.cursor/mcp.json` directly. Thi
 
 If you install the plugin, don't also run `npx skills add LiquidMax-dev/liquid-plugin --skill coinvest -a cursor`: Cursor would then load two skills named `coinvest`.
 
-Version 1.0.2 aligns the package version with the owner-selected release label. Co-Invest uses the Computer endpoint; earlier local installs connected to the Main endpoint and need to sign in again. See the [changelog](CHANGELOG.md).
+Version 1.0.3 rewrites the listing description and adds example prompts; 1.0.2 aligned the package version with the owner-selected release label. Co-Invest uses the Computer endpoint; earlier local installs connected to the Main endpoint and need to sign in again. See the [changelog](CHANGELOG.md).
 
 ## MCP configuration
 
@@ -53,11 +53,26 @@ You can also practice with paper trading, which uses virtual funds instead of yo
 
 Computer groups its tools by what they do. The names below are examples: the connected server's live tool list is authoritative, and this plugin doesn't pin a fixed number of tools. See [the skill's tool reference](skills/coinvest/references/tools.md) for the current catalog and how each group behaves.
 
-- **Research:** market analysis, technical indicators, order books, charts, and news, such as `analyze_market`, `get_technical_indicators`, `show_orderbook`, and `get_news`.
+- **Research:** market analysis, technical indicators, order books, charts, news, earnings dates, and company fundamentals, such as `analyze_market`, `get_technical_indicators`, `show_orderbook`, `get_news`, `upcoming_earnings`, and `get_asset_profile`.
 - **Account:** balances, positions, open orders, and history, such as `get_portfolio`, `view_open_orders`, and `get_position_history`.
-- **Trading:** direct order placement and management, such as `execute_order`, `execute_tpsl`, `close_position`, `cancel_order`, and `update_leverage`.
+- **Trading:** direct order placement and management, such as `execute_order`, `execute_tpsl`, `set_trailing_stop`, `close_position`, `cancel_order`, and `update_leverage`.
+- **Prediction markets:** searching markets, reading order books, and placing or closing prediction orders, such as `search_prediction_markets`, `show_prediction_orderbook`, and `execute_prediction_order`.
+- **Earn and staking:** reading your Earn vault balance and HYPE staking, such as `get_earn_balance` and `get_staking`.
 - **Paper trading:** simulated trading with virtual funds, such as `paper_trading_status`, `enable_paper_trading`, and `reset_paper_account`.
 - **Automation:** bounded autonomous trading, such as `automated_trading_status`, `enable_automated_trading`, and `disable_automated_trading`.
+
+## Try asking
+
+Example requests that use tools Co-Invest Computer serves today. A trading request runs when you make it, so name the asset, side and size you want. Paper mode applies to your wallet across Liquid connectors; ask to switch back to live trading to leave it.
+
+- Compare NVDA, TSLA and BTC: price, funding, positioning and the latest news. No trade.
+- Which companies report earnings this week, and what are NVDA's market cap and P/E?
+- Show my Liquid portfolio, open orders and my last 10 trades.
+- Long ETH with $50 notional at 2x and a stop loss 5% below the entry price.
+- Set a trailing stop on my SOL position that gives back 20% of margin, and show its trigger price.
+- Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds.
+- How much USDC do I have in Earn, and what is my staked HYPE earning?
+- Switch to paper trading and plan a moderate-risk portfolio across crypto, stocks and gold.
 
 ## Network and data
 

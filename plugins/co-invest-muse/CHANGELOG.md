@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+- Listing description names the asset classes covered; both disclosure sentences are unchanged. Example prompts added to the README. Endpoint and tools are unchanged.
+
 ## 1.0.2
 
 - Production paper-only profile enabled and directly verified on 2026-10-12;

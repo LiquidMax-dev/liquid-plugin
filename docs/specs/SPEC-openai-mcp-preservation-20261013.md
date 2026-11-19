@@ -1,5 +1,7 @@
 # Preserve the existing OpenAI MCP connection
 
+**Changed 2026-11-19 by [SPEC-listing-descriptions-prompts-20261119](SPEC-listing-descriptions-prompts-20261119.md):** `description`, `interface.longDescription` and `interface.defaultPrompt` are no longer preserved; all other listing fields still are.
+
 Status: superseded by SPEC-openai-skills-and-exact-url-20261013.
 
 **Corrected 2026-10-13:** The four-file archive below was rejected because the UI normalizes the MCP URL with a slash, while the registered string has none. Preserve `https://coinvest-chat.liquid.trade` exactly. The seven-file skills archive was subsequently accepted as a 1.0.2 draft, and metadata plus all three skills passed checks. The historical account below describes the rejected artifact, not the current package.

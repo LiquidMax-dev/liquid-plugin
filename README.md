@@ -4,7 +4,7 @@
 
 Liquid Co-Invest helps you research markets, size positions, and trade crypto, stocks, commodities, and FX through supported AI clients. [Co-Invest Computer](https://www.liquid.trade/coinvest-computer) exposes Liquid as an MCP server, so agents in Codex, Claude Code, Cursor, Hermes, or any MCP client can research markets, watch for entries, and use the trading tools exposed by their configured connection. There is no subscription; executed trades pay standard Liquid trading fees.
 
-Liquid Co-Invest is Liquid's multi-asset MCP, covering equities, commodities, indices, crypto, and other supported Liquid markets. The Cursor and Grok packages expose the workflows described below. The Muse package connects to the production paper-only endpoint, verified on 2026-10-12; its platform submission is in review after owner submission. The OpenAI package uses the Restricted endpoint for research, portfolio reads and review links for new trade suggestions; its existing simulated account and position management tools are also available. Its OAuth consent uses normal Liquid read and trade permissions. The owner-uploaded OpenAI 1.0.2 ZIP passed draft checks, but has not been submitted; 1.0.0 remains published. The current local portfolio-planning skill differs from that checked upload. The Perplexity package connects to Co-Invest Computer, bundles the same skill as the Cursor package and installs through Perplexity's "Import plugin from GitHub"; on 2026-11-16 that import and the Liquid authorization step were verified with this package, while tool calls inside Perplexity were not verified by the agent. All repository plugin packages use version **1.0.2**.
+Liquid Co-Invest is Liquid's multi-asset MCP, covering equities, commodities, indices, crypto, and other supported Liquid markets. The Cursor and Grok packages expose the workflows described below. The Muse package connects to the production paper-only endpoint, verified on 2026-10-12; its platform submission is in review after owner submission. The OpenAI package uses the Restricted endpoint for research, portfolio reads and review links for new trade suggestions; its existing simulated account and position management tools are also available. Its OAuth consent uses normal Liquid read and trade permissions. The owner-uploaded OpenAI 1.0.2 ZIP passed draft checks, but has not been submitted; 1.0.0 remains published. The current local portfolio-planning skill differs from that checked upload. The Perplexity package connects to Co-Invest Computer, bundles the same skill as the Cursor package and installs through Perplexity's "Import plugin from GitHub"; on 2026-11-16 that import and the Liquid authorization step were verified with this package, while tool calls inside Perplexity were not verified by the agent. All repository plugin packages use version **1.0.3**, which changes listing text only; the Muse and OpenAI submissions described here were made with 1.0.2.
 
 The Cursor plugin connects to Co-Invest Computer, whose direct trading tools place orders you explicitly request in chat, with no widget confirmation cards, and it bundles the Co-Invest skill. The Grok plugin connects to liquid-mcp's `all` profile: it returns text results, and an order is placed only after you approve its exact terms in chat.
 
@@ -15,8 +15,9 @@ The Cursor plugin connects to Co-Invest Computer, whose direct trading tools pla
 | [Co-Invest](plugins/co-invest) | Cursor | https://coinvest-computer.liquid.trade/mcp | Direct trades you authorize in chat |
 | [Co-Invest](plugins/co-invest-grok) | Grok Bot, Grok Build | https://coinvest.liquid.trade/mcp?profile=all | Trades you approve in chat |
 | [Co-Invest](plugins/co-invest-muse) | Muse Connector Platform (in review) | https://coinvest.liquid.trade/mcp?profile=paper-only | Orders through this connector are simulated; sign-in grants a normal Liquid permission, not a practice-only one; production endpoint verified; Muse review pending |
-| [Co-Invest](plugins/co-invest-perplexity) | Perplexity (GitHub import) | https://coinvest-computer.liquid.trade/mcp | Trades you approve in chat; marketplace proposal drafted, not submitted |
+| [Co-Invest](plugins/co-invest-perplexity) | Perplexity (GitHub import) | https://coinvest-computer.liquid.trade/mcp | Direct trades you authorize in chat; marketplace proposal drafted, not submitted |
 | [Co-Invest](plugins/co-invest-openai) | OpenAI | https://coinvest-chat.liquid.trade | Market research, portfolio reads and review links for new trade suggestions; simulated account and position management tools |
+| [Co-Invest](#claude) | Claude (custom connector, no package) | https://coinvest.liquid.trade | Trades you confirm on a card or in chat |
 
 ## Repository layout
 
@@ -95,10 +96,11 @@ Plugins 1.0.0 manifest and MCP configuration format. The paper-only endpoint is 
 authenticated host execution remain separate review steps; the package does not
 add an entry to the Cursor marketplace.
 
-`co-invest-openai` preserves the published OpenAI listing metadata and both
-original PNG logos. Its 1.0.2 manifest changes the version, declares the
-existing MCP connection through `.mcp.json`, and points to three bundled
-research skills. The exact registered MCP URL has no trailing slash. The
+`co-invest-openai` keeps the published OpenAI identity, short description,
+links and both original PNG logos. Its 1.0.3 manifest changes the version,
+declares the existing MCP connection through `.mcp.json`, points to three
+bundled research skills, and since 2026-11-19 carries a rewritten long
+description and three starter prompts that have not been uploaded to OpenAI. The exact registered MCP URL has no trailing slash. The
 uploaded ZIP passed metadata and skill checks, while the local
 portfolio-planning skill has since been corrected and has not yet been
 rechecked in a rebuilt ZIP. The portal's existing OAuth authorization remains
@@ -107,6 +109,24 @@ tools to the server; no direct-execution or Earn tool deployment is claimed.
 This package is outside the Cursor marketplace.
 See the [OpenAI submission notes](docs/openai-submission-1.0.2.md) for the
 package workflow and official OpenAI references.
+
+## Claude
+
+Claude connects to Co-Invest as a custom connector, so this repository has no Claude package. In the Claude apps (web, desktop, mobile), open Settings, then Connectors, choose Add custom connector, name it Co-Invest, paste `https://coinvest.liquid.trade` and sign in to Liquid. Research and perpetual trades come back as Co-Invest cards, and a trade is placed only after you confirm its card; tokenized-stock orders and trailing stops are placed after you confirm their preview in chat. Claude Code at the same address gets text results with chat confirmation; the `coinvest` skill's default for Claude Code is Co-Invest Computer.
+
+Example requests that use tools this connection serves today. Tokenized stocks trade live only. Paper mode applies to your wallet across Liquid connectors; ask to switch back to live trading to leave it.
+
+- Compare NVDA, TSLA and BTC: price, funding, positioning and the latest news. No trade.
+- Show a 4h BTC chart, then its RSI and MACD and the order book.
+- Which companies report earnings this week, and what are NVDA's market cap and P/E?
+- Show my Liquid portfolio and open orders, then chart my allocation.
+- Suggest an ETH long with $50 notional at 2x and a stop loss 5% below entry, as a card I can confirm.
+- Buy $25 of tokenized Apple stock (EQAAPL) with no leverage. Show me the preview first.
+- Set a trailing stop on my SOL position that gives back 20% of margin, and show its trigger price.
+- Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds.
+- Switch to paper trading and plan a moderate-risk portfolio across crypto, stocks and gold.
+
+Each plugin's README has its own list, because the endpoints serve different tools: tokenized stocks are available on the Claude and Grok connections only, and no connection has options. The lists and the tools behind each prompt are in [docs/listing-prompts.json](docs/listing-prompts.json).
 
 <!-- coinvest-skill:start -->
 ## Install the Co-Invest skill
@@ -143,7 +163,7 @@ Build the OpenAI ZIP to an explicit absolute output path that does not already
 exist and is outside the package directory:
 
 ```sh
-npm run package:openai -- --out /absolute/path/Co-Invest-1.0.2.zip
+npm run package:openai -- --out /absolute/path/Co-Invest-1.0.3.zip
 ```
 
 The build validates the OpenAI package and archives seven files: the manifest,

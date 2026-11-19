@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+- Listing description rewritten and example prompts added to the README. Endpoint and tools are unchanged.
+
 ## 1.0.2
 
 - Align the package version with the owner-selected release label. The Co-Invest

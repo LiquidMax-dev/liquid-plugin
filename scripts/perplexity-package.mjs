@@ -5,7 +5,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 export const PERPLEXITY_ENDPOINT = "https://coinvest-computer.liquid.trade/mcp";
 const PACKAGE_NAME = "co-invest-perplexity";
 const PLUGIN_NAME = "co-invest";
-const PACKAGE_VERSION = "1.0.2";
+const PACKAGE_VERSION = "1.0.3";
 const BASE_FILES = ["CHANGELOG.md", "LICENSE", "README.md", "assets/logo.svg", "mcp.json", "plugin.json"];
 const SKILL = "skills/coinvest";
 

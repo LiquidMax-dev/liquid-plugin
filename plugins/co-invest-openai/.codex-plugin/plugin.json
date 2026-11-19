@@ -2,18 +2,20 @@
   "author": {
     "name": "Liquid"
   },
-  "description": "Co-Invest brings market research and portfolio planning into ChatGPT.\n\nExplore Liquid market data, news catalysts, positioning trends, portfolio context, and trading tools in one place. Model allocations, compare opportunities, and open Liquid, our brokerage, with trade ideas ready for your final review.\n\nDesigned for traders who want sharper context, faster planning, and a more connected way to navigate Liquid markets.",
+  "description": "Co-Invest brings Liquid market research and portfolio planning into ChatGPT.\n\nAsk about crypto, equities, commodities, indices and prediction markets and get live prices, funding, positioning, technical indicators, charts and news. Review your Liquid portfolio, open orders and history, and model an allocation that fits your risk and time horizon.\n\nWhen you want to act, Co-Invest prepares the trade and opens Liquid, our brokerage, with the idea ready for your final review; live orders are not placed from ChatGPT. A paper account with simulated funds lets you practice and manage simulated positions.\n\nDesigned for traders who want sharper context, faster planning, and a more connected way to navigate Liquid markets.",
   "interface": {
     "capabilities": [],
     "category": "Finance",
     "defaultPrompt": [
-      "NVDA last 24h"
+      "What moved NVDA in the last 24 hours?",
+      "Plan a moderate-risk portfolio across crypto, stocks and gold",
+      "Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds."
     ],
     "developerName": "Liquid",
     "displayName": "Co-Invest",
     "logo": "./assets/logo.png",
     "logoDark": "./assets/logo-dark.png",
-    "longDescription": "Co-Invest brings market research and portfolio planning into ChatGPT.\n\nExplore Liquid market data, news catalysts, positioning trends, portfolio context, and trading tools in one place. Model allocations, compare opportunities, and open Liquid, our brokerage, with trade ideas ready for your final review.\n\nDesigned for traders who want sharper context, faster planning, and a more connected way to navigate Liquid markets.",
+    "longDescription": "Co-Invest brings Liquid market research and portfolio planning into ChatGPT.\n\nAsk about crypto, equities, commodities, indices and prediction markets and get live prices, funding, positioning, technical indicators, charts and news. Review your Liquid portfolio, open orders and history, and model an allocation that fits your risk and time horizon.\n\nWhen you want to act, Co-Invest prepares the trade and opens Liquid, our brokerage, with the idea ready for your final review; live orders are not placed from ChatGPT. A paper account with simulated funds lets you practice and manage simulated positions.\n\nDesigned for traders who want sharper context, faster planning, and a more connected way to navigate Liquid markets.",
     "privacyPolicyURL": "https://liquid.trade/privacy",
     "shortDescription": "Research global markets 24/7",
     "supportURL": "https://liquid.trade/support",
@@ -21,7 +23,7 @@
     "websiteURL": "https://coinvest.ai"
   },
   "name": "app-6a20e26c6ab8819191519e2811e03522",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "mcpServers": "./.mcp.json",
   "skills": "./skills/"
 }

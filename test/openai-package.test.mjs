@@ -56,15 +56,41 @@ test("validates published metadata, exact registered MCP URL, and all bundled sk
 test("rejects listing metadata drift, wrong version, or unexpected manifest MCP/skills fields", (t) => {
   const cases = [
     (manifest) => { manifest.name = "app-wrong"; },
-    (manifest) => { manifest.description = "Changed listing copy"; },
-    (manifest) => { manifest.version = "1.0.3"; },
+    (manifest) => { manifest.interface.shortDescription = "Changed listing copy"; },
+    (manifest) => { manifest.interface.displayName = "Other"; },
+    (manifest) => { manifest.version = "1.0.4"; },
     (manifest) => { manifest.mcpServers = { url: "https://coinvest-chat.liquid.trade/" }; },
     (manifest) => { manifest.skills = "./other/"; },
   ];
   for (const mutate of cases) {
     const { root, dir } = fixture(t);
     rewriteJson(join(dir, manifestPath), mutate);
-    assert.match(errorsFor(root), /manifest must match the published 1\.0\.0 export except for version, mcpServers(?:, and| and) skills|mcpServers must be "\.\/.mcp\.json"|skills must be "\.\/skills\/"|version must be "1\.0\.2"/);
+    assert.match(errorsFor(root), /manifest must match the published 1\.0\.0 export except for version, mcpServers, skills, description, longDescription and defaultPrompt|mcpServers must be "\.\/.mcp\.json"|skills must be "\.\/skills\/"|version must be "1\.0\.3"/);
+  }
+});
+
+test("accepts new listing copy within OpenAI's limits and rejects copy outside them", (t) => {
+  const accepted = fixture(t);
+  rewriteJson(join(accepted.dir, manifestPath), (manifest) => {
+    manifest.description = "New copy";
+    manifest.interface.longDescription = "New copy";
+    manifest.interface.defaultPrompt = ["One", "Two"];
+  });
+  assert.deepEqual(validateOpenaiPackage(accepted.root).errors, []);
+
+  const cases = [
+    [(manifest) => { manifest.description = "Only one field changed"; }, /description and interface\.longDescription must be identical/],
+    [(manifest) => { manifest.description = manifest.interface.longDescription = "x".repeat(4001); }, /at most 4000 characters/],
+    [(manifest) => { manifest.interface.defaultPrompt = ["1", "2", "3", "4"]; }, /1 to 3 unique prompts/],
+    [(manifest) => { manifest.interface.defaultPrompt = []; }, /1 to 3 unique prompts/],
+    [(manifest) => { manifest.interface.defaultPrompt = ["Same", "Same"]; }, /1 to 3 unique prompts/],
+    [(manifest) => { manifest.interface.defaultPrompt = ["x".repeat(129)]; }, /1 to 3 unique prompts/],
+    [(manifest) => { manifest.interface.defaultPrompt = ["@Co-Invest NVDA"]; }, /without @mentions/],
+  ];
+  for (const [mutate, expected] of cases) {
+    const { root, dir } = fixture(t);
+    rewriteJson(join(dir, manifestPath), mutate);
+    assert.match(errorsFor(root), expected);
   }
 });
 
@@ -151,7 +177,7 @@ test("rejects unexpected skill resources and symlinked skill files", (t) => {
 });
 
 test("rejects valid JSON manifest values with an invalid shape", (t) => {
-  for (const value of [null, false, 0, "", [], {}, { version: "1.0.2" }]) {
+  for (const value of [null, false, 0, "", [], {}, { version: "1.0.3" }]) {
     const { root, dir } = fixture(t);
     writeFileSync(join(dir, manifestPath), JSON.stringify(value));
     assert.notEqual(errorsFor(root), "", `accepted ${JSON.stringify(value)}`);
@@ -215,7 +241,7 @@ test("rejects symlinked files and directories in the package", (t) => {
   assert.match(errorsFor(directoryFixture.root), /symlinks are not allowed in the OpenAI package/);
 });
 
-test("builds deterministic seven-file ZIPs and preserves published metadata, MCP, skills, and logos", (t) => {
+test("builds deterministic seven-file ZIPs with the source listing copy and the published identity, MCP, skills, and logos", (t) => {
   const { root, dir } = fixture(t);
   const first = join(root, "artifacts/first.zip");
   const second = join(root, "artifacts/second.zip");
@@ -227,13 +253,22 @@ test("builds deterministic seven-file ZIPs and preserves published metadata, MCP
   const archive = JSON.parse(execFileSync("python3", ["-c", inspect, first], { encoding: "utf8" }));
   assert.deepEqual(archive.names, [...archivePaths].sort());
   const baseline = JSON.parse(readFileSync(join(root, "schemas/openai/published-plugin-1.0.0.json"), "utf8"));
-  assert.equal(archive.manifest.version, "1.0.2");
+  assert.equal(archive.manifest.version, "1.0.3");
   assert.equal(archive.manifest.mcpServers, "./.mcp.json");
   assert.equal(archive.manifest.skills, "./skills/");
   delete archive.manifest.version;
   delete archive.manifest.mcpServers;
   delete archive.manifest.skills;
   delete baseline.version;
+  const source = JSON.parse(readFileSync(join(dir, manifestPath), "utf8"));
+  assert.equal(archive.manifest.description, source.description);
+  assert.equal(archive.manifest.interface.longDescription, source.description);
+  assert.deepEqual(archive.manifest.interface.defaultPrompt, source.interface.defaultPrompt);
+  for (const manifest of [archive.manifest, baseline]) {
+    delete manifest.description;
+    delete manifest.interface.longDescription;
+    delete manifest.interface.defaultPrompt;
+  }
   assert.deepEqual(archive.manifest, baseline);
   assert.deepEqual(archive.mcp, expectedMcp);
   for (const name of skillNames) {

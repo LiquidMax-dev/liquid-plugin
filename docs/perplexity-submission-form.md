@@ -2,6 +2,8 @@
 
 Drafted 2026-11-16, first for the standard endpoint and changed the same day to the Co-Invest Computer endpoint `https://coinvest-computer.liquid.trade/mcp` (owner decision: Perplexity does not render Co-Invest widgets, and Computer returns text results). Owner answers were added the same day. The owner reviews and submits; nothing here has been submitted.
 
+**Corrected 2026-11-19 by SPEC-listing-descriptions-prompts-20261119:** Co-Invest Computer has no approval gate on perpetual orders. In its catalog (`computer-v1-full`) `execute_order`, `execute_tpsl`, `close_position` and `update_leverage` take no `confirmed` argument and run when called; the statements below that cite `generated/all.json` describe a different catalog. Only prediction orders and trailing stops keep a `confirmed` argument on Computer. The catalog description, tagline and example queries below are corrected; the workflow, authorization and additional-context answers are marked where they are wrong, and the live form still holds the earlier text until the owner updates it.
+
 Conventions: `OWNER: ...` marks a fact only the owner knows. `UNVERIFIED:` marks a statement carried over from the Muse paper-only material (or from a Perplexity measurement on a different resource) that was not rechecked for the standard endpoint.
 
 Scope note: the Muse documents describe the `paper-only` profile on the standard host. This proposal is for Co-Invest Computer, the endpoint the Cursor package and the bundled `coinvest` skill use. It can place live orders after the user approves the exact terms in chat. Tool names below come from `skills/coinvest/references/tools.md`; the live Computer catalog was not listed for this draft, so they are starting points, not a full inventory.
@@ -64,15 +66,20 @@ Left blank (optional).
 
 1. Goal: research a market before trading. Data or action: the assistant calls `analyze_market` and `get_news` for a symbol. Outcome: the user gets price, funding, open interest, positioning data and recent headlines in one answer. Source: `generated/all.json` (`analyze_market`, `get_news`).
 2. Goal: review the user's own account. Data or action: `get_portfolio` and `view_open_orders`. Outcome: balances, positions, open orders and recent activity in one summary. Source: `generated/all.json`.
-3. Goal: place or close a trade with control. Data or action: the assistant states the exact terms; the user approves in chat; `execute_order` or `close_position` with `confirmed=true` places it. Outcome: an order or close the user approved, with a result to verify against open orders and positions. Source: `generated/all.json` (`execute_order`, `close_position` descriptions).
+3. **Corrected 2026-11-19: on Computer `execute_order` and `close_position` have no `confirmed` argument; the order runs when the assistant calls the tool after the user asks for it.** Goal: place or close a trade with control. Data or action: the assistant states the exact terms; the user approves in chat; `execute_order` or `close_position` with `confirmed=true` places it. Outcome: an order or close the user approved, with a result to verify against open orders and positions. Source: `generated/all.json` (`execute_order`, `close_position` descriptions).
 
 ### Example queries
 
-- Compare BTC and ETH funding, open interest and positioning, and summarize the main risks. Do not place a trade.
-- Show my Liquid portfolio, open orders and my last 10 transactions.
-- Preview a small long on ETH with 1x leverage. If I approve the exact terms, place it, then check the position.
-- Preview closing half of my SOL position and wait for my approval before closing it.
-- Search prediction markets about the next Federal Reserve rate decision and show the orderbook.
+Changed 2026-11-19 to the list in `docs/listing-prompts.json`; the live form still holds the five earlier queries until the owner updates it.
+
+- Compare NVDA, TSLA and BTC: price, funding, positioning and the latest news. No trade.
+- Which companies report earnings this week, and what are NVDA's market cap and P/E?
+- Show my Liquid portfolio, open orders and my last 10 trades.
+- Preview a $50 ETH long at 2x with a stop loss 5% below entry, and place it after I approve the terms.
+- Set a 20% trailing stop on my SOL position and show where it sits now.
+- Which prediction markets are open on Bitcoin's price and this weekend's games? Show the odds.
+- Switch to paper trading and plan a moderate-risk $1,000 portfolio across crypto, stocks and gold.
+- How much USDC do I have in Earn, and what is my staked HYPE earning?
 
 ### Required customer account or plan
 
@@ -146,7 +153,7 @@ No. On 2026-11-16 dynamic registration accepted `https://www.perplexity.ai/rest/
 
 ### Authorization requirements
 
-Per-user. Each user signs in to their own Liquid account and the token is bound to that user's wallet. Order and position changes also need the user's approval of exact terms in chat: the execution tools (`execute_order`, `close_position`, `execute_prediction_order` and similar) are annotated as destructive and take a `confirmed` argument that the assistant sets only after the user approves the previewed terms (`generated/all.json`, tool annotations and descriptions). This is a convention enforced by the tool contract and the assistant's behavior, not a server-issued confirmation token (liquid-mcp `generated/README.md`: "`caller-confirmation` does not claim a server-side confirmation token").
+**Corrected 2026-11-19: the `confirmed` argument described here exists on Computer only for prediction orders and trailing stops; perpetual orders, closes, TP/SL and leverage changes run when called.** Per-user. Each user signs in to their own Liquid account and the token is bound to that user's wallet. Order and position changes also need the user's approval of exact terms in chat: the execution tools (`execute_order`, `close_position`, `execute_prediction_order` and similar) are annotated as destructive and take a `confirmed` argument that the assistant sets only after the user approves the previewed terms (`generated/all.json`, tool annotations and descriptions). This is a convention enforced by the tool contract and the assistant's behavior, not a server-issued confirmation token (liquid-mcp `generated/README.md`: "`caller-confirmation` does not claim a server-side confirmation token").
 
 ### Token refresh, revocation, and expiry behavior
 
@@ -260,13 +267,13 @@ Co-Invest
 
 ### Short tagline
 
-Research markets and place trades you approve on Liquid
+Research markets and trade on Liquid from chat
 
-(55 characters; limit 80.)
+(46 characters; limit 80. Changed 2026-11-19; was "Research markets and place trades you approve on Liquid".)
 
 ### Catalog description
 
-Co-Invest connects Perplexity to your Liquid account. Research crypto, equities, commodities, indices and prediction markets with live prices, funding, positioning and news. Review your portfolio, open orders and history. Ask for a trade and Co-Invest previews the exact terms first. Orders are placed only after you approve those terms in chat. Signing in grants Liquid's normal read and trade permission. A paper-trading mode with simulated funds is available for practice.
+Co-Invest connects Perplexity to your Liquid account. Research crypto, equities, commodities, indices and prediction markets with live prices, funding, positioning, news, earnings dates and company fundamentals. Review your portfolio, open orders and history. Orders are placed when you ask for them in chat, with no separate confirmation step, so name the asset, side and size you want. Protect positions with take-profit, stop-loss and trailing stops. Signing in grants Liquid's normal read and trade permission. A paper-trading mode with simulated funds is available for practice.
 
 ### Brand asset folder
 
@@ -298,7 +305,7 @@ Yes (owner's direction, 2026-11-16). The live form did not show the Catalog list
 
 ### Additional context
 
-- Orders can be live. The approval gate is the exact-terms preview and chat confirmation, not a separate server token.
+- Orders can be live. **Corrected 2026-11-19:** there is no server-side approval gate for perpetual orders on Computer; the control is the assistant acting only on an explicit request (the bundled skill's rule).
 - Perplexity Computer is an autonomous agent. Users should be told that the connector can place live orders once they approve terms.
 - Perplexity's GitHub import of `plugins/co-invest-perplexity` was verified on 2026-11-16; tool calls inside Perplexity are not yet verified.
 - Support: support@liquid.trade. Privacy and deletion: customer-support@liquid.trade.

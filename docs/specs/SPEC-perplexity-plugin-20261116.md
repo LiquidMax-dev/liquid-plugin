@@ -9,7 +9,7 @@ These supersede the matching statements below, which describe the first merged v
 - **Endpoint:** Co-Invest Computer, `https://coinvest-computer.liquid.trade/mcp`, replaces the standard endpoint. Reason: Perplexity does not render Co-Invest widgets; Computer returns text.
 - **Skill:** the package bundles `skills/coinvest` through `scripts/sync-skills.mjs` (`SKILL_SYNC_MAP`), like the Cursor package. The validator allows exactly the canonical skill's files under `skills/coinvest/`.
 - **Name:** `co-invest` (was `co-invest-perplexity`); see the `plugin.json` note below.
-- **Description:** expanded; it is the text Perplexity shows under the title.
+- **Description:** expanded; it is the text Perplexity shows under the title. **Corrected 2026-11-19 by SPEC-listing-descriptions-prompts-20261119:** the description, tagline and README no longer say orders are previewed and placed only after approval. Computer runs perpetual orders when called (no `confirmed` argument), so every such statement below is wrong for this package.
 - **Publisher line:** Perplexity shows "by LiquidMax-dev", the GitHub organization. `author`, `publisher` and `owner` keys in `plugin.json` do not change it (measured).
 - **Form:** the draft and the live form name the Computer endpoint; the live form carries the reviewer test login by the owner's direction.
 
