@@ -19,6 +19,8 @@ The Cursor plugin connects to Co-Invest Computer, whose direct trading tools pla
 | [Co-Invest](plugins/co-invest-openai) | OpenAI | https://coinvest-chat.liquid.trade | Market research, portfolio reads and review links for new trade suggestions; simulated account and position management tools |
 | [Co-Invest](#claude) | Claude (custom connector, no package) | https://coinvest.liquid.trade | Trades you confirm on a card or in chat |
 
+Store status on 2026-11-19: the 1.1.0 repository was submitted to Cursor's marketplace form as an update to the existing `co-invest` listing plus the `co-invest-grok` entry for Grok Bot (review pending; the live listing still showed the earlier one-skill version). The OpenAI 1.1.0 package is in review. The Muse and Perplexity form drafts for 1.1.0 are in `docs/` and have not been sent.
+
 ## Repository layout
 
 ```text
