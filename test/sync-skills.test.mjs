@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { SKILL_SYNC_MAP, computeSkillSyncMap, diffSkillCopies } from "../scripts/sync-skills.mjs";
+import { API_SKILLS, SKILL_SYNC_MAP, computeSkillSyncMap, diffSkillCopies } from "../scripts/sync-skills.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -25,9 +25,17 @@ test("every SKILL_SYNC_MAP entry names a root skill", () => {
   }
 });
 
-test("every root skill is bundled by at least one package", () => {
+test("API skills are root-only and never bundled", () => {
   const bundled = new Set(Object.values(SKILL_SYNC_MAP).flat());
-  assert.deepEqual([...bundled].sort(), rootSkillNames());
+  for (const name of API_SKILLS) {
+    assert.ok(!bundled.has(name), `${name} must not be bundled`);
+    assert.ok(existsSync(path.join(repoRoot, "skills", name, "SKILL.md")), `${name} has no root skill`);
+  }
+});
+
+test("every non-API root skill is bundled by at least one package", () => {
+  const bundled = new Set(Object.values(SKILL_SYNC_MAP).flat());
+  assert.deepEqual([...bundled].sort(), rootSkillNames().filter((name) => !API_SKILLS.includes(name)));
 });
 
 test("a package gets exactly the skills whose required tool its platform serves", () => {

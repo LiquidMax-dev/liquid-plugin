@@ -3,7 +3,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import test from "node:test";
 import { parse } from "yaml";
-import { PACKAGE_EXCLUDES, PACKAGE_PLATFORM, SKILL_REQUIRES, SKILL_SYNC_MAP } from "../scripts/sync-skills.mjs";
+import { API_SKILLS, PACKAGE_EXCLUDES, PACKAGE_PLATFORM, SKILL_REQUIRES, SKILL_SYNC_MAP } from "../scripts/sync-skills.mjs";
 
 const repoRoot = resolve(import.meta.dirname, "..");
 const readJson = (rel) => JSON.parse(readFileSync(join(repoRoot, rel), "utf8"));
@@ -64,9 +64,9 @@ export function skillProblems(skill) {
 const workflowSkills = Object.keys(SKILL_REQUIRES);
 const skills = workflowSkills.map((name) => readSkill(repoRoot, name));
 
-test("root skills are exactly the base skill and the mapped workflow skills", () => {
+test("root skills are exactly the base skill, the mapped workflow skills and the API skills", () => {
   const folders = readdirSync(join(repoRoot, "skills")).sort();
-  assert.deepEqual(folders, ["coinvest", ...workflowSkills].sort());
+  assert.deepEqual(folders, ["coinvest", ...workflowSkills, ...API_SKILLS].sort());
 });
 
 test("every workflow skill follows the shared format and gate wording", () => {
