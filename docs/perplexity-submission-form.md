@@ -1,4 +1,6 @@
-# Co-Invest for Perplexity: connector proposal form draft
+# Co-Invest for Perplexity: connector proposal form
+
+**Submitted 2026-11-19 21:50 UTC:** the answers below (1.1.0) were sent through Perplexity's connector submission form and the form confirmed receipt. Differences from this text as sent: editorial notes, `OWNER:` and `UNVERIFIED:` markers and source paths were removed; "Bundled skills" was shortened to a list of the 13 skill names at the end of "Key tools and capabilities"; "Authorization requirements" is a checkbox on the form (Per-user authorization); "Supported transport" was Streamable HTTP only. The live form ended after "Validation and operations", so the Catalog listing answers were not sent. Not verified: any tool call or skill load inside Perplexity.
 
 Drafted 2026-11-16, first for the standard endpoint and changed the same day to the Co-Invest Computer endpoint `https://coinvest-computer.liquid.trade/mcp` (owner decision: Perplexity does not render Co-Invest widgets, and Computer returns text results). Owner answers were added the same day. The owner reviews and submits; nothing here has been submitted.
 

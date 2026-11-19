@@ -15,7 +15,7 @@ The Cursor plugin connects to Co-Invest Computer, whose direct trading tools pla
 | [Co-Invest](plugins/co-invest) | Cursor | https://coinvest-computer.liquid.trade/mcp | Direct trades you authorize in chat |
 | [Co-Invest](plugins/co-invest-grok) | Grok Bot, Grok Build | https://coinvest.liquid.trade/mcp?profile=all | Trades you approve in chat |
 | [Co-Invest](plugins/co-invest-muse) | Muse Connector Platform (in review) | https://coinvest.liquid.trade/mcp?profile=paper-only | Orders through this connector are simulated; sign-in grants a normal Liquid permission, not a practice-only one; production endpoint verified; Muse review pending |
-| [Co-Invest](plugins/co-invest-perplexity) | Perplexity (GitHub import) | https://coinvest-computer.liquid.trade/mcp | Direct trades you authorize in chat; marketplace proposal drafted, not submitted |
+| [Co-Invest](plugins/co-invest-perplexity) | Perplexity (GitHub import) | https://coinvest-computer.liquid.trade/mcp | Direct trades you authorize in chat; connector form submitted to Perplexity for 1.1.0 on 2026-11-19 (in review) |
 | [Co-Invest](plugins/co-invest-openai) | OpenAI | https://coinvest-chat.liquid.trade | Market research, portfolio reads and review links for new trade suggestions; simulated account and position management tools |
 | [Co-Invest](#claude) | Claude (custom connector, no package) | https://coinvest.liquid.trade | Trades you confirm on a card or in chat |
 
