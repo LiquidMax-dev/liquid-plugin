@@ -16,7 +16,6 @@ Copies of the repository's root skills, bundled because this connection serves t
 | `coinvest-market-scan` | What is moving, signals, ideas, the leaderboard and your watchlist. Places no trades. |
 | `coinvest-paper-trading` | Paper mode status, switching and reset. |
 | `coinvest-portfolio-review` | Balances, positions, open orders, history and allocation. Read-only. |
-| `coinvest-prediction-markets` | Prediction markets: search, odds and order books, positions, buys, closes and cancels. |
 | `coinvest-research` | One asset or a comparison: price, funding, positioning, technicals, order book, news. Read-only. |
 | `coinvest-trade` | Perpetual orders, take-profit and stop-loss, closes, cancels and leverage, following this connection's approval step. |
 

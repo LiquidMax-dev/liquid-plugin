@@ -36,6 +36,14 @@ test("a package gets exactly the skills whose required tool its platform serves"
   assert.deepEqual(map, { "pkg-a": ["coinvest-research", "coinvest-tokenized-stocks"], "pkg-b": ["coinvest", "coinvest-research"] });
 });
 
+test("a store's refused skill is left out of that package only", () => {
+  const platforms = { a: { tools: ["search_prediction_markets"] }, b: { tools: ["search_prediction_markets"] } };
+  const map = computeSkillSyncMap(platforms, { "pkg-a": "a", "pkg-b": "b" }, [], { "pkg-a": ["coinvest-prediction-markets"] });
+  assert.deepEqual(map, { "pkg-a": [], "pkg-b": ["coinvest-prediction-markets"] });
+  assert.ok(!SKILL_SYNC_MAP["co-invest-openai"].includes("coinvest-prediction-markets"));
+  assert.ok(SKILL_SYNC_MAP["co-invest-muse"].includes("coinvest-prediction-markets") || SKILL_SYNC_MAP["co-invest-grok"].includes("coinvest-prediction-markets"));
+});
+
 test("the tokenized-stocks skill ships only where execute_spot_order is served", () => {
   const withSkill = Object.entries(SKILL_SYNC_MAP).filter(([, names]) => names.includes("coinvest-tokenized-stocks")).map(([pkg]) => pkg).sort();
   assert.deepEqual(withSkill, ["co-invest-claude", "co-invest-grok"]);

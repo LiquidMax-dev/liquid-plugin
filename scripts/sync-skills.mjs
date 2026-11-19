@@ -35,11 +35,15 @@ export const PACKAGE_PLATFORM = Object.freeze({
 // The base skill defaults to the Computer endpoint, so it is listed by hand.
 export const BASE_SKILL_PACKAGES = Object.freeze(["co-invest", "co-invest-perplexity"]);
 
-export function computeSkillSyncMap(platforms, packagePlatform = PACKAGE_PLATFORM, basePackages = BASE_SKILL_PACKAGES) {
+// Skills a store refused although its endpoint serves their tools. OpenAI's skill check
+// (2026-11-19, draft 1.1.0) rejected coinvest-prediction-markets as "not suitable for broad discovery".
+export const PACKAGE_EXCLUDES = Object.freeze({ "co-invest-openai": Object.freeze(["coinvest-prediction-markets"]) });
+
+export function computeSkillSyncMap(platforms, packagePlatform = PACKAGE_PLATFORM, basePackages = BASE_SKILL_PACKAGES, excludes = PACKAGE_EXCLUDES) {
   const map = {};
   for (const [pkg, platform] of Object.entries(packagePlatform)) {
     const tools = new Set(platforms[platform].tools);
-    const skills = Object.entries(SKILL_REQUIRES).filter(([, tool]) => tools.has(tool)).map(([name]) => name);
+    const skills = Object.entries(SKILL_REQUIRES).filter(([, tool]) => tools.has(tool)).map(([name]) => name).filter((name) => !(excludes[pkg] ?? []).includes(name));
     if (basePackages.includes(pkg)) skills.unshift("coinvest");
     map[pkg] = Object.freeze(skills.sort());
   }

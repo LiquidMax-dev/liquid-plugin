@@ -3,7 +3,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import test from "node:test";
 import { parse } from "yaml";
-import { PACKAGE_PLATFORM, SKILL_REQUIRES, SKILL_SYNC_MAP } from "../scripts/sync-skills.mjs";
+import { PACKAGE_EXCLUDES, PACKAGE_PLATFORM, SKILL_REQUIRES, SKILL_SYNC_MAP } from "../scripts/sync-skills.mjs";
 
 const repoRoot = resolve(import.meta.dirname, "..");
 const readJson = (rel) => JSON.parse(readFileSync(join(repoRoot, rel), "utf8"));
@@ -85,7 +85,8 @@ test("a skill is bundled only where every tool its Tools section leads with coul
 
 test("every tool a package's endpoint serves is named by a skill bundled with it", () => {
   for (const [pkg, names] of Object.entries(SKILL_SYNC_MAP)) {
-    const named = new Set(names.filter((name) => name !== "coinvest").flatMap((name) => [...toolsNamed(readSkill(repoRoot, name).raw)]));
+    const covering = [...names, ...(PACKAGE_EXCLUDES[pkg] ?? [])];
+    const named = new Set(covering.filter((name) => name !== "coinvest").flatMap((name) => [...toolsNamed(readSkill(repoRoot, name).raw)]));
     const missing = platforms[PACKAGE_PLATFORM[pkg]].tools.filter((tool) => tool !== "help" && !named.has(tool));
     assert.deepEqual(missing, [], `${pkg}: tools with no bundled skill`);
   }
