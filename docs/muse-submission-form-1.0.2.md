@@ -1,3 +1,5 @@
+An update draft for version 1.1.0, prepared 2026-11-19 and not submitted, is in [muse-submission-form-1.1.0.md](muse-submission-form-1.1.0.md). This document stays as the record of the 1.0.2 submission.
+
 # Co-Invest 1.0.2 — Muse submission form
 
 Filled on 2026-10-12 and submitted by the owner the same day. Muse then requested an Integration credentials step, filled on 2026-10-23 and submitted by the owner. This records public form fields. Private submitter identity and work-email values are intentionally omitted, alongside reviewer credentials, access tokens, account data and infrastructure identifiers.
