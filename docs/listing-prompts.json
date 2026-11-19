@@ -1,0 +1,262 @@
+{
+  "formatVersion": 1,
+  "sourceRepository": "LiquidMax-dev/liquid-mcp",
+  "sourceRevision": "82d1e73a13fe0fabe2ca619341e9307bbb66c6ab",
+  "observedOn": "2026-11-19",
+  "platforms": {
+    "cursor": {
+      "endpoint": "https://coinvest-computer.liquid.trade/mcp",
+      "catalog": "computer-v1-full",
+      "orderGate": "direct",
+      "readme": "plugins/co-invest/README.md",
+      "tools": ["_earn_pending_status", "analyze_market", "analyze_markets_batch", "automated_trading_status", "cancel_order", "cancel_prediction_order", "close_position", "close_positions_batch", "close_prediction_position", "create_onramp_session", "deposit_earn", "disable_automated_trading", "disable_paper_trading", "edit_watchlist", "enable_automated_trading", "enable_paper_trading", "enable_trading", "execute_order", "execute_orders_batch", "execute_prediction_order", "execute_tpsl", "generate_deposit_address", "get_account", "get_asset_profile", "get_earn_balance", "get_news", "get_portfolio", "get_position_history", "get_positioning_pulse", "get_staking", "get_technical_indicators", "get_transaction_history", "help", "leaderboard_data", "leaderboard_rank", "market_picks", "modify_position", "paper_trading_status", "payment_link", "plan_portfolio", "read_link", "refer", "remove_trailing_stop", "reset_paper_account", "search_markets", "search_prediction_markets", "set_trailing_stop", "show_chart", "show_deposit", "show_market_overview", "show_orderbook", "show_portfolio_chart", "show_prediction_orderbook", "suggest_order", "suggest_trade", "suggest_trades_batch", "upcoming_earnings", "update_leverage", "view_open_orders", "view_prediction_orders", "view_prediction_positions", "view_trailing_stop", "withdraw_earn"],
+      "prompts": [
+        {
+          "text": "Compare NVDA, TSLA and BTC: price, funding, positioning and the latest news. No trade.",
+          "tools": ["analyze_markets_batch", "get_news"]
+        },
+        {
+          "text": "Which companies report earnings this week, and what are NVDA's market cap and P/E?",
+          "tools": ["upcoming_earnings", "get_asset_profile"]
+        },
+        {
+          "text": "Show my Liquid portfolio, open orders and my last 10 trades.",
+          "tools": ["get_portfolio", "view_open_orders", "get_transaction_history"]
+        },
+        {
+          "text": "Long ETH with $50 notional at 2x and a stop loss 5% below the entry price.",
+          "tools": ["execute_order"]
+        },
+        {
+          "text": "Set a trailing stop on my SOL position that gives back 20% of margin, and show its trigger price.",
+          "tools": ["set_trailing_stop", "view_trailing_stop"]
+        },
+        {
+          "text": "Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds.",
+          "tools": ["search_prediction_markets"]
+        },
+        {
+          "text": "How much USDC do I have in Earn, and what is my staked HYPE earning?",
+          "tools": ["get_earn_balance", "get_staking"]
+        },
+        {
+          "text": "Switch to paper trading and plan a moderate-risk portfolio across crypto, stocks and gold.",
+          "tools": ["enable_paper_trading", "plan_portfolio"]
+        }
+      ]
+    },
+    "perplexity": {
+      "endpoint": "https://coinvest-computer.liquid.trade/mcp",
+      "catalog": "computer-v1-full",
+      "orderGate": "direct",
+      "readme": "plugins/co-invest-perplexity/README.md",
+      "tools": ["_earn_pending_status", "analyze_market", "analyze_markets_batch", "automated_trading_status", "cancel_order", "cancel_prediction_order", "close_position", "close_positions_batch", "close_prediction_position", "create_onramp_session", "deposit_earn", "disable_automated_trading", "disable_paper_trading", "edit_watchlist", "enable_automated_trading", "enable_paper_trading", "enable_trading", "execute_order", "execute_orders_batch", "execute_prediction_order", "execute_tpsl", "generate_deposit_address", "get_account", "get_asset_profile", "get_earn_balance", "get_news", "get_portfolio", "get_position_history", "get_positioning_pulse", "get_staking", "get_technical_indicators", "get_transaction_history", "help", "leaderboard_data", "leaderboard_rank", "market_picks", "modify_position", "paper_trading_status", "payment_link", "plan_portfolio", "read_link", "refer", "remove_trailing_stop", "reset_paper_account", "search_markets", "search_prediction_markets", "set_trailing_stop", "show_chart", "show_deposit", "show_market_overview", "show_orderbook", "show_portfolio_chart", "show_prediction_orderbook", "suggest_order", "suggest_trade", "suggest_trades_batch", "upcoming_earnings", "update_leverage", "view_open_orders", "view_prediction_orders", "view_prediction_positions", "view_trailing_stop", "withdraw_earn"],
+      "prompts": [
+        {
+          "text": "Compare NVDA, TSLA and BTC: price, funding, positioning and the latest news. No trade.",
+          "tools": ["analyze_markets_batch", "get_news"]
+        },
+        {
+          "text": "Which companies report earnings this week, and what are NVDA's market cap and P/E?",
+          "tools": ["upcoming_earnings", "get_asset_profile"]
+        },
+        {
+          "text": "Show my Liquid portfolio, open orders and my last 10 trades.",
+          "tools": ["get_portfolio", "view_open_orders", "get_transaction_history"]
+        },
+        {
+          "text": "Show me the terms for an ETH long with $50 notional at 2x and a 5% stop loss, and place it once I approve.",
+          "tools": ["execute_order"]
+        },
+        {
+          "text": "Set a trailing stop on my SOL position that gives back 20% of margin, and show its trigger price.",
+          "tools": ["set_trailing_stop", "view_trailing_stop"]
+        },
+        {
+          "text": "Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds.",
+          "tools": ["search_prediction_markets"]
+        },
+        {
+          "text": "How much USDC do I have in Earn, and what is my staked HYPE earning?",
+          "tools": ["get_earn_balance", "get_staking"]
+        },
+        {
+          "text": "Switch to paper trading and plan a moderate-risk portfolio across crypto, stocks and gold.",
+          "tools": ["enable_paper_trading", "plan_portfolio"]
+        }
+      ]
+    },
+    "grok": {
+      "endpoint": "https://coinvest.liquid.trade/mcp?profile=all",
+      "catalog": "all",
+      "orderGate": "chat-approval",
+      "readme": "plugins/co-invest-grok/README.md",
+      "tools": ["_earn_pending_status", "analyze_market", "analyze_markets_batch", "automated_trading_status", "cancel_order", "cancel_prediction_order", "close_position", "close_positions_batch", "close_prediction_position", "create_onramp_session", "deposit_earn", "disable_automated_trading", "disable_paper_trading", "edit_watchlist", "enable_automated_trading", "enable_paper_trading", "enable_trading", "execute_order", "execute_orders_batch", "execute_prediction_order", "execute_spot_order", "execute_tpsl", "generate_deposit_address", "get_account", "get_asset_profile", "get_earn_balance", "get_news", "get_portfolio", "get_position_history", "get_positioning_pulse", "get_staking", "get_technical_indicators", "get_transaction_history", "help", "leaderboard_data", "leaderboard_rank", "market_picks", "modify_position", "paper_trading_status", "payment_link", "plan_portfolio", "read_link", "refer", "remove_trailing_stop", "reset_paper_account", "search_markets", "search_prediction_markets", "set_trailing_stop", "show_chart", "show_deposit", "show_market_overview", "show_orderbook", "show_portfolio_chart", "show_prediction_orderbook", "suggest_order", "suggest_trade", "suggest_trades_batch", "upcoming_earnings", "update_leverage", "view_open_orders", "view_prediction_orders", "view_prediction_positions", "view_trailing_stop", "withdraw_earn"],
+      "prompts": [
+        {
+          "text": "Compare NVDA, TSLA and BTC: price, funding, positioning and the latest news. No trade.",
+          "tools": ["analyze_markets_batch", "get_news"]
+        },
+        {
+          "text": "Which companies report earnings this week, and what are NVDA's market cap and P/E?",
+          "tools": ["upcoming_earnings", "get_asset_profile"]
+        },
+        {
+          "text": "Show my Liquid portfolio, open orders and my last 10 trades.",
+          "tools": ["get_portfolio", "view_open_orders", "get_transaction_history"]
+        },
+        {
+          "text": "Show me the terms for an ETH long with $50 notional at 2x and a 5% stop loss, and place it once I approve.",
+          "tools": ["suggest_trade", "execute_order"]
+        },
+        {
+          "text": "Buy $25 of tokenized Apple stock (EQAAPL) with no leverage. Show me the preview first.",
+          "tools": ["execute_spot_order"]
+        },
+        {
+          "text": "Set a trailing stop on my SOL position that gives back 20% of margin, and show its trigger price.",
+          "tools": ["set_trailing_stop", "view_trailing_stop"]
+        },
+        {
+          "text": "Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds.",
+          "tools": ["search_prediction_markets"]
+        },
+        {
+          "text": "How much USDC do I have in Earn, and what is my staked HYPE earning?",
+          "tools": ["get_earn_balance", "get_staking"]
+        },
+        {
+          "text": "Switch to paper trading and plan a moderate-risk portfolio across crypto, stocks and gold.",
+          "tools": ["enable_paper_trading", "plan_portfolio"]
+        }
+      ]
+    },
+    "claude": {
+      "endpoint": "https://coinvest.liquid.trade",
+      "catalog": "interactive-v1",
+      "orderGate": "card-or-chat-approval",
+      "readme": "README.md",
+      "tools": ["_earn_pending_status", "analyze_market", "analyze_markets_batch", "automated_trading_status", "cancel_order", "cancel_prediction_order", "close_position", "close_positions_batch", "close_prediction_position", "create_onramp_session", "deposit_earn", "disable_automated_trading", "disable_paper_trading", "edit_watchlist", "enable_automated_trading", "enable_paper_trading", "enable_trading", "execute_order", "execute_orders_batch", "execute_prediction_order", "execute_spot_order", "execute_tpsl", "generate_deposit_address", "get_account", "get_asset_profile", "get_earn_balance", "get_news", "get_portfolio", "get_position_history", "get_positioning_pulse", "get_staking", "get_technical_indicators", "get_transaction_history", "help", "leaderboard_data", "leaderboard_rank", "market_picks", "modify_position", "paper_trading_status", "payment_link", "plan_portfolio", "read_link", "refer", "remove_trailing_stop", "reset_paper_account", "search_markets", "search_prediction_markets", "set_trailing_stop", "show_chart", "show_deposit", "show_market_overview", "show_orderbook", "show_portfolio_chart", "show_prediction_orderbook", "suggest_order", "suggest_trade", "suggest_trades_batch", "upcoming_earnings", "update_leverage", "view_open_orders", "view_prediction_orders", "view_prediction_positions", "view_trailing_stop", "withdraw_earn"],
+      "prompts": [
+        {
+          "text": "Compare NVDA, TSLA and BTC: price, funding, positioning and the latest news. No trade.",
+          "tools": ["analyze_markets_batch", "get_news"]
+        },
+        {
+          "text": "Show a 4h BTC chart, then its RSI and MACD and the order book.",
+          "tools": ["show_chart", "get_technical_indicators", "show_orderbook"]
+        },
+        {
+          "text": "Which companies report earnings this week, and what are NVDA's market cap and P/E?",
+          "tools": ["upcoming_earnings", "get_asset_profile"]
+        },
+        {
+          "text": "Show my Liquid portfolio and open orders, then chart my allocation.",
+          "tools": ["get_portfolio", "view_open_orders", "show_portfolio_chart"]
+        },
+        {
+          "text": "Suggest an ETH long with $50 notional at 2x and a stop loss 5% below entry, as a card I can confirm.",
+          "tools": ["suggest_trade"]
+        },
+        {
+          "text": "Buy $25 of tokenized Apple stock (EQAAPL) with no leverage. Show me the preview first.",
+          "tools": ["execute_spot_order"]
+        },
+        {
+          "text": "Set a trailing stop on my SOL position that gives back 20% of margin, and show its trigger price.",
+          "tools": ["set_trailing_stop", "view_trailing_stop"]
+        },
+        {
+          "text": "Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds.",
+          "tools": ["search_prediction_markets"]
+        },
+        {
+          "text": "Switch to paper trading and plan a moderate-risk portfolio across crypto, stocks and gold.",
+          "tools": ["enable_paper_trading", "plan_portfolio"]
+        }
+      ]
+    },
+    "chatgpt": {
+      "endpoint": "https://coinvest-chat.liquid.trade",
+      "catalog": "interactive-v1-links-only",
+      "orderGate": "liquid-review-link",
+      "readme": "plugins/co-invest-openai/README.md",
+      "tools": ["analyze_market", "analyze_markets_batch", "cancel_paper_order", "close_all_paper_positions", "close_paper_position", "create_onramp_session", "disable_paper_trading", "edit_watchlist", "enable_paper_trading", "enable_trading", "generate_deposit_address", "get_news", "get_portfolio", "get_position_history", "get_positioning_pulse", "get_staking", "get_technical_indicators", "get_transaction_history", "help", "leaderboard_data", "leaderboard_rank", "market_picks", "paper_trading_status", "payment_link", "plan_portfolio", "read_link", "refer", "reset_paper_account", "search_markets", "search_prediction_markets", "set_paper_tp_sl", "show_chart", "show_deposit", "show_market_overview", "show_orderbook", "show_portfolio_chart", "show_prediction_orderbook", "suggest_order", "suggest_trade", "suggest_trades_batch", "update_paper_leverage", "view_open_orders", "view_prediction_orders", "view_prediction_positions"],
+      "prompts": [
+        {
+          "text": "What moved NVDA in the last 24 hours?",
+          "tools": ["analyze_market", "get_news"]
+        },
+        {
+          "text": "Compare BTC, ETH and SOL: funding, positioning and key technical levels.",
+          "tools": ["analyze_markets_batch", "get_technical_indicators"]
+        },
+        {
+          "text": "Plan a moderate-risk portfolio across crypto, stocks and gold",
+          "tools": ["plan_portfolio", "suggest_trades_batch"]
+        },
+        {
+          "text": "Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds.",
+          "tools": ["search_prediction_markets"]
+        },
+        {
+          "text": "Show my Liquid portfolio, open orders and my last 10 trades.",
+          "tools": ["get_portfolio", "view_open_orders", "get_transaction_history"]
+        },
+        {
+          "text": "Suggest a small ETH long with a stop loss and give me the link to review it in Liquid.",
+          "tools": ["suggest_trade"]
+        },
+        {
+          "text": "Set a take-profit 10% above and a stop-loss 5% below the current price on my paper BTC position.",
+          "tools": ["set_paper_tp_sl"]
+        },
+        {
+          "text": "Who are the top traders on Liquid this week, and where do I rank?",
+          "tools": ["leaderboard_data", "leaderboard_rank"]
+        }
+      ]
+    },
+    "muse": {
+      "endpoint": "https://coinvest.liquid.trade/mcp?profile=paper-only",
+      "catalog": "paper-only",
+      "orderGate": "chat-approval-simulated",
+      "readme": "plugins/co-invest-muse/README.md",
+      "tools": ["analyze_market", "analyze_markets_batch", "automated_trading_status", "cancel_order", "cancel_prediction_order", "close_position", "close_positions_batch", "close_prediction_position", "edit_watchlist", "enable_paper_trading", "execute_order", "execute_orders_batch", "execute_prediction_order", "execute_tpsl", "get_account", "get_news", "get_portfolio", "get_position_history", "get_positioning_pulse", "get_technical_indicators", "get_transaction_history", "help", "leaderboard_data", "leaderboard_rank", "market_picks", "modify_position", "paper_trading_status", "plan_portfolio", "read_link", "refer", "reset_paper_account", "search_markets", "search_prediction_markets", "show_chart", "show_market_overview", "show_orderbook", "show_portfolio_chart", "show_prediction_orderbook", "suggest_order", "suggest_trade", "suggest_trades_batch", "update_leverage", "view_open_orders", "view_prediction_orders", "view_prediction_positions"],
+      "prompts": [
+        {
+          "text": "Compare BTC and ETH: price, funding, positioning and the latest news. No trade.",
+          "tools": ["analyze_markets_batch", "get_news"]
+        },
+        {
+          "text": "Summarize SOL's 4h price action and key technical indicators.",
+          "tools": ["show_chart", "get_technical_indicators"]
+        },
+        {
+          "text": "Show me the terms for a simulated BTC long with $100 notional at 2x, and place it once I approve.",
+          "tools": ["suggest_trade", "execute_order"]
+        },
+        {
+          "text": "Set a take-profit 10% above and a stop-loss 5% below the current price on my simulated BTC position.",
+          "tools": ["get_portfolio", "modify_position", "execute_tpsl"]
+        },
+        {
+          "text": "Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds.",
+          "tools": ["search_prediction_markets"]
+        },
+        {
+          "text": "Plan a moderate-risk simulated portfolio across crypto, stocks and gold.",
+          "tools": ["plan_portfolio", "suggest_trades_batch"]
+        },
+        {
+          "text": "Show my simulated portfolio, open orders and trade history.",
+          "tools": ["get_portfolio", "view_open_orders", "get_transaction_history"]
+        },
+        {
+          "text": "Who are the top traders on Liquid's public leaderboard this week?",
+          "tools": ["leaderboard_data"]
+        }
+      ]
+    }
+  }
+}

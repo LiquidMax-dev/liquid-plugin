@@ -45,12 +45,27 @@ The connected server groups its tools by what they do. The names below are examp
 
 - **Research:** market analysis, positioning and crowd-bias reads, technical indicators, order books, price history, a market overview, leaderboard rankings, and news, such as `analyze_market`, `show_chart`, `get_news`, and `leaderboard_data`.
 - **Account:** balances, positions, open orders, your position allocation, and transaction or position history, such as `get_portfolio`, `view_open_orders`, `get_account`, and `get_transaction_history`.
-- **Trading:** preparing and previewing a trade, then placing, closing, or adjusting perpetual orders once you approve the exact terms, such as `suggest_trade`, `execute_order`, and `close_position`. Cancelling a resting order with `cancel_order` runs when you ask.
+- **Trading:** preparing and previewing a trade, then placing, closing, or adjusting perpetual orders once you approve the exact terms, such as `suggest_trade`, `execute_order`, `set_trailing_stop`, and `close_position`. Cancelling a resting order with `cancel_order` runs when you ask.
+- **Tokenized stocks:** buying or selling EQX spot tokens such as EQAAPL at 1x after you approve the preview, with `execute_spot_order`. Live only; paper trading does not cover them.
 - **Prediction markets:** searching HIP-4 markets, checking your positions and orders, and placing, closing, or cancelling a prediction order after you approve it, such as `search_prediction_markets`, `execute_prediction_order`, and `cancel_prediction_order`.
 - **Paper:** the same preview-and-approve flow as live trading, run against Liquid's shared paper simulator, plus turning paper mode on or off and resetting it, such as `enable_paper_trading`, `paper_trading_status`, and `reset_paper_account`.
 - **Funding:** checking account setup, funding your account, and reviewing your HYPE staking, such as `enable_trading`, `show_deposit`, and `get_staking`.
 - **Automation policy:** saving, reading, or clearing a per-order automation limit, such as `enable_automated_trading`, `automated_trading_status`, and `disable_automated_trading`. These tools only manage that saved record: they don't place orders, and a saved policy never authorizes a chat trade.
 - **Sharing:** your referral link and your payment link, such as `refer` and `payment_link`.
+
+## Try asking
+
+Example requests that use tools this connection serves today. Trading requests return a preview first and run only after you approve it. Tokenized stocks trade live only. Paper mode applies to your wallet across Liquid connectors; ask to switch back to live trading to leave it.
+
+- Compare NVDA, TSLA and BTC: price, funding, positioning and the latest news. No trade.
+- Which companies report earnings this week, and what are NVDA's market cap and P/E?
+- Show my Liquid portfolio, open orders and my last 10 trades.
+- Show me the terms for an ETH long with $50 notional at 2x and a 5% stop loss, and place it once I approve.
+- Buy $25 of tokenized Apple stock (EQAAPL) with no leverage. Show me the preview first.
+- Set a trailing stop on my SOL position that gives back 20% of margin, and show its trigger price.
+- Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds.
+- How much USDC do I have in Earn, and what is my staked HYPE earning?
+- Switch to paper trading and plan a moderate-risk portfolio across crypto, stocks and gold.
 
 ## Network and data
 

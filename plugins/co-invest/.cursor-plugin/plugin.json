@@ -1,13 +1,13 @@
 {
   "name": "co-invest",
   "displayName": "Co-Invest",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "minClientVersions": {
     "cursor": "3.13.0",
     "grokbot": "never",
     "sand": "never"
   },
-  "description": "Research markets, review your Liquid portfolio, and place trades you authorize without leaving Cursor.",
+  "description": "Research and trade crypto, equities, commodities, indices and prediction markets on Liquid without leaving Cursor. Live prices, positioning, news, earnings and fundamentals; your portfolio, orders and history; trailing stops and paper trading. Orders are placed when you ask for them, or within an automation limit you set.",
   "author": {
     "name": "Liquid"
   },

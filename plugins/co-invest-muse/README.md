@@ -1,6 +1,6 @@
 # Co-Invest for Muse
 
-Version **1.0.2**. Connector display name: **Co-Invest**.
+Version **1.0.3** (the Muse submission was made with 1.0.2). Connector display name: **Co-Invest**.
 
 Co-Invest for Muse connects to Liquid's paper-only MCP profile for public market research and simulated trading. Orders placed through this connector's address are simulated: that endpoint never places a live order, adds funds, or switches to another Liquid connection. The production endpoint was enabled and directly verified on 2026-10-12. The hosted Muse submission is prepared for owner review; tool execution inside Muse remains unverified.
 
@@ -23,6 +23,19 @@ The package documents all 45 tools present in the pinned paper-only contract. Tr
 `reset_paper_account` clears the wallet's shared simulated account and cancels its open paper orders. Use it only after the user explicitly asks for a reset. The simulator is shared by wallet across Liquid MCP connectors; changing its state can be visible in other connectors. This endpoint does not change the Liquid web app's selected trading mode.
 
 The owner confirmed the simulated-trading scope for this submission. The Muse form has been filled for review and its terms accessed after sign-in. The agent has not submitted it or accepted terms on the owner's behalf. See the [complete form draft](../../docs/muse-submission-form-1.0.2.md).
+
+## Try asking
+
+Example requests that use tools in the pinned paper-only contract. Every balance, order and position here is simulated.
+
+- Compare BTC and ETH: price, funding, positioning and the latest news. No trade.
+- Summarize SOL's 4h price action and key technical indicators.
+- Show me the terms for a simulated BTC long with $100 notional at 2x, and place it once I approve.
+- Set a take-profit 10% above and a stop-loss 5% below the current price on my simulated BTC position.
+- Which prediction markets are open on Bitcoin and on upcoming Premier League matches? Show the odds.
+- Plan a moderate-risk simulated portfolio across crypto, stocks and gold.
+- Show my simulated portfolio, open orders and trade history.
+- Who are the top traders on Liquid's public leaderboard this week?
 
 ## Files
 

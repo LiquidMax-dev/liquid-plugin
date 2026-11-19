@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "co-invest",
-  "version": "1.0.2",
-  "description": "Co-Invest connects Perplexity to your Liquid account. Research crypto, equities, commodities, indices and prediction markets with live prices, funding, positioning and news. Review your portfolio, open orders and history. Ask for a trade and Co-Invest previews the exact terms first; orders are placed only after you approve them in chat. Includes a paper-trading mode with simulated funds.",
+  "version": "1.0.3",
+  "description": "Co-Invest connects Perplexity to your Liquid account. Research crypto, equities, commodities, indices and prediction markets with live prices, funding, positioning, news, earnings dates and company fundamentals. Review your portfolio, open orders and history. Orders are placed when you ask for them in chat, with no separate confirmation step, so name the asset, side and size you want. Protect positions with take-profit, stop-loss and trailing stops, or practice in paper-trading mode with simulated funds.",
   "author": { "name": "Liquid", "url": "https://liquid.trade" },
   "homepage": "https://liquid.trade/coinvest",
   "repository": "https://github.com/LiquidMax-dev/liquid-plugin",

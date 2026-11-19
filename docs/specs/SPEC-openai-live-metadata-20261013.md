@@ -1,5 +1,7 @@
 # Superseded metadata-only OpenAI package
 
+**Changed 2026-11-19 by [SPEC-listing-descriptions-prompts-20261119](SPEC-listing-descriptions-prompts-20261119.md):** `description`, `interface.longDescription` and `interface.defaultPrompt` are no longer preserved; all other listing fields still are.
+
 **Superseded 2026-10-13 by [SPEC-openai-mcp-preservation-20261013](SPEC-openai-mcp-preservation-20261013.md).** The owner uploaded the three-file ZIP and OpenAI rejected it because the existing MCP declaration was missing. The export was incomplete for an update. The replacement adds `mcpServers: "./.mcp.json"` and the existing registered root URL, preserving listing fields and logos. The original local-verification record below is historical; its three-file archive must not be used.
 
 Historical status: locally verified, then rejected by portal import.

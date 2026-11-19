@@ -1,5 +1,7 @@
 # Cursor plugin structure
 
+**Changed 2026-11-19 by [SPEC-listing-descriptions-prompts-20261119](SPEC-listing-descriptions-prompts-20261119.md):** the Cursor and Grok descriptions quoted below ("Research markets, review your Liquid portfolio, ...") are replaced; the manifests hold the current text.
+
 Status: implemented, 2026-09-28, including the D8 amendment (QA needed: the authenticated Cursor leg and a Grok Bot connector check). The advisor review was applied: it
 found a missing-copy blocker, unconditional Agent Plugins MCP validation,
 Cursor's MCP merge model, symlink and metadata-equality checks, the verbatim
