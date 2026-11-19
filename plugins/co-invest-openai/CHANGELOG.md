@@ -2,7 +2,7 @@
 
 ## 1.1.0
 
-- Bundled skills replaced: the three package-specific skills are removed and the shared Co-Invest skill set is bundled instead (allocate, funding, market scan, paper trading, portfolio review, prediction markets, research, trade). Listing copy, endpoint and tools are unchanged. Needs a new upload to OpenAI.
+- Bundled skills replaced: the three package-specific skills are removed and the shared Co-Invest skill set is bundled instead (allocate, funding, market scan, paper trading, portfolio review, research, trade). The prediction markets skill is left out: OpenAI's skill check refused it on 2026-11-19 as not suitable for broad discovery; the prediction market tools themselves are unchanged. Listing copy, endpoint and tools are unchanged.
 
 ## 1.0.3
 

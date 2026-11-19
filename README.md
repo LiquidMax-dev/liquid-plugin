@@ -167,7 +167,7 @@ Skills are defined once, in `skills/`. `npm run sync:skills` copies each one int
 | `plugins/co-invest-perplexity` | 13 | `coinvest-tokenized-stocks` |
 | `plugins/co-invest-claude` | 13 | `coinvest` |
 | `plugins/co-invest-grok` | 13 | `coinvest` |
-| `plugins/co-invest-openai` | 8 | `coinvest`, `coinvest-automation`, `coinvest-trailing-stops`, `coinvest-earnings`, `coinvest-yield`, `coinvest-tokenized-stocks` |
+| `plugins/co-invest-openai` | 7 | `coinvest-prediction-markets` (refused by OpenAI's skill check, 2026-11-19), `coinvest`, `coinvest-automation`, `coinvest-trailing-stops`, `coinvest-earnings`, `coinvest-yield`, `coinvest-tokenized-stocks` |
 | `plugins/co-invest-muse` | 8 | `coinvest`, `coinvest-trailing-stops`, `coinvest-earnings`, `coinvest-yield`, `coinvest-funding`, `coinvest-tokenized-stocks` |
 
 Every workflow skill reads the live tool list and follows that connection's approval step, so the same text works on each endpoint. `coinvest-tokenized-stocks` needs `execute_spot_order`, which only the Grok and Claude connections serve.
@@ -202,7 +202,7 @@ npm run package:openai -- --out /absolute/path/Co-Invest-1.0.3.zip
 ```
 
 The build validates the OpenAI package and archives the manifest,
-`.mcp.json`, both PNG logos, and the bundled `skills/*/SKILL.md` files (eight today). The
+`.mcp.json`, both PNG logos, and the bundled `skills/*/SKILL.md` files (seven today). The
 [OpenAI tool reference](https://github.com/LiquidMax-dev/liquid-plugin/blob/main/docs/openai/tools.md)
 and its JSON snapshot stay in the repository, outside the ZIP. After replacing
 the snapshot with a sanitized public tools/list result, run

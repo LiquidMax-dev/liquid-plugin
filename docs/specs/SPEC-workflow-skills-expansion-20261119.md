@@ -1,6 +1,6 @@
 # SPEC-workflow-skills-expansion-20261119
 
-Status: implemented 2026-11-19. Gates: validate OK, 89 of 89 tests with `LIQUID_MCP_ROOT` (88 plus the optional catalog comparison). Not verified: skill loading or triggering inside any host; any call on the `all`, `interactive-v1`, links-only or paper-only endpoints. Nothing was uploaded or submitted to a store. Extends SPEC-bundled-workflow-skills-20261109 (PR #14), which bundled six Computer-only workflow skills with the Cursor plugin.
+Status: implemented 2026-11-19. **Corrected 2026-11-19:** the ChatGPT package bundles 7 skills, not 8. OpenAI's automated skill check on the uploaded 1.1.0 draft passed seven and refused `coinvest-prediction-markets` ("The content or focus of your skill is not suitable for broad discovery and cannot be approved as submitted"), so `PACKAGE_EXCLUDES` in `scripts/sync-skills.mjs` leaves it out of `co-invest-openai` only. Original status: Gates: validate OK, 89 of 89 tests with `LIQUID_MCP_ROOT` (88 plus the optional catalog comparison). Not verified: skill loading or triggering inside any host; any call on the `all`, `interactive-v1`, links-only or paper-only endpoints. Nothing was uploaded or submitted to a store. Extends SPEC-bundled-workflow-skills-20261109 (PR #14), which bundled six Computer-only workflow skills with the Cursor plugin.
 
 ## TLDR
 

@@ -1,5 +1,7 @@
 # OpenAI Co-Invest 1.0.2 submission
 
+**Corrected 2026-11-19:** 1.0.2 is the published version (portal read 2026-11-19), not 1.0.0. A 1.1.0 draft with the shared skill set was uploaded the same day: metadata had no findings, seven skills passed the automated check and `coinvest-prediction-markets` was refused as not suitable for broad discovery, so the package now bundles seven skills. The statements below predate this.
+
 The owner-uploaded `Co-Invest-1.0.2-skills.zip` passed draft checks. The 1.0.2 draft is not submitted; 1.0.0 remains published. The checked upload preserves the published identity, listing fields and original PNG logos, uses the exact registered MCP URL, and adds three research skills. The current local portfolio-planning skill was corrected after upload, so its source differs from the checked artifact and must be rebuilt and rechecked before submission.
 
 **Changed 2026-11-19 by SPEC-listing-descriptions-prompts-20261119:** the local manifest now has a rewritten long description (in `description` and `interface.longDescription`) and three starter prompts in `interface.defaultPrompt`. The package version is now 1.0.3. Neither has been uploaded to OpenAI. The statements below that every listing field is preserved describe the earlier uploaded ZIP; for the current source, those three fields differ and all other listing fields are still the published values. A listing text change needs a new ZIP and OpenAI review.
