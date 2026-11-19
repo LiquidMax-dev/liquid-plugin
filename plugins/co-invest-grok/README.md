@@ -53,6 +53,28 @@ The connected server groups its tools by what they do. The names below are examp
 - **Automation policy:** saving, reading, or clearing a per-order automation limit, such as `enable_automated_trading`, `automated_trading_status`, and `disable_automated_trading`. These tools only manage that saved record: they don't place orders, and a saved policy never authorizes a chat trade.
 - **Sharing:** your referral link and your payment link, such as `refer` and `payment_link`.
 
+## Bundled skills
+
+Copies of the repository's root skills, bundled because this connection serves the tools they use:
+
+| Skill | What it does |
+| --- | --- |
+| `coinvest-allocate` | A multi-position plan from `plan_portfolio`, proposed as one batch and placed only on your explicit yes. |
+| `coinvest-automation` | The automated-trading policy: your per-order cap and expiry, and what it does and does not authorize. |
+| `coinvest-earnings` | Earnings calendar and company fundamentals. Read-only. |
+| `coinvest-funding` | Trading setup, deposit addresses, card on-ramp, payment and referral links. |
+| `coinvest-market-scan` | What is moving, signals, ideas, the leaderboard and your watchlist. Places no trades. |
+| `coinvest-paper-trading` | Paper mode status, switching and reset. |
+| `coinvest-portfolio-review` | Balances, positions, open orders, history and allocation. Read-only. |
+| `coinvest-prediction-markets` | Prediction markets: search, odds and order books, positions, buys, closes and cancels. |
+| `coinvest-research` | One asset or a comparison: price, funding, positioning, technicals, order book, news. Read-only. |
+| `coinvest-tokenized-stocks` | Buy and sell tokenized stock spot tokens such as EQAAPL: 1x, no shorting, live only. |
+| `coinvest-trade` | Perpetual orders, take-profit and stop-loss, closes, cancels and leverage, following this connection's approval step. |
+| `coinvest-trailing-stops` | Set, view and remove trailing stops, with the trigger price stated before you approve. |
+| `coinvest-yield` | Earn vault balance, deposit and withdrawal requests you sign in Liquid, and HYPE staking reads. |
+
+If you copy this folder into Grok Build, do not also install the same skills with `npx skills add`, or they load twice. Whether Grok Bot loads a package's `skills/` folder is not confirmed.
+
 ## Try asking
 
 Example requests that use tools this connection serves today. Trading requests return a preview first and run only after you approve it. Tokenized stocks trade live only. Paper mode applies to your wallet across Liquid connectors; ask to switch back to live trading to leave it.

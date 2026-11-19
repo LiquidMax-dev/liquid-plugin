@@ -1,16 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.1.0
 
-- Bundled six workflow skills next to `coinvest`: `coinvest-research`,
-  `coinvest-portfolio-review`, `coinvest-allocate`, `coinvest-trade`,
-  `coinvest-paper-trading`, and `coinvest-automation`. They are copies of the
-  repository's root skills.
-- Narrowed the `coinvest` skill's description to connection, discovery, and
-  safety rules, and added a list of the workflow skills. Its rules are
-  unchanged.
-- The manifest version stays 1.0.2 until the owner selects the next release
-  label. The MCP server is unchanged.
+- Bundled 12 workflow skills next to `coinvest`, copies of the repository's root skills: `coinvest-research`, `coinvest-portfolio-review`, `coinvest-allocate`, `coinvest-trade`, `coinvest-paper-trading`, `coinvest-automation`, `coinvest-market-scan`, `coinvest-prediction-markets`, `coinvest-trailing-stops`, `coinvest-earnings`, `coinvest-yield` and `coinvest-funding`. Each follows the approval step of the connection it runs on.
+- Narrowed the `coinvest` skill's description to connection, discovery, and safety rules, and added a list of the workflow skills. Its rules are unchanged.
+- The MCP server is unchanged.
 
 ## 1.0.3
 

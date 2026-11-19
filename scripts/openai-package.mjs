@@ -3,20 +3,20 @@ import { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
+import { SKILL_SYNC_MAP } from "./sync-skills.mjs";
 
 const BASELINE_SHA256 = "c7a7590179b778f2335f4c9fb35f8dd00f05c4f11bafa7d666fe6e39fbde9077";
 const LOGO_HASHES = new Map([
   ["assets/logo.png", "2f1b172ae3b87c066ccab9a517e9c303cd88df6b6ca1835e865f6fd38a704506"],
   ["assets/logo-dark.png", "29bb7e1a2ba39baf4811246ecfecdfeb1d6d4f9277588587b3bd1b8cb151488a"],
 ]);
+export const SKILL_NAMES = Object.freeze([...SKILL_SYNC_MAP["co-invest-openai"]]);
 const REQUIRED_FILES = new Set([
   ".codex-plugin/plugin.json",
   ".mcp.json",
   "assets/logo.png",
   "assets/logo-dark.png",
-  "skills/coinvest-market-research/SKILL.md",
-  "skills/coinvest-portfolio-planning/SKILL.md",
-  "skills/coinvest-earn-vaults/SKILL.md",
+  ...SKILL_NAMES.map((name) => `skills/${name}/SKILL.md`),
 ]);
 const ALLOWED_FILES = new Set([
   ...REQUIRED_FILES,
@@ -24,7 +24,6 @@ const ALLOWED_FILES = new Set([
   "LICENSE",
   "README.md",
 ]);
-const SKILL_NAMES = ["coinvest-market-research", "coinvest-portfolio-planning", "coinvest-earn-vaults"];
 const EXPECTED_DIRS = new Set([
   ".codex-plugin",
   "assets",
@@ -242,7 +241,7 @@ export function validateOpenaiPackage(repoRootInput) {
   if (!isRecord(manifest)) {
     report(manifestPath, "manifest must be a JSON object");
   } else {
-    if (manifest.version !== "1.0.3") report(manifestPath, 'version must be "1.0.3"');
+    if (manifest.version !== "1.1.0") report(manifestPath, 'version must be "1.1.0"');
     if (manifest.mcpServers !== "./.mcp.json") report(manifestPath, 'mcpServers must be "./.mcp.json"');
     if (manifest.skills !== "./skills/") report(manifestPath, 'skills must be "./skills/"');
     if (isRecord(baseline) && !sameValue(manifestWithoutAllowedChanges(manifest), manifestWithoutAllowedChanges(baseline))) {

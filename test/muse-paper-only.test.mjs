@@ -5,9 +5,11 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
 import { validateMusePackage } from "../scripts/muse-paper-only.mjs";
+import { SKILL_SYNC_MAP } from "../scripts/sync-skills.mjs";
 
 const repoRoot = resolve(import.meta.dirname, "..");
 const packageDir = join(repoRoot, "plugins/co-invest-muse");
+const mappedSkills = SKILL_SYNC_MAP["co-invest-muse"];
 
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), "liquid-plugin-muse-test-"));
@@ -16,6 +18,10 @@ function fixture(t) {
   mkdirSync(join(root, "schemas/agent-plugins"), { recursive: true });
   cpSync(packageDir, join(root, "plugins/co-invest-muse"), { recursive: true });
   cpSync(join(repoRoot, "schemas/agent-plugins"), join(root, "schemas/agent-plugins"), { recursive: true });
+  for (const name of mappedSkills) {
+    cpSync(join(repoRoot, "skills", name), join(root, "skills", name), { recursive: true });
+    cpSync(join(repoRoot, "skills", name), join(root, "plugins/co-invest-muse/skills", name), { recursive: true });
+  }
   return { root, dir: join(root, "plugins/co-invest-muse") };
 }
 
@@ -205,4 +211,33 @@ test("validate-plugins attributes an issue to its file path when the message con
     output = err.stdout;
   }
   assert.match(output, /^ERROR: plugins\/co-invest-muse\/paper-only\.contract\.json: tool identifier "bad: name" is invalid$/m);
+});
+
+test("accepts the mapped skills bundled under skills/", (t) => {
+  const { root, dir } = fixture(t);
+  assert.ok(mappedSkills.length > 0);
+  for (const name of mappedSkills) assert.ok(readFileSync(join(dir, "skills", name, "SKILL.md"), "utf8").length > 0);
+  assert.equal(errorsFor(root), "");
+});
+
+test("rejects a mapped skill file that is missing from the package", (t) => {
+  const { root, dir } = fixture(t);
+  rmSync(join(dir, "skills", mappedSkills[0], "SKILL.md"));
+  assert.match(errorsFor(root), new RegExp(`skills/${mappedSkills[0]}/SKILL\\.md: required Muse package file is missing`));
+});
+
+test("rejects a skill folder outside the mapped set", (t) => {
+  const { root, dir } = fixture(t);
+  mkdirSync(join(dir, "skills", "not-a-mapped-skill"), { recursive: true });
+  writeFileSync(join(dir, "skills", "not-a-mapped-skill", "SKILL.md"), "---\nname: not-a-mapped-skill\n---\n");
+  const errors = errorsFor(root);
+  assert.match(errors, /skills\/not-a-mapped-skill: directory is outside the reviewed Muse package scope/);
+  assert.match(errors, /skills\/not-a-mapped-skill\/SKILL\.md: file is outside the reviewed Muse package scope/);
+});
+
+test("rejects a bundled skill that differs from the canonical copy", (t) => {
+  const { root, dir } = fixture(t);
+  const path = join(dir, "skills", mappedSkills[0], "SKILL.md");
+  writeFileSync(path, `${readFileSync(path, "utf8")}\nextra line\n`);
+  assert.match(errorsFor(root), /differs from the canonical skill copy/);
 });

@@ -1,0 +1,14 @@
+{
+  "name": "liquid",
+  "owner": {
+    "name": "Liquid"
+  },
+  "plugins": [
+    {
+      "name": "co-invest",
+      "source": "./plugins/co-invest-claude",
+      "description": "Research and trade crypto, equities, tokenized stocks, commodities, indices and prediction markets on Liquid from Claude. Live prices, positioning, news, earnings and fundamentals; your portfolio, orders and history; trailing stops and paper trading. Every order is previewed and placed only after you approve it in chat.",
+      "version": "1.1.0"
+    }
+  ]
+}

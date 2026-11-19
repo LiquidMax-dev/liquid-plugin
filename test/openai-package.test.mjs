@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
 import { validateOpenaiPackage } from "../scripts/openai-package.mjs";
+import { SKILL_SYNC_MAP } from "../scripts/sync-skills.mjs";
 
 const repoRoot = resolve(import.meta.dirname, "..");
 const packageDir = join(repoRoot, "plugins/co-invest-openai");
@@ -12,7 +13,7 @@ const builder = join(repoRoot, "scripts/package-openai.py");
 const manifestPath = ".codex-plugin/plugin.json";
 const mcpPath = ".mcp.json";
 const skillsPath = "skills";
-const skillNames = ["coinvest-market-research", "coinvest-portfolio-planning", "coinvest-earn-vaults"];
+const skillNames = [...SKILL_SYNC_MAP["co-invest-openai"]];
 const expectedMcp = { mcpServers: { "co-invest": { url: "https://coinvest-chat.liquid.trade" } } };
 const archivePaths = [
   manifestPath,
@@ -58,14 +59,14 @@ test("rejects listing metadata drift, wrong version, or unexpected manifest MCP/
     (manifest) => { manifest.name = "app-wrong"; },
     (manifest) => { manifest.interface.shortDescription = "Changed listing copy"; },
     (manifest) => { manifest.interface.displayName = "Other"; },
-    (manifest) => { manifest.version = "1.0.4"; },
+    (manifest) => { manifest.version = "1.1.1"; },
     (manifest) => { manifest.mcpServers = { url: "https://coinvest-chat.liquid.trade/" }; },
     (manifest) => { manifest.skills = "./other/"; },
   ];
   for (const mutate of cases) {
     const { root, dir } = fixture(t);
     rewriteJson(join(dir, manifestPath), mutate);
-    assert.match(errorsFor(root), /manifest must match the published 1\.0\.0 export except for version, mcpServers, skills, description, longDescription and defaultPrompt|mcpServers must be "\.\/.mcp\.json"|skills must be "\.\/skills\/"|version must be "1\.0\.3"/);
+    assert.match(errorsFor(root), /manifest must match the published 1\.0\.0 export except for version, mcpServers, skills, description, longDescription and defaultPrompt|mcpServers must be "\.\/.mcp\.json"|skills must be "\.\/skills\/"|version must be "1\.1\.0"/);
   }
 });
 
@@ -177,7 +178,7 @@ test("rejects unexpected skill resources and symlinked skill files", (t) => {
 });
 
 test("rejects valid JSON manifest values with an invalid shape", (t) => {
-  for (const value of [null, false, 0, "", [], {}, { version: "1.0.3" }]) {
+  for (const value of [null, false, 0, "", [], {}, { version: "1.1.0" }]) {
     const { root, dir } = fixture(t);
     writeFileSync(join(dir, manifestPath), JSON.stringify(value));
     assert.notEqual(errorsFor(root), "", `accepted ${JSON.stringify(value)}`);
@@ -241,7 +242,7 @@ test("rejects symlinked files and directories in the package", (t) => {
   assert.match(errorsFor(directoryFixture.root), /symlinks are not allowed in the OpenAI package/);
 });
 
-test("builds deterministic seven-file ZIPs with the source listing copy and the published identity, MCP, skills, and logos", (t) => {
+test("builds deterministic ZIPs of the manifest, MCP map, logos and shared skills with the source listing copy and the published identity, MCP, skills, and logos", (t) => {
   const { root, dir } = fixture(t);
   const first = join(root, "artifacts/first.zip");
   const second = join(root, "artifacts/second.zip");
@@ -253,7 +254,7 @@ test("builds deterministic seven-file ZIPs with the source listing copy and the 
   const archive = JSON.parse(execFileSync("python3", ["-c", inspect, first], { encoding: "utf8" }));
   assert.deepEqual(archive.names, [...archivePaths].sort());
   const baseline = JSON.parse(readFileSync(join(root, "schemas/openai/published-plugin-1.0.0.json"), "utf8"));
-  assert.equal(archive.manifest.version, "1.0.3");
+  assert.equal(archive.manifest.version, "1.1.0");
   assert.equal(archive.manifest.mcpServers, "./.mcp.json");
   assert.equal(archive.manifest.skills, "./skills/");
   delete archive.manifest.version;

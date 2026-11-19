@@ -5,17 +5,23 @@ Co-Invest connects Cursor to Co-Invest Computer, Liquid's trading MCP server. Re
 ## What's included
 
 - The Co-Invest MCP server, connected to Co-Invest Computer.
-- Seven skills under `skills/` in this plugin, copies of the repository's root skills:
+- Thirteen skills under `skills/` in this plugin, copies of the repository's root skills:
 
   | Skill | What it does |
   | --- | --- |
   | `coinvest` | Connection defaults, tool discovery, and the safety rules every action follows. |
-  | `coinvest-research` | Market analysis, positioning, technicals, order books, charts, and news. Read-only. |
-  | `coinvest-portfolio-review` | Balance, positions, open orders, and recent position history. Read-only. |
-  | `coinvest-allocate` | A multi-position plan from `plan_portfolio`, placed only on your explicit yes. |
-  | `coinvest-trade` | A pre-trade checklist, then orders, TP/SL, closes, cancels, and leverage changes. |
-  | `coinvest-paper-trading` | Paper mode status, switching, and reset. |
-  | `coinvest-automation` | Bounded automated trading: a per-order notional cap and an expiry you set. |
+  | `coinvest-allocate` | A multi-position plan from `plan_portfolio`, proposed as one batch and placed only on your explicit yes. |
+  | `coinvest-automation` | The automated-trading policy: your per-order cap and expiry, and what it does and does not authorize. |
+  | `coinvest-earnings` | Earnings calendar and company fundamentals. Read-only. |
+  | `coinvest-funding` | Trading setup, deposit addresses, card on-ramp, payment and referral links. |
+  | `coinvest-market-scan` | What is moving, signals, ideas, the leaderboard and your watchlist. Places no trades. |
+  | `coinvest-paper-trading` | Paper mode status, switching and reset. |
+  | `coinvest-portfolio-review` | Balances, positions, open orders, history and allocation. Read-only. |
+  | `coinvest-prediction-markets` | Prediction markets: search, odds and order books, positions, buys, closes and cancels. |
+  | `coinvest-research` | One asset or a comparison: price, funding, positioning, technicals, order book, news. Read-only. |
+  | `coinvest-trade` | Perpetual orders, take-profit and stop-loss, closes, cancels and leverage, following this connection's approval step. |
+  | `coinvest-trailing-stops` | Set, view and remove trailing stops, with the trigger price stated before you approve. |
+  | `coinvest-yield` | Earn vault balance, deposit and withdrawal requests you sign in Liquid, and HYPE staking reads. |
 
   Each workflow skill names trigger phrases, defaults, and what to do when Co-Invest isn't connected, following the plugin design guidance in [Agent Plugins for AWS](https://github.com/awslabs/agent-plugins/blob/main/docs/DESIGN_GUIDELINES.md).
 

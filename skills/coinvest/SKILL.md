@@ -61,12 +61,19 @@ Requires a host that supports remote HTTP MCP and Liquid OAuth.
 This skill sets the connection and safety rules. For a specific task, use the
 matching workflow skill when it is installed; each repeats the rules it needs:
 
-- `coinvest-research`: market analysis, positioning, technicals, and news.
-- `coinvest-portfolio-review`: balance, positions, orders, and history.
-- `coinvest-allocate`: a multi-position plan from `plan_portfolio`.
-- `coinvest-trade`: orders, TP/SL, closes, cancels, and leverage.
-- `coinvest-paper-trading`: paper mode status, switching, and reset.
-- `coinvest-automation`: bounded automated-trading policies.
+- `coinvest-research`: one asset or a comparison: price, funding, positioning, technicals, order book, news. Read-only.
+- `coinvest-portfolio-review`: balances, positions, open orders, history and allocation. Read-only.
+- `coinvest-allocate`: a multi-position plan from plan_portfolio, proposed as one batch and placed only on your explicit yes.
+- `coinvest-trade`: perpetual orders, take-profit and stop-loss, closes, cancels and leverage, following this connection's approval step.
+- `coinvest-paper-trading`: paper mode status, switching and reset.
+- `coinvest-automation`: the automated-trading policy: your per-order cap and expiry, and what it does and does not authorize.
+- `coinvest-market-scan`: what is moving, signals, ideas, the leaderboard and your watchlist. Places no trades.
+- `coinvest-prediction-markets`: prediction markets: search, odds and order books, positions, buys, closes and cancels.
+- `coinvest-trailing-stops`: set, view and remove trailing stops, with the trigger price stated before you approve.
+- `coinvest-earnings`: earnings calendar and company fundamentals. Read-only.
+- `coinvest-yield`: earn vault balance, deposit and withdrawal requests you sign in Liquid, and HYPE staking reads.
+- `coinvest-funding`: trading setup, deposit addresses, card on-ramp, payment and referral links.
+- `coinvest-tokenized-stocks`: buy and sell tokenized stock spot tokens such as EQAAPL: 1x, no shorting, live only (only on connections that serve `execute_spot_order`).
 
 Read the reference that matches the task before acting:
 

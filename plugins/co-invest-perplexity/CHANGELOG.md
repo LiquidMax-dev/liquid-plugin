@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- Bundled 12 workflow skills next to `coinvest`, copies of the repository's root skills, covering research, portfolio review, allocation, trading, paper trading, automation, market scans, prediction markets, trailing stops, earnings, Earn and staking, and funding. Endpoint and tools are unchanged.
+
 ## 1.0.3
 
 - Listing description rewritten and example prompts added to the README. The description and README no longer say orders are placed only after approval: Co-Invest Computer places a perpetual order when the assistant calls the tool. Endpoint and tools are unchanged.

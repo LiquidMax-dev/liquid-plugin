@@ -1,0 +1,1340 @@
+{
+ "_earn_pending_status": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": null
+ },
+ "analyze_market": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "analyze_markets_batch": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "automated_trading_status": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "cancel_order": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "direct-request",
+   "confirmed": false
+  }
+ },
+ "cancel_paper_order": {
+  "computer-v1-full": null,
+  "all": null,
+  "interactive-v1": null,
+  "interactive-v1-links-only": {
+   "approval": "caller-confirmation",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "cancel_prediction_order": {
+  "computer-v1-full": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  }
+ },
+ "close_all_paper_positions": {
+  "computer-v1-full": null,
+  "all": null,
+  "interactive-v1": null,
+  "interactive-v1-links-only": {
+   "approval": "caller-confirmation",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "close_paper_position": {
+  "computer-v1-full": null,
+  "all": null,
+  "interactive-v1": null,
+  "interactive-v1-links-only": {
+   "approval": "caller-confirmation",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "close_position": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  }
+ },
+ "close_positions_batch": {
+  "computer-v1-full": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  }
+ },
+ "close_prediction_position": {
+  "computer-v1-full": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  }
+ },
+ "create_onramp_session": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "deposit_earn": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": null
+ },
+ "disable_automated_trading": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": null
+ },
+ "disable_paper_trading": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "edit_watchlist": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "direct-request",
+   "confirmed": false
+  }
+ },
+ "enable_automated_trading": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": null
+ },
+ "enable_paper_trading": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "enable_trading": {
+  "computer-v1-full": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "execute_order": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  }
+ },
+ "execute_orders_batch": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  }
+ },
+ "execute_prediction_order": {
+  "computer-v1-full": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  }
+ },
+ "execute_spot_order": {
+  "computer-v1-full": null,
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": null
+ },
+ "execute_tpsl": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  }
+ },
+ "generate_deposit_address": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "get_account": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "get_asset_profile": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "get_earn_balance": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "get_news": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "get_portfolio": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "get_position_history": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "get_positioning_pulse": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "get_staking": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "get_technical_indicators": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "get_transaction_history": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "help": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "leaderboard_data": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "leaderboard_rank": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "market_picks": {
+  "computer-v1-full": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  }
+ },
+ "modify_position": {
+  "computer-v1-full": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  }
+ },
+ "paper_trading_status": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "payment_link": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "plan_portfolio": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "read_link": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "refer": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "remove_trailing_stop": {
+  "computer-v1-full": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": null
+ },
+ "reset_paper_account": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "direct-request",
+   "confirmed": false
+  }
+ },
+ "search_markets": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "search_prediction_markets": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "set_paper_tp_sl": {
+  "computer-v1-full": null,
+  "all": null,
+  "interactive-v1": null,
+  "interactive-v1-links-only": {
+   "approval": "caller-confirmation",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "set_trailing_stop": {
+  "computer-v1-full": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": null
+ },
+ "show_chart": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "show_deposit": {
+  "computer-v1-full": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "show_market_overview": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "show_orderbook": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "show_portfolio_chart": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "show_prediction_orderbook": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "suggest_order": {
+  "computer-v1-full": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  }
+ },
+ "suggest_trade": {
+  "computer-v1-full": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  }
+ },
+ "suggest_trades_batch": {
+  "computer-v1-full": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "proposal-only",
+   "confirmed": false
+  }
+ },
+ "upcoming_earnings": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "update_leverage": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": {
+   "approval": "confirmed-argument",
+   "confirmed": true
+  }
+ },
+ "update_paper_leverage": {
+  "computer-v1-full": null,
+  "all": null,
+  "interactive-v1": null,
+  "interactive-v1-links-only": {
+   "approval": "caller-confirmation",
+   "confirmed": false
+  },
+  "paper-only": null
+ },
+ "view_open_orders": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "view_prediction_orders": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "view_prediction_positions": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "paper-only": {
+   "approval": "none",
+   "confirmed": false
+  }
+ },
+ "view_trailing_stop": {
+  "computer-v1-full": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "none",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": null
+ },
+ "withdraw_earn": {
+  "computer-v1-full": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "all": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1": {
+   "approval": "direct-request",
+   "confirmed": false
+  },
+  "interactive-v1-links-only": null,
+  "paper-only": null
+ }
+}

@@ -23,7 +23,7 @@
     "websiteURL": "https://coinvest.ai"
   },
   "name": "app-6a20e26c6ab8819191519e2811e03522",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "mcpServers": "./.mcp.json",
   "skills": "./skills/"
 }

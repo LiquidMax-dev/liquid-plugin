@@ -1,6 +1,6 @@
 # Co-Invest for Muse
 
-Version **1.0.3** (the Muse submission was made with 1.0.2). Connector display name: **Co-Invest**.
+Version **1.1.0** (the Muse submission was made with 1.0.2). Connector display name: **Co-Invest**.
 
 Co-Invest for Muse connects to Liquid's paper-only MCP profile for public market research and simulated trading. Orders placed through this connector's address are simulated: that endpoint never places a live order, adds funds, or switches to another Liquid connection. The production endpoint was enabled and directly verified on 2026-10-12. The hosted Muse submission is prepared for owner review; tool execution inside Muse remains unverified.
 
@@ -23,6 +23,23 @@ The package documents all 45 tools present in the pinned paper-only contract. Tr
 `reset_paper_account` clears the wallet's shared simulated account and cancels its open paper orders. Use it only after the user explicitly asks for a reset. The simulator is shared by wallet across Liquid MCP connectors; changing its state can be visible in other connectors. This endpoint does not change the Liquid web app's selected trading mode.
 
 The owner confirmed the simulated-trading scope for this submission. The Muse form has been filled for review and its terms accessed after sign-in. The agent has not submitted it or accepted terms on the owner's behalf. See the [complete form draft](../../docs/muse-submission-form-1.0.2.md).
+
+## Bundled skills
+
+The package bundles shared Co-Invest skills under `skills/`. Whether Muse loads skills from a hosted connector package is not confirmed.
+
+Copies of the repository's root skills, bundled because this connection serves the tools they use:
+
+| Skill | What it does |
+| --- | --- |
+| `coinvest-allocate` | A multi-position plan from `plan_portfolio`, proposed as one batch and placed only on your explicit yes. |
+| `coinvest-automation` | The automated-trading policy: your per-order cap and expiry, and what it does and does not authorize. |
+| `coinvest-market-scan` | What is moving, signals, ideas, the leaderboard and your watchlist. Places no trades. |
+| `coinvest-paper-trading` | Paper mode status, switching and reset. |
+| `coinvest-portfolio-review` | Balances, positions, open orders, history and allocation. Read-only. |
+| `coinvest-prediction-markets` | Prediction markets: search, odds and order books, positions, buys, closes and cancels. |
+| `coinvest-research` | One asset or a comparison: price, funding, positioning, technicals, order book, news. Read-only. |
+| `coinvest-trade` | Perpetual orders, take-profit and stop-loss, closes, cancels and leverage, following this connection's approval step. |
 
 ## Try asking
 

@@ -1,65 +1,42 @@
 ---
 name: coinvest-automation
-description: "Set up, check, and stop Co-Invest Computer's bounded automated trading on Liquid: a per-order notional cap and an expiry the user sets, inside which the agent may place orders without asking each time. Triggers on: trade for me, automate my strategy, let the agent trade, automation status, stop automated trading."
+description: "Save, read and clear a Co-Invest automated trading policy: a per-order notional cap and an expiry the user sets. Explains whether this connection lets in-policy orders run without asking, or only stores the policy. Triggers on: trade for me, automate my strategy, let the agent trade, autopilot, automation status, stop automated trading."
 license: MIT
 ---
 
 # Co-Invest automated trading
 
-Automation lets the agent place orders without a per-order request, only
-inside a policy the user set explicitly on Co-Invest Computer.
+A saved policy holds a per-order notional cap and an expiry the user chose. What it authorizes depends on this connection, so read the tool descriptions and say plainly which case applies before relying on it.
 
-## Enable
+## Workflow
 
 1. Read `automated_trading_status` and `paper_trading_status`.
-2. Get the bounds from the user. Do not infer them from a vague request:
-   - **Maximum notional per order**, in USD. Required. If the user did not
-     give a number, ask.
-   - **Expiry.** The tool defaults to 7 days (10080 minutes), which is also
-     the maximum. State the expiry and get the user's agreement to it.
-   - The strategy: the user's rules, or an explicit delegation such as
-     "entry and exit logic is up to you".
-3. Restate the policy in one line, with the mode, then call
-   `enable_automated_trading` with `maxOrderNotional` and
-   `expiresInMinutes`.
-4. Read `automated_trading_status` back and report the active bounds and
-   expiry it returns.
+2. Read the description of `enable_automated_trading` on this connection and decide the case:
+   - Case A: the description says that after enabling, order tools may be used for in-policy orders without another approval per order, and the order tools take no `confirmed` argument.
+   - Case B: the description says the policy is saved data only, or the order tools take `confirmed`. Then every order still needs its own preview and approval.
+   - If unclear, treat it as Case B.
+3. Get the user's numbers. The cap in USD per order is required: if they did not give one, ask. Expiry is 1 to 10080 minutes (7 days, the default); use their duration. A request to save a policy with a cap is the approval to save it.
+4. Call `enable_automated_trading`, then read `automated_trading_status` back and report the cap and expiry it returns. Tell the user which case applies and what it means.
+5. To stop, call `disable_automated_trading`, read the status back and report it.
 
-## Acting under a policy
+## Tools
 
-- Before each materially different action, read `automated_trading_status`.
-  Act only when the policy is active, unexpired, and covers the order.
-- Place an order only when current tool data supports a clear thesis.
-  Otherwise do nothing and say why.
-- Stay inside the notional cap on every order, including each leg of a
-  batch.
-- Follow the trade skill's order-term, mode, and outcome rules (the
-  `coinvest-trade` skill when installed).
+- `automated_trading_status`: the saved policy. Where its description says so, it also reports whether paper trading is on, in which case executions are simulated. In Case B it reports saved data only.
+- `enable_automated_trading`: save the cap and expiry; takes `maxOrderNotional` and `expiresInMinutes`.
+- `disable_automated_trading`: clear the policy. In Case A this ends in-policy orders without a per-order request. In Case B its description says it does not change order behavior or cancel accepted orders.
+- `paper_trading_status`: whether paper mode is on, so you can label what runs under the policy.
 
-## Stop
+## Rules
 
-On "stop", "pause", or "turn off automation", call
-`disable_automated_trading`, then read `automated_trading_status` back and
-report it.
+- A saved policy never supplies `confirmed=true`. Where order tools take `confirmed`, preview first, show the exact terms, and send `confirmed=true` only after the user approves those terms in chat. An order tool whose description says it is internal or called only by a confirmation control is never called directly: the change happens only when the user confirms the returned proposal with its own confirmation control, and a typed "yes" in chat does not place it. If the host shows no confirmation control, say this connection cannot place it from chat.
+- Case A only: an order may run without a per-order request only while `automated_trading_status` shows the policy active, unexpired and covering it. Keep every order, including each leg of a batch, inside the cap, and place one only when current data supports a clear thesis; otherwise do nothing and say why.
+- Case B: say that saving the policy does not start a scheduler, authorize automated orders or bypass the order approval flow.
+- Never infer or widen a cap, expiry or strategy. Never create a policy from a vague request.
+- The policy is not a scheduler. Do not promise monitoring or action between turns.
+- A running process may keep an older local policy until its status refreshes; report the status you read.
+- Installing this skill is not consent to automation. Never promise profit.
 
-## Defaults
+## If something is missing
 
-- Endpoint: Co-Invest Computer, `https://coinvest-computer.liquid.trade/mcp`.
-  Main's tools do not provide Computer automation.
-- Scheduling: the policy bounds orders the agent places; it is not itself a
-  scheduler. Do not infer one, and do not promise monitoring the host does
-  not run.
-- Enforcement: the server checks every order against the active policy before
-  execution. Still check the bounds yourself before each call.
-
-## If Co-Invest is unavailable
-
-- No Computer connection, or the status read fails: do not act autonomously.
-  Say so and guide the user to connect
-  `https://coinvest-computer.liquid.trade/mcp` with Liquid OAuth.
-
-## Guardrails
-
-- Installing this skill is not consent to automation.
-- Never create or widen a policy without the user's explicit numbers.
-- Never promise profit.
+- No Co-Invest connection, or the status read fails: do not act autonomously. Say so and point the user to the host's Co-Invest connector settings.
+- A tool is absent from the live list: say this connection cannot do that, and do not switch endpoints or modes.

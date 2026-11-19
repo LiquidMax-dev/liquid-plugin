@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- Bundled 13 workflow skills under `skills/`, copies of the repository's root skills, including `coinvest-tokenized-stocks`, `coinvest-trailing-stops`, `coinvest-earnings`, `coinvest-prediction-markets`, `coinvest-yield` and `coinvest-funding`. Endpoint and tools are unchanged.
+
 ## 1.0.3
 
 - Listing description rewritten, now naming tokenized stocks, and example prompts added to the README. Endpoint and tools are unchanged.

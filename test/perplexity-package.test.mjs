@@ -14,7 +14,7 @@ function fixture(t) {
   mkdirSync(join(root, "schemas"), { recursive: true });
   cpSync(join(repoRoot, "plugins/co-invest-perplexity"), join(root, "plugins/co-invest-perplexity"), { recursive: true });
   cpSync(join(repoRoot, "schemas"), join(root, "schemas"), { recursive: true });
-  cpSync(join(repoRoot, "skills/coinvest"), join(root, "skills/coinvest"), { recursive: true });
+  cpSync(join(repoRoot, "skills"), join(root, "skills"), { recursive: true });
   return { root, dir: join(root, "plugins/co-invest-perplexity") };
 }
 
@@ -65,8 +65,8 @@ test("rejects a changed name", (t) => {
 
 test("rejects a changed version", (t) => {
   const { root, dir } = fixture(t);
-  rewriteJson(join(dir, "plugin.json"), (v) => { v.version = "1.0.4"; });
-  assert.match(errorsFor(root), /plugin\.json: version must be "1\.0\.3"/);
+  rewriteJson(join(dir, "plugin.json"), (v) => { v.version = "1.0.9"; });
+  assert.match(errorsFor(root), /plugin\.json: version must be "1\.1\.0"/);
 });
 
 test("rejects a missing package folder", (t) => {
