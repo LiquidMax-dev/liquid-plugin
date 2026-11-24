@@ -22,6 +22,26 @@ export const SKILL_REQUIRES = Object.freeze({
   "coinvest-tokenized-stocks": "execute_spot_order",
 });
 
+// Personal-API-key skills (SPEC-api-skills-20261014). They stay at the root `skills/` and ship in no package.
+export const API_SKILLS = Object.freeze([
+  "liquid-account",
+  "liquid-bracket-order",
+  "liquid-cancel-orders",
+  "liquid-chart-pattern",
+  "liquid-close-position",
+  "liquid-leverage",
+  "liquid-limit-order",
+  "liquid-market-order",
+  "liquid-markets",
+  "liquid-open-orders",
+  "liquid-orderbook",
+  "liquid-position-guard",
+  "liquid-positions",
+  "liquid-price",
+  "liquid-price-alert",
+  "liquid-tp-sl",
+].sort());
+
 // Package folder to its platform key in docs/listing-prompts.json.
 export const PACKAGE_PLATFORM = Object.freeze({
   "co-invest": "cursor",
